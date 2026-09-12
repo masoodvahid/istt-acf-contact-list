@@ -1,5 +1,5 @@
 /* Base and shared elements */
-.istt-pb {
+.rdsco-contact-list {
     --p: #07594f;
     --ph: #064a43;
     --a: #78bdb0;
@@ -10,20 +10,33 @@
     --b: #e4e9ed;
     --l: #f5f7f8;
     --w: #fff;
+    --rdsco-search-height: 62px;
+    --rdsco-search-bg: var(--w);
+    --rdsco-search-border: var(--b);
+    --rdsco-tag-bg: var(--w);
+    --rdsco-tag-active-bg: var(--al);
+    --rdsco-tag-radius: 10px;
+    --rdsco-row-bg: transparent;
+    --rdsco-row-hover-bg: var(--al);
+    --rdsco-row-min-height: 88px;
+    --rdsco-row-radius: 0px;
+    --rdsco-sidebar-bg: var(--w);
+    --rdsco-sidebar-width: 440px;
     width: 100%;
+    background: transparent;
     color: var(--x);
     font-family: inherit;
 }
 
-.istt-pb * {
+.rdsco-contact-list * {
     box-sizing: border-box;
 }
 
-.istt-pb button,.istt-pb input,.istt-pb select {
+.rdsco-contact-list button,.rdsco-contact-list input,.rdsco-contact-list select {
     font-family: inherit;
 }
 
-.istt-pb .dashicons {
+.rdsco-contact-list .dashicons {
     width: auto;
     height: auto;
     font-size: inherit;
@@ -31,19 +44,19 @@
 }
 
 /* Header, search and quick-start tags */
-.istt-pb .istt-pb-hero {
+.rdsco-contact-list .rdsco-contact-list-hero {
     padding: 58px 20px 34px;
     text-align: center;
-    animation: pbUp .65s ease both;
+    animation: rdscoContactListUp .65s ease both;
 }
 
-.istt-pb .istt-pb-eyebrow {
+.rdsco-contact-list .rdsco-contact-list-eyebrow {
     margin-bottom: 14px;
     color: var(--p);
     font-size: 14px;
 }
 
-.istt-pb .istt-pb-hero>h1 {
+.rdsco-contact-list .rdsco-contact-list-hero>h1 {
     margin: 0;
     color: var(--t);
     font-size: clamp(32px,4.3vw,58px);
@@ -52,45 +65,45 @@
     letter-spacing: -1.5px;
 }
 
-.istt-pb .istt-pb-hero>p {
+.rdsco-contact-list .rdsco-contact-list-hero>p {
     margin: 12px 0 25px;
     color: var(--m);
     font-size: 15px;
 }
 
-.istt-pb .istt-pb-form {
+.rdsco-contact-list .rdsco-contact-list-form {
     width: min(1080px,100%);
     margin: auto;
 }
 
-.istt-pb .istt-pb-search-box {
+.rdsco-contact-list .rdsco-contact-list-search-box {
     position: relative;
     width: min(700px,100%);
     margin: auto;
-    animation: pbUp .65s .08s ease both;
+    animation: rdscoContactListUp .65s .08s ease both;
 }
 
-.istt-pb .istt-pb-search-box input {
+.rdsco-contact-list .rdsco-contact-list-search-box input {
     width: 100%;
-    height: 62px;
+    height: var(--rdsco-search-height);
     padding: 0 24px 0 68px;
-    border: 1px solid var(--b);
+    border: 1px solid var(--rdsco-search-border);
     border-radius: 32px;
     outline: 0;
-    background: var(--w);
+    background: var(--rdsco-search-bg);
     color: var(--t);
     font-size: 14px;
     box-shadow: 0 10px 35px rgba(29,49,66,.08);
     transition: .2s;
 }
 
-.istt-pb .istt-pb-search-box input:focus {
+.rdsco-contact-list .rdsco-contact-list-search-box input:focus {
     border-color: var(--a);
     box-shadow: 0 14px 40px rgba(29,49,66,.12);
     transform: translateY(-1px);
 }
 
-.istt-pb .istt-pb-search-box button {
+.rdsco-contact-list .rdsco-contact-list-search-box button {
     position: absolute;
     top: 50%;
     left: 11px;
@@ -109,29 +122,29 @@
     cursor: pointer;
 }
 
-.istt-pb .istt-pb-start-section {
+.rdsco-contact-list .rdsco-contact-list-start-section {
     margin-top: 38px;
 }
 
-.istt-pb .istt-pb-start-section h2 {
+.rdsco-contact-list .rdsco-contact-list-start-section h2 {
     margin: 0 0 5px;
     color: var(--t);
     font-size: 23px;
 }
 
-.istt-pb .istt-pb-start-section>p {
+.rdsco-contact-list .rdsco-contact-list-start-section>p {
     margin: 0 0 18px;
     color: var(--m);
     font-size: 13px;
 }
 
-.istt-pb .istt-pb-tag-links {
+.rdsco-contact-list .rdsco-contact-list-tag-links {
     display: grid;
     grid-template-columns: repeat(5,minmax(0,1fr));
     gap: 10px;
 }
 
-.istt-pb .istt-pb-tag-link {
+.rdsco-contact-list .rdsco-contact-list-tag-link {
     display: flex;
     width: 100%;
     min-height: 78px;
@@ -139,8 +152,8 @@
     justify-content: center;
     padding: 15px;
     border: 1px solid var(--b);
-    border-radius: 10px;
-    background: var(--w);
+    border-radius: var(--rdsco-tag-radius);
+    background: var(--rdsco-tag-bg);
     color: var(--t);
     text-align: center;
     text-decoration: none;
@@ -151,25 +164,25 @@
     appearance: none;
     opacity: 0;
     transform: translateY(12px);
-    animation: pbTag .45s ease forwards;
-    animation-delay: calc(var(--pb-tag-index)*55ms);
+    animation: rdscoContactListTag .45s ease forwards;
+    animation-delay: calc(var(--rdsco-contact-list-tag-index)*55ms);
     transition: .22s;
 }
 
-.istt-pb .istt-pb-tag-link:hover {
+.rdsco-contact-list .rdsco-contact-list-tag-link:hover {
     transform: translateY(-4px);
     border-color: var(--a);
     box-shadow: 0 12px 25px rgba(24,61,67,.08);
 }
 
-.istt-pb .istt-pb-tag-link.active {
+.rdsco-contact-list .rdsco-contact-list-tag-link.active {
     border-color: var(--a);
-    background: var(--al);
+    background: var(--rdsco-tag-active-bg);
     color: var(--p);
 }
 
 /* Filters */
-.istt-pb .istt-pb-filter-area {
+.rdsco-contact-list .rdsco-contact-list-filter-area {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -178,14 +191,14 @@
     margin-top: 25px;
 }
 
-.istt-pb .istt-pb-zone-filters {
+.rdsco-contact-list .rdsco-contact-list-zone-filters {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 8px;
 }
 
-.istt-pb .istt-pb-zone {
+.rdsco-contact-list .rdsco-contact-list-zone {
     min-height: 40px;
     padding: 0 22px;
     border: 1px solid var(--b);
@@ -196,29 +209,29 @@
     transition: .2s;
 }
 
-.istt-pb .istt-pb-zone:hover {
+.rdsco-contact-list .rdsco-contact-list-zone:hover {
     transform: translateY(-2px);
 }
 
-.istt-pb .istt-pb-zone.active {
+.rdsco-contact-list .rdsco-contact-list-zone.active {
     border-color: var(--p);
     background: var(--p);
     color: var(--w);
 }
 
-.istt-pb .istt-pb-unit-filter {
+.rdsco-contact-list .rdsco-contact-list-unit-filter {
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-.istt-pb .istt-pb-unit-filter label {
+.rdsco-contact-list .rdsco-contact-list-unit-filter label {
     color: var(--m);
     font-size: 12px;
     white-space: nowrap;
 }
 
-.istt-pb .istt-pb-unit-filter select {
+.rdsco-contact-list .rdsco-contact-list-unit-filter select {
     min-width: 190px;
     height: 42px;
     padding: 0 13px;
@@ -229,7 +242,7 @@
     color: var(--x);
 }
 
-.istt-pb .istt-pb-reset {
+.rdsco-contact-list .rdsco-contact-list-reset {
     display: inline-flex;
     min-height: 42px;
     align-items: center;
@@ -242,13 +255,13 @@
 }
 
 /* Results and contact rows */
-.istt-pb .istt-pb-results {
+.rdsco-contact-list .rdsco-contact-list-results {
     width: min(1120px,calc(100% - 40px));
     margin: 0 auto 70px;
     transition: opacity .2s;
 }
 
-.istt-pb .istt-pb-results-head {
+.rdsco-contact-list .rdsco-contact-list-results-head {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
@@ -258,48 +271,50 @@
     text-align: right;
 }
 
-.istt-pb .istt-pb-results-head span {
+.rdsco-contact-list .rdsco-contact-list-results-head span {
     color: var(--m);
     font-size: 12px;
 }
 
-.istt-pb .istt-pb-results-head h2 {
+.rdsco-contact-list .rdsco-contact-list-results-head h2 {
     margin: 24px 0 0;
     color: var(--t);
     font-size: 20px;
 }
 
-.istt-pb .istt-pb-current-unit {
+.rdsco-contact-list .rdsco-contact-list-current-unit {
     padding: 7px 13px;
     border-radius: 18px;
     background: var(--al);
     color: var(--p)!important;
 }
 
-.istt-pb .istt-pb-contact-row {
+.rdsco-contact-list .rdsco-contact-list-contact-row {
     display: grid;
     grid-template-columns: 68px minmax(210px,1.45fr) minmax(150px,1fr) minmax(100px,.65fr) 55px 145px;
     gap: 14px;
     align-items: center;
-    min-height: 88px;
+    min-height: var(--rdsco-row-min-height);
     padding: 10px 14px;
     border-bottom: 1px solid var(--b);
+    border-radius: var(--rdsco-row-radius);
+    background: var(--rdsco-row-bg);
     text-align: right;
     opacity: 0;
     transform: translateY(12px);
-    animation: pbRow .42s ease forwards;
-    animation-delay: calc(var(--pb-row-index)*35ms);
+    animation: rdscoContactListRow .42s ease forwards;
+    animation-delay: calc(var(--rdsco-contact-list-row-index)*35ms);
     transition: .22s;
 }
 
-.istt-pb .istt-pb-contact-row:hover {
+.rdsco-contact-list .rdsco-contact-list-contact-row:hover {
     z-index: 1;
     transform: translateX(-4px);
-    background: var(--al);
+    background: var(--rdsco-row-hover-bg);
     box-shadow: 0 10px 25px rgba(29,60,67,.05);
 }
 
-.istt-pb .istt-pb-contact-photo {
+.rdsco-contact-list .rdsco-contact-list-contact-photo {
     display: flex;
     width: 58px;
     height: 58px;
@@ -311,37 +326,37 @@
     color: var(--p);
 }
 
-.istt-pb .istt-pb-contact-photo img,.istt-pb .istt-pb-sidebar-photo img {
+.rdsco-contact-list .rdsco-contact-list-contact-photo img,.rdsco-contact-list .rdsco-contact-list-sidebar-photo img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform .3s;
 }
 
-.istt-pb .istt-pb-contact-row:hover .istt-pb-contact-photo img {
+.rdsco-contact-list .rdsco-contact-list-contact-row:hover .rdsco-contact-list-contact-photo img {
     transform: scale(1.06);
 }
 
-.istt-pb .istt-pb-contact-identity h3 {
+.rdsco-contact-list .rdsco-contact-list-contact-identity h3 {
     margin: 0 0 4px;
     color: var(--t);
     font-size: 15px;
     font-weight: 700;
 }
 
-.istt-pb .istt-pb-contact-identity p {
+.rdsco-contact-list .rdsco-contact-list-contact-identity p {
     margin: 0;
     color: var(--m);
     font-size: 12px;
     line-height: 1.7;
 }
 
-.istt-pb .istt-pb-contact-zone {
+.rdsco-contact-list .rdsco-contact-list-contact-zone {
     font-size: 12px;
     line-height: 1.7;
 }
 
-.istt-pb .istt-pb-contact-phone {
+.rdsco-contact-list .rdsco-contact-list-contact-phone {
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -350,16 +365,16 @@
     font-size: 13px;
 }
 
-.istt-pb .istt-pb-contact-phone .dashicons,.istt-pb .istt-pb-contact-email-status .dashicons {
+.rdsco-contact-list .rdsco-contact-list-contact-phone .dashicons,.rdsco-contact-list .rdsco-contact-list-contact-email-status .dashicons {
     color: var(--p);
     font-size: 19px;
 }
 
-.istt-pb .istt-pb-contact-email-status {
+.rdsco-contact-list .rdsco-contact-list-contact-email-status {
     text-align: center;
 }
 
-.istt-pb .istt-pb-details-button {
+.rdsco-contact-list .rdsco-contact-list-details-button {
     display: flex;
     min-height: 44px;
     align-items: center;
@@ -375,12 +390,12 @@
     transition: .2s;
 }
 
-.istt-pb .istt-pb-details-button:hover {
+.rdsco-contact-list .rdsco-contact-list-details-button:hover {
     gap: 11px;
     background: var(--w);
 }
 
-.istt-pb .istt-pb-loading {
+.rdsco-contact-list .rdsco-contact-list-loading {
     width: min(1120px,calc(100% - 40px));
     margin: 15px auto;
     padding: 18px;
@@ -388,29 +403,29 @@
     text-align: center;
 }
 
-.istt-pb .istt-pb-loading .dashicons,.istt-pb .istt-pb-qr-loader {
+.rdsco-contact-list .rdsco-contact-list-loading .dashicons,.rdsco-contact-list .rdsco-contact-list-qr-loader {
     margin-left: 8px;
-    animation: pbSpin .8s linear infinite;
+    animation: rdscoContactListSpin .8s linear infinite;
 }
 
-.istt-pb.is-loading .istt-pb-results {
+.rdsco-contact-list.is-loading .rdsco-contact-list-results {
     opacity: .35;
     pointer-events: none;
 }
 
-.istt-pb .istt-pb-empty {
+.rdsco-contact-list .rdsco-contact-list-empty {
     padding: 55px 20px;
     border-block: 1px solid var(--b);
     color: var(--m);
     text-align: center;
 }
 
-.istt-pb .istt-pb-empty .dashicons {
+.rdsco-contact-list .rdsco-contact-list-empty .dashicons {
     font-size: 30px;
 }
 
 /* Pagination and messages */
-.istt-pb .istt-pb-pagination {
+.rdsco-contact-list .rdsco-contact-list-pagination {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -418,7 +433,7 @@
     margin-top: 28px;
 }
 
-.istt-pb .istt-pb-page-button {
+.rdsco-contact-list .rdsco-contact-list-page-button {
     display: flex;
     min-height: 44px;
     align-items: center;
@@ -431,18 +446,18 @@
     cursor: pointer;
 }
 
-.istt-pb .istt-pb-page-button:disabled {
+.rdsco-contact-list .rdsco-contact-list-page-button:disabled {
     opacity: .4;
     cursor: not-allowed;
 }
 
-.istt-pb .istt-pb-pagination>span {
+.rdsco-contact-list .rdsco-contact-list-pagination>span {
     color: var(--m);
     font-size: 12px;
 }
 
 /* Contact details sidebar */
-.istt-pb .istt-pb-sidebar-layer {
+.rdsco-contact-list .rdsco-contact-list-sidebar-layer {
     position: fixed;
     inset: 0;
     z-index: 999999;
@@ -450,12 +465,12 @@
     pointer-events: none;
 }
 
-.istt-pb .istt-pb-sidebar-layer.open {
+.rdsco-contact-list .rdsco-contact-list-sidebar-layer.open {
     visibility: visible;
     pointer-events: auto;
 }
 
-.istt-pb .istt-pb-sidebar-backdrop {
+.rdsco-contact-list .rdsco-contact-list-sidebar-backdrop {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -468,18 +483,18 @@
     transition: opacity .3s;
 }
 
-.istt-pb .istt-pb-sidebar-layer.open .istt-pb-sidebar-backdrop {
+.rdsco-contact-list .rdsco-contact-list-sidebar-layer.open .rdsco-contact-list-sidebar-backdrop {
     opacity: 1;
 }
 
-.istt-pb .istt-pb-sidebar {
+.rdsco-contact-list .rdsco-contact-list-sidebar {
     position: absolute;
     top: 0;
     right: 0;
-    width: min(440px,100%);
+    width: min(var(--rdsco-sidebar-width),100%);
     height: 100dvh;
     overflow-y: auto;
-    background: var(--w);
+    background: var(--rdsco-sidebar-bg);
     box-shadow: -20px 0 60px rgba(15,35,48,.15);
     transform: translateX(105%);
     transition: transform .34s cubic-bezier(.22,1,.36,1);
@@ -487,11 +502,11 @@
     scrollbar-color: var(--b) transparent;
 }
 
-.istt-pb .istt-pb-sidebar-layer.open .istt-pb-sidebar {
+.rdsco-contact-list .rdsco-contact-list-sidebar-layer.open .rdsco-contact-list-sidebar {
     transform: translateX(0);
 }
 
-.istt-pb .istt-pb-sidebar-top {
+.rdsco-contact-list .rdsco-contact-list-sidebar-top {
     position: sticky;
     top: 0;
     z-index: 2;
@@ -507,7 +522,7 @@
     font-weight: 700;
 }
 
-.istt-pb .istt-pb-sidebar-close {
+.rdsco-contact-list .rdsco-contact-list-sidebar-close {
     display: flex;
     width: 36px;
     height: 36px;
@@ -522,24 +537,24 @@
     transition: .2s;
 }
 
-.istt-pb .istt-pb-sidebar-close:hover {
+.rdsco-contact-list .rdsco-contact-list-sidebar-close:hover {
     transform: rotate(90deg);
 }
 
-.istt-pb .istt-pb-sidebar-content {
+.rdsco-contact-list .rdsco-contact-list-sidebar-content {
     padding: 16px 20px 22px;
 }
 
-.istt-pb .istt-pb-sidebar-profile {
+.rdsco-contact-list .rdsco-contact-list-sidebar-profile {
     display: grid;
     grid-template-columns: 78px minmax(0,1fr);
     column-gap: 14px;
     align-items: center;
     text-align: right;
-    animation: pbUp .4s .12s ease both;
+    animation: rdscoContactListUp .4s .12s ease both;
 }
 
-.istt-pb .istt-pb-sidebar-photo {
+.rdsco-contact-list .rdsco-contact-list-sidebar-photo {
     display: flex;
     grid-column: 1;
     grid-row: 1/3;
@@ -556,11 +571,11 @@
     box-shadow: 0 7px 22px rgba(16,61,56,.12);
 }
 
-.istt-pb .istt-pb-sidebar-photo .dashicons {
+.rdsco-contact-list .rdsco-contact-list-sidebar-photo .dashicons {
     font-size: 32px;
 }
 
-.istt-pb .istt-pb-sidebar-profile>h2 {
+.rdsco-contact-list .rdsco-contact-list-sidebar-profile>h2 {
     grid-column: 2;
     grid-row: 1;
     align-self: end;
@@ -570,7 +585,7 @@
     line-height: 1.45;
 }
 
-.istt-pb .istt-pb-sidebar-position {
+.rdsco-contact-list .rdsco-contact-list-sidebar-position {
     grid-column: 2;
     grid-row: 2;
     align-self: start;
@@ -580,14 +595,14 @@
     line-height: 1.65;
 }
 
-.istt-pb .istt-pb-sidebar-divider {
+.rdsco-contact-list .rdsco-contact-list-sidebar-divider {
     grid-column: 1/-1;
     height: 1px;
     margin: 13px 0;
     background: linear-gradient(90deg,transparent,var(--b) 15%,var(--b) 85%,transparent);
 }
 
-.istt-pb .istt-pb-sidebar-data {
+.rdsco-contact-list .rdsco-contact-list-sidebar-data {
     display: grid;
     grid-column: 1/-1;
     grid-template-columns: repeat(2,minmax(0,1fr));
@@ -596,7 +611,7 @@
     text-align: right;
 }
 
-.istt-pb .istt-pb-sidebar-data>div {
+.rdsco-contact-list .rdsco-contact-list-sidebar-data>div {
     min-width: 0;
     padding: 8px 10px;
     border: 1px solid var(--b);
@@ -604,7 +619,7 @@
     background: var(--l);
 }
 
-.istt-pb .istt-pb-sidebar-data dt {
+.rdsco-contact-list .rdsco-contact-list-sidebar-data dt {
     display: flex;
     align-items: center;
     gap: 7px;
@@ -614,14 +629,14 @@
     line-height: 1.45;
 }
 
-.istt-pb .istt-pb-sidebar-data dt .dashicons {
+.rdsco-contact-list .rdsco-contact-list-sidebar-data dt .dashicons {
     width: 15px;
     color: var(--p);
     font-size: 15px;
     text-align: center;
 }
 
-.istt-pb .istt-pb-sidebar-data dd {
+.rdsco-contact-list .rdsco-contact-list-sidebar-data dd {
     margin: 0;
     color: var(--t);
     font-size: 12.5px;
@@ -630,18 +645,18 @@
     overflow-wrap: anywhere;
 }
 
-.istt-pb .istt-pb-sidebar-data>div:last-child {
+.rdsco-contact-list .rdsco-contact-list-sidebar-data>div:last-child {
     grid-column: 1/-1;
 }
 
-.istt-pb .istt-pb-protected-email {
+.rdsco-contact-list .rdsco-contact-list-protected-email {
     display: inline-block;
     direction: rtl;
     unicode-bidi: bidi-override;
     font-weight: 500;
 }
 
-.istt-pb .istt-pb-sidebar-call {
+.rdsco-contact-list .rdsco-contact-list-sidebar-call {
     display: flex;
     grid-column: 1/-1;
     min-height: 42px;
@@ -658,14 +673,14 @@
     transition: .2s;
 }
 
-.istt-pb .istt-pb-sidebar-call:hover {
+.rdsco-contact-list .rdsco-contact-list-sidebar-call:hover {
     transform: translateY(-2px);
     background: var(--ph);
     color: var(--w);
 }
 
 /* QR Code and vCard */
-.istt-pb .istt-pb-qr-section {
+.rdsco-contact-list .rdsco-contact-list-qr-section {
     display: grid;
     grid-column: 1/-1;
     grid-template-columns: 144px minmax(0,1fr);
@@ -680,33 +695,33 @@
     text-align: right;
 }
 
-.istt-pb .istt-pb-qr-title {
+.rdsco-contact-list .rdsco-contact-list-qr-title {
     display: flex;
     grid-area: title;
     align-items: flex-start;
     gap: 9px;
 }
 
-.istt-pb .istt-pb-qr-title>.dashicons {
+.rdsco-contact-list .rdsco-contact-list-qr-title>.dashicons {
     margin-top: 2px;
     color: var(--p);
     font-size: 21px;
 }
 
-.istt-pb .istt-pb-qr-title h3 {
+.rdsco-contact-list .rdsco-contact-list-qr-title h3 {
     margin: 0 0 3px;
     color: var(--t);
     font-size: 14px;
 }
 
-.istt-pb .istt-pb-qr-title p {
+.rdsco-contact-list .rdsco-contact-list-qr-title p {
     margin: 0;
     color: var(--m);
     font-size: 10.5px;
     line-height: 1.65;
 }
 
-.istt-pb .istt-pb-qr-box {
+.rdsco-contact-list .rdsco-contact-list-qr-box {
     display: flex;
     grid-area: qr;
     width: 144px;
@@ -725,13 +740,13 @@
     text-align: center;
 }
 
-.istt-pb .istt-pb-qr-box canvas,.istt-pb .istt-pb-qr-box img {
+.rdsco-contact-list .rdsco-contact-list-qr-box canvas,.rdsco-contact-list .rdsco-contact-list-qr-box img {
     display: block;
     width: 128px!important;
     height: 128px!important;
 }
 
-.istt-pb .istt-pb-vcard-download {
+.rdsco-contact-list .rdsco-contact-list-vcard-download {
     display: flex;
     grid-area: download;
     min-height: 40px;
@@ -747,23 +762,23 @@
     transition: .2s;
 }
 
-.istt-pb .istt-pb-vcard-download[hidden] {
+.rdsco-contact-list .rdsco-contact-list-vcard-download[hidden] {
     display: none;
 }
 
-.istt-pb .istt-pb-qr-error {
+.rdsco-contact-list .rdsco-contact-list-qr-error {
     grid-area: download;
     color: #a33c3c;
     font-size: 11px;
     text-align: center;
 }
 
-body.istt-pb-sidebar-open {
+body.rdsco-contact-list-sidebar-open {
     overflow: hidden;
 }
 
 /* Animations */
-@keyframes pbUp {
+@keyframes rdscoContactListUp {
     from {
         opacity: 0;
         transform: translateY(16px);
@@ -776,7 +791,7 @@ body.istt-pb-sidebar-open {
 
 }
 
-@keyframes pbTag {
+@keyframes rdscoContactListTag {
     to {
         opacity: 1;
         transform: translateY(0);
@@ -784,7 +799,7 @@ body.istt-pb-sidebar-open {
 
 }
 
-@keyframes pbRow {
+@keyframes rdscoContactListRow {
     to {
         opacity: 1;
         transform: translateY(0);
@@ -792,7 +807,7 @@ body.istt-pb-sidebar-open {
 
 }
 
-@keyframes pbSpin {
+@keyframes rdscoContactListSpin {
     to {
         transform: rotate(360deg);
     }
@@ -801,54 +816,54 @@ body.istt-pb-sidebar-open {
 
 /* Responsive styles */
 @media (max-width: 960px) {
-    .istt-pb .istt-pb-tag-links {
+    .rdsco-contact-list .rdsco-contact-list-tag-links {
         grid-template-columns: repeat(3,minmax(0,1fr));
     }
 
-    .istt-pb .istt-pb-contact-row {
+    .rdsco-contact-list .rdsco-contact-list-contact-row {
         grid-template-columns: 64px minmax(180px,1fr) minmax(130px,.8fr) 100px 45px;
     }
 
-    .istt-pb .istt-pb-details-button {
+    .rdsco-contact-list .rdsco-contact-list-details-button {
         grid-column: 1/-1;
     }
 
 }
 
 @media (max-width: 700px) {
-    .istt-pb .istt-pb-hero {
+    .rdsco-contact-list .rdsco-contact-list-hero {
         padding: 38px 14px 24px;
     }
 
-    .istt-pb .istt-pb-hero>h1 {
+    .rdsco-contact-list .rdsco-contact-list-hero>h1 {
         font-size: 34px;
         letter-spacing: -.7px;
     }
 
-    .istt-pb .istt-pb-hero>p {
+    .rdsco-contact-list .rdsco-contact-list-hero>p {
         max-width: 320px;
         margin: 12px auto 25px;
         font-size: 13px;
         line-height: 1.9;
     }
 
-    .istt-pb .istt-pb-search-box input {
+    .rdsco-contact-list .rdsco-contact-list-search-box input {
         height: 56px;
         padding-right: 18px;
         font-size: 13px;
     }
 
-    .istt-pb .istt-pb-tag-links {
+    .rdsco-contact-list .rdsco-contact-list-tag-links {
         grid-template-columns: 1fr 1fr;
     }
 
-    .istt-pb .istt-pb-tag-link {
+    .rdsco-contact-list .rdsco-contact-list-tag-link {
         min-height: 68px;
         padding: 11px;
         font-size: 12px;
     }
 
-    .istt-pb .istt-pb-zone-filters {
+    .rdsco-contact-list .rdsco-contact-list-zone-filters {
         width: calc(100vw - 28px);
         justify-content: flex-start;
         flex-wrap: nowrap;
@@ -857,46 +872,46 @@ body.istt-pb-sidebar-open {
         scrollbar-width: none;
     }
 
-    .istt-pb .istt-pb-zone-filters::-webkit-scrollbar {
+    .rdsco-contact-list .rdsco-contact-list-zone-filters::-webkit-scrollbar {
         display: none;
     }
 
-    .istt-pb .istt-pb-zone {
+    .rdsco-contact-list .rdsco-contact-list-zone {
         flex: 0 0 auto;
         min-height: 44px;
     }
 
-    .istt-pb .istt-pb-filter-area,.istt-pb .istt-pb-unit-filter {
+    .rdsco-contact-list .rdsco-contact-list-filter-area,.rdsco-contact-list .rdsco-contact-list-unit-filter {
         width: 100%;
     }
 
-    .istt-pb .istt-pb-unit-filter {
+    .rdsco-contact-list .rdsco-contact-list-unit-filter {
         display: grid;
         text-align: right;
     }
 
-    .istt-pb .istt-pb-unit-filter select {
+    .rdsco-contact-list .rdsco-contact-list-unit-filter select {
         width: 100%;
         min-width: 0;
         height: 48px;
         border-radius: 12px;
     }
 
-    .istt-pb .istt-pb-results {
+    .rdsco-contact-list .rdsco-contact-list-results {
         width: calc(100% - 24px);
         margin-bottom: 45px;
     }
 
-    .istt-pb .istt-pb-results-head {
+    .rdsco-contact-list .rdsco-contact-list-results-head {
         align-items: flex-start;
         flex-direction: column;
     }
 
-    .istt-pb .istt-pb-results-head h2 {
+    .rdsco-contact-list .rdsco-contact-list-results-head h2 {
         margin-top: 14px;
     }
 
-    .istt-pb .istt-pb-contact-row {
+    .rdsco-contact-list .rdsco-contact-list-contact-row {
         grid-template-columns: 58px 1fr auto;
         gap: 11px;
         min-height: 0;
@@ -907,37 +922,37 @@ body.istt-pb-sidebar-open {
         background: var(--w);
     }
 
-    .istt-pb .istt-pb-contact-row:hover {
+    .rdsco-contact-list .rdsco-contact-list-contact-row:hover {
         transform: translateY(-2px);
     }
 
-    .istt-pb .istt-pb-contact-photo {
+    .rdsco-contact-list .rdsco-contact-list-contact-photo {
         width: 52px;
         height: 52px;
     }
 
-    .istt-pb .istt-pb-contact-zone {
+    .rdsco-contact-list .rdsco-contact-list-contact-zone {
         grid-column: 2/-1;
         padding-top: 7px;
         border-top: 1px solid var(--b);
     }
 
-    .istt-pb .istt-pb-contact-phone {
+    .rdsco-contact-list .rdsco-contact-list-contact-phone {
         grid-column: 2;
         justify-content: flex-end;
     }
 
-    .istt-pb .istt-pb-contact-email-status {
+    .rdsco-contact-list .rdsco-contact-list-contact-email-status {
         grid-column: 3;
     }
 
-    .istt-pb .istt-pb-details-button {
+    .rdsco-contact-list .rdsco-contact-list-details-button {
         grid-column: 1/-1;
         min-height: 46px;
         background: var(--al);
     }
 
-    .istt-pb .istt-pb-sidebar {
+    .rdsco-contact-list .rdsco-contact-list-sidebar {
         top: auto;
         right: 0;
         bottom: 0;
@@ -948,44 +963,44 @@ body.istt-pb-sidebar-open {
         box-shadow: 0 -20px 60px rgba(15,35,48,.16);
     }
 
-    .istt-pb .istt-pb-sidebar-layer.open .istt-pb-sidebar {
+    .rdsco-contact-list .rdsco-contact-list-sidebar-layer.open .rdsco-contact-list-sidebar {
         transform: translateY(0);
     }
 
-    .istt-pb .istt-pb-sidebar-top {
+    .rdsco-contact-list .rdsco-contact-list-sidebar-top {
         min-height: 54px;
         padding: 0 16px;
         border-radius: 22px 22px 0 0;
     }
 
-    .istt-pb .istt-pb-sidebar-content {
+    .rdsco-contact-list .rdsco-contact-list-sidebar-content {
         padding: 14px 16px 20px;
     }
 
-    .istt-pb .istt-pb-sidebar-photo {
+    .rdsco-contact-list .rdsco-contact-list-sidebar-photo {
         width: 72px;
         height: 72px;
     }
 
-    .istt-pb .istt-pb-qr-section {
+    .rdsco-contact-list .rdsco-contact-list-qr-section {
         grid-template-columns: 132px minmax(0,1fr);
     }
 
-    .istt-pb .istt-pb-qr-box {
+    .rdsco-contact-list .rdsco-contact-list-qr-box {
         width: 132px;
         min-height: 132px;
     }
 
-    .istt-pb .istt-pb-qr-box canvas,.istt-pb .istt-pb-qr-box img {
+    .rdsco-contact-list .rdsco-contact-list-qr-box canvas,.rdsco-contact-list .rdsco-contact-list-qr-box img {
         width: 116px!important;
         height: 116px!important;
     }
 
-    .istt-pb .istt-pb-pagination {
+    .rdsco-contact-list .rdsco-contact-list-pagination {
         gap: 8px;
     }
 
-    .istt-pb .istt-pb-page-button {
+    .rdsco-contact-list .rdsco-contact-list-page-button {
         min-height: 44px;
         padding: 0 11px;
     }
@@ -993,53 +1008,53 @@ body.istt-pb-sidebar-open {
 }
 
 @media (max-width: 430px) {
-    .istt-pb .istt-pb-tag-links {
+    .rdsco-contact-list .rdsco-contact-list-tag-links {
         grid-template-columns: 1fr;
     }
 
-    .istt-pb .istt-pb-tag-link {
+    .rdsco-contact-list .rdsco-contact-list-tag-link {
         min-height: 58px;
     }
 
-    .istt-pb .istt-pb-pagination>span {
+    .rdsco-contact-list .rdsco-contact-list-pagination>span {
         font-size: 10px;
     }
 
-    .istt-pb .istt-pb-sidebar-content {
+    .rdsco-contact-list .rdsco-contact-list-sidebar-content {
         padding-right: 12px;
         padding-left: 12px;
     }
 
-    .istt-pb .istt-pb-sidebar-profile {
+    .rdsco-contact-list .rdsco-contact-list-sidebar-profile {
         grid-template-columns: 68px minmax(0,1fr);
         column-gap: 11px;
     }
 
-    .istt-pb .istt-pb-sidebar-photo {
+    .rdsco-contact-list .rdsco-contact-list-sidebar-photo {
         width: 68px;
         height: 68px;
     }
 
-    .istt-pb .istt-pb-sidebar-profile>h2 {
+    .rdsco-contact-list .rdsco-contact-list-sidebar-profile>h2 {
         font-size: 18px;
     }
 
-    .istt-pb .istt-pb-sidebar-data>div {
+    .rdsco-contact-list .rdsco-contact-list-sidebar-data>div {
         padding: 7px 8px;
     }
 
-    .istt-pb .istt-pb-qr-section {
+    .rdsco-contact-list .rdsco-contact-list-qr-section {
         grid-template-columns: 120px minmax(0,1fr);
         gap: 8px 10px;
     }
 
-    .istt-pb .istt-pb-qr-box {
+    .rdsco-contact-list .rdsco-contact-list-qr-box {
         width: 120px;
         min-height: 120px;
         padding: 7px;
     }
 
-    .istt-pb .istt-pb-qr-box canvas,.istt-pb .istt-pb-qr-box img {
+    .rdsco-contact-list .rdsco-contact-list-qr-box canvas,.rdsco-contact-list .rdsco-contact-list-qr-box img {
         width: 104px!important;
         height: 104px!important;
     }
@@ -1047,7 +1062,7 @@ body.istt-pb-sidebar-open {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .istt-pb *,.istt-pb *:before,.istt-pb *:after {
+    .rdsco-contact-list *,.rdsco-contact-list *:before,.rdsco-contact-list *:after {
         animation-duration: .01ms!important;
         transition-duration: .01ms!important;
     }

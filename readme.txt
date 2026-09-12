@@ -1,38 +1,34 @@
-=== ISTT ACF Contact List ===
+=== افزونه های المنتور راهکار دیجیتال شریف ===
 Contributors: masoodvahid
+Tags: elementor, contact directory, acf, ajax, phonebook
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.0.7
+Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-دفتر تلفن AJAX مبتنی بر ACF برای دسته contacts همراه با فیلتر، سایدبار جزئیات، QR Code و vCard.
+مجموعه ویجت‌های اختصاصی Elementor راهکار دیجیتال شریف.
 
 == Description ==
 
-Use the [istt_phonebook] shortcode to display the contact directory.
+نسخه 2.0.0 شامل ویجت بومی Elementor «دفتر تلفن» است. این ویجت نوشته‌های دسته contacts را همراه با فیلدهای ACF نمایش می‌دهد و دارای جست‌وجوی AJAX، فیلتر وابسته حوزه و واحد سازمانی، فیلتر برچسب در همان صفحه، سایدبار جزئیات، QR Code و vCard است.
 
-ACF fields:
-* istt_contact_zone
-* istt_contact_email
-* istt_contact_external_phone
-* istt_contact_internal_phone
+همه متن‌ها، رنگ‌ها، پس‌زمینه، تایپوگرافی، فاصله‌ها و تنظیمات بخش‌های اصلی از پنل خود Elementor کنترل می‌شوند. این نسخه شورت‌کد و صفحه تنظیمات جداگانه ندارد.
 
 == Installation ==
 
-1. Disable the previous Code Snippets version.
-2. Upload and activate this plugin.
-3. Place [istt_phonebook] in the desired page or Elementor archive template.
+1. افزونه Elementor نسخه 3.20 یا جدیدتر را نصب و فعال کنید.
+2. این افزونه را نصب و فعال کنید.
+3. یک صفحه را با Elementor باز کنید.
+4. در دسته «افزونه های راهکار دیجیتال شریف»، ویجت «دفتر تلفن» را به صفحه اضافه کنید.
+5. تنظیمات محتوا و ظاهر را از پنل Elementor انجام دهید.
 
 == Changelog ==
 
-= 1.0.7 =
-* Added a WordPress settings page for custom CSS.
-* Custom CSS is loaded after the bundled stylesheet so it can override the default design.
-* Added the native WordPress code editor and a plugin settings shortcut.
-
-= 1.0.6 =
-* Converted the snippet into a standalone plugin.
-* Separated PHP, CSS, application JavaScript and QRCode.js.
-* Added native WordPress updates from GitHub.
+= 2.0.0 =
+* تبدیل کامل دفتر تلفن به ویجت بومی Elementor.
+* حذف شورت‌کد، صفحه تنظیمات و استایل سفارشی سراسری.
+* افزودن دسته اختصاصی و معماری ماژولار برای ویجت‌های آینده.
+* افزودن کنترل‌های محتوایی و ظاهری Elementor.
+* بهبود بررسی بروزرسانی GitHub با حذف کش اختصاصی شش‌ساعته.

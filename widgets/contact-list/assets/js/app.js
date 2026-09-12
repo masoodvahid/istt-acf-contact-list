@@ -2,29 +2,29 @@
     'use strict';
 
     function initPhonebook(wrapper) {
-        if (!wrapper || wrapper.dataset.isttPbReady === '1') {
+        if (!wrapper || wrapper.dataset.rdscoContactListReady === '1') {
             return;
         }
 
-        const form = wrapper.querySelector('.istt-pb-form');
-        const results = wrapper.querySelector('.istt-pb-results');
-        const loading = wrapper.querySelector('.istt-pb-loading');
+        const form = wrapper.querySelector('.rdsco-contact-list-form');
+        const results = wrapper.querySelector('.rdsco-contact-list-results');
+        const loading = wrapper.querySelector('.rdsco-contact-list-loading');
         const search = form ? form.querySelector('[name="search"]') : null;
         const zone = form ? form.querySelector('[name="zone"]') : null;
         const unit = form ? form.querySelector('[name="unit"]') : null;
         const tag = form ? form.querySelector('[name="tag_id"]') : null;
         const page = form ? form.querySelector('[name="paged"]') : null;
-        const layer = wrapper.querySelector('.istt-pb-sidebar-layer');
-        const sidebarContent = wrapper.querySelector('.istt-pb-sidebar-content');
-        const closeButton = wrapper.querySelector('.istt-pb-sidebar-close');
-        const backdrop = wrapper.querySelector('.istt-pb-sidebar-backdrop');
-        const resetButton = wrapper.querySelector('.istt-pb-reset');
+        const layer = wrapper.querySelector('.rdsco-contact-list-sidebar-layer');
+        const sidebarContent = wrapper.querySelector('.rdsco-contact-list-sidebar-content');
+        const closeButton = wrapper.querySelector('.rdsco-contact-list-sidebar-close');
+        const backdrop = wrapper.querySelector('.rdsco-contact-list-sidebar-backdrop');
+        const resetButton = wrapper.querySelector('.rdsco-contact-list-reset');
 
         if (!form || !results || !loading || !search || !zone || !unit || !tag || !page || !layer || !sidebarContent || !closeButton || !backdrop) {
             return;
         }
 
-        wrapper.dataset.isttPbReady = '1';
+        wrapper.dataset.rdscoContactListReady = '1';
 
         let controller = null;
         let timer = null;
@@ -89,7 +89,7 @@
                     }
                 } catch (error) {
                     if (error.name !== 'AbortError') {
-                        results.innerHTML = '<div class="istt-pb-empty"><p>خطا در دریافت اطلاعات.</p></div>';
+                        results.innerHTML = '<div class="rdsco-contact-list-empty"><p>خطا در دریافت اطلاعات.</p></div>';
                     }
                 } finally {
                     wrapper.classList.remove('is-loading');
@@ -118,7 +118,7 @@
         function waitForQr(callback, attempt) {
             const currentAttempt = attempt || 0;
 
-            if (window.ISTTPBQRCode) {
+            if (window.RDSCOContactListQRCode) {
                 callback();
                 return;
             }
@@ -134,8 +134,8 @@
         }
 
         function showQrError(section, message) {
-            const box = section.querySelector('.istt-pb-qr-box');
-            const error = section.querySelector('.istt-pb-qr-error');
+            const box = section.querySelector('.rdsco-contact-list-qr-box');
+            const error = section.querySelector('.rdsco-contact-list-qr-error');
 
             box.hidden = true;
             error.textContent = message || 'ساخت QR Code ممکن نشد.';
@@ -143,8 +143,8 @@
         }
 
         function drawQr(section, data) {
-            const box = section.querySelector('.istt-pb-qr-box');
-            const download = section.querySelector('.istt-pb-vcard-download');
+            const box = section.querySelector('.rdsco-contact-list-qr-box');
+            const download = section.querySelector('.rdsco-contact-list-vcard-download');
 
             if (activeVcardUrl) {
                 URL.revokeObjectURL(activeVcardUrl);
@@ -159,7 +159,7 @@
             download.hidden = false;
 
             waitForQr(function (error) {
-                if (error || !window.ISTTPBQRCode) {
+                if (error || !window.RDSCOContactListQRCode) {
                     showQrError(section, error ? error.message : 'موتور QR یافت نشد');
                     return;
                 }
@@ -167,17 +167,17 @@
                 box.innerHTML = '';
 
                 try {
-                    new window.ISTTPBQRCode(box, {
+                    new window.RDSCOContactListQRCode(box, {
                         text: data.vcard,
                         width: 174,
                         height: 174,
                         colorDark: '#103d38',
                         colorLight: '#ffffff',
-                        correctLevel: window.ISTTPBQRCode.CorrectLevel.L
+                        correctLevel: window.RDSCOContactListQRCode.CorrectLevel.L
                     });
                     box.removeAttribute('title');
                 } catch (drawError) {
-                    console.error('ISTT Contact List QR draw error:', drawError);
+                    console.error('RDSCO Contact List QR draw error:', drawError);
                     showQrError(
                         section,
                         'خطا در رسم QR: ' + (drawError.message || 'خطای نامشخص')
@@ -198,7 +198,7 @@
             }
 
             const formData = new FormData();
-            formData.set('action', 'istt_phonebook_vcard');
+            formData.set('action', 'rdsco_contact_list_vcard');
             formData.set('post_id', contactId);
             formData.set('token', section.dataset.qrToken || '');
 
@@ -237,7 +237,7 @@
                 cards.set(contactId, item);
                 drawQr(section, item);
             } catch (error) {
-                console.error('ISTT Contact List vCard error:', error);
+                console.error('RDSCO Contact List vCard error:', error);
                 showQrError(
                     section,
                     'خطا در دریافت اطلاعات QR: ' + (error.message || 'خطای نامشخص')
@@ -248,7 +248,7 @@
         function closeSidebar() {
             layer.classList.remove('open');
             layer.setAttribute('aria-hidden', 'true');
-            document.body.classList.remove('istt-pb-sidebar-open');
+            document.body.classList.remove('rdsco-contact-list-sidebar-open');
 
             window.setTimeout(function () {
                 sidebarContent.innerHTML = '';
@@ -270,9 +270,9 @@
             loadResults({ delay: 350 });
         });
 
-        wrapper.querySelectorAll('.istt-pb-zone').forEach(function (button) {
+        wrapper.querySelectorAll('.rdsco-contact-list-zone').forEach(function (button) {
             button.addEventListener('click', function () {
-                wrapper.querySelectorAll('.istt-pb-zone').forEach(function (item) {
+                wrapper.querySelectorAll('.rdsco-contact-list-zone').forEach(function (item) {
                     item.classList.remove('active');
                 });
 
@@ -289,11 +289,11 @@
             loadResults();
         });
 
-        wrapper.querySelectorAll('.istt-pb-tag-link').forEach(function (button) {
+        wrapper.querySelectorAll('.rdsco-contact-list-tag-link').forEach(function (button) {
             button.addEventListener('click', function () {
                 const wasActive = button.classList.contains('active');
 
-                wrapper.querySelectorAll('.istt-pb-tag-link').forEach(function (item) {
+                wrapper.querySelectorAll('.rdsco-contact-list-tag-link').forEach(function (item) {
                     item.classList.remove('active');
                     item.setAttribute('aria-pressed', 'false');
                 });
@@ -318,11 +318,11 @@
                 tag.value = '0';
                 page.value = '1';
 
-                wrapper.querySelectorAll('.istt-pb-zone').forEach(function (item) {
+                wrapper.querySelectorAll('.rdsco-contact-list-zone').forEach(function (item) {
                     item.classList.toggle('active', item.dataset.zone === '');
                 });
 
-                wrapper.querySelectorAll('.istt-pb-tag-link').forEach(function (item) {
+                wrapper.querySelectorAll('.rdsco-contact-list-tag-link').forEach(function (item) {
                     item.classList.remove('active');
                     item.setAttribute('aria-pressed', 'false');
                 });
@@ -332,7 +332,7 @@
         }
 
         results.addEventListener('click', function (event) {
-            const paginationButton = event.target.closest('.istt-pb-page-button');
+            const paginationButton = event.target.closest('.rdsco-contact-list-page-button');
 
             if (paginationButton && !paginationButton.disabled) {
                 page.value = paginationButton.dataset.page;
@@ -340,13 +340,15 @@
                 return;
             }
 
-            const detailsButton = event.target.closest('.istt-pb-details-button');
+            const detailsButton = event.target.closest('.rdsco-contact-list-details-button');
             if (!detailsButton) {
                 return;
             }
 
             const contactId = detailsButton.dataset.contactId;
-            const template = results.querySelector('#istt-pb-contact-' + contactId);
+            const template = results.querySelector(
+                'template[data-contact-template="' + contactId + '"]'
+            );
 
             if (!template) {
                 return;
@@ -357,7 +359,7 @@
             sidebarContent.appendChild(template.content.cloneNode(true));
             layer.classList.add('open');
             layer.setAttribute('aria-hidden', 'false');
-            document.body.classList.add('istt-pb-sidebar-open');
+            document.body.classList.add('rdsco-contact-list-sidebar-open');
             closeButton.focus();
             loadQr(contactId);
         });
@@ -372,13 +374,34 @@
         });
     }
 
-    function boot() {
-        document.querySelectorAll('.istt-pb').forEach(initPhonebook);
+    function boot(scope) {
+        const root = scope || document;
+
+        if (root.matches && root.matches('.rdsco-contact-list')) {
+            initPhonebook(root);
+        }
+
+        root.querySelectorAll('.rdsco-contact-list').forEach(initPhonebook);
     }
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', boot);
+        document.addEventListener('DOMContentLoaded', function () {
+            boot(document);
+        });
     } else {
-        boot();
+        boot(document);
     }
+
+    window.addEventListener('elementor/frontend/init', function () {
+        if (!window.elementorFrontend || !window.elementorFrontend.hooks) {
+            return;
+        }
+
+        window.elementorFrontend.hooks.addAction(
+            'frontend/element_ready/rdsco-contact-list.default',
+            function (scope) {
+                boot(scope && scope[0] ? scope[0] : document);
+            }
+        );
+    });
 })();
