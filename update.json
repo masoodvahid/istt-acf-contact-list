@@ -1,0 +1,17 @@
+{
+  "name": "ISTT ACF Contact List",
+  "slug": "istt-acf-contact-list",
+  "version": "1.0.6",
+  "author": "Masood Vahid",
+  "homepage": "https://github.com/masoodvahid/istt-acf-contact-list",
+  "download_url": "https://github.com/masoodvahid/istt-acf-contact-list/archive/refs/heads/main.zip",
+  "requires": "6.0",
+  "tested": "6.8",
+  "requires_php": "7.4",
+  "last_updated": "2026-09-12",
+  "sections": {
+    "description": "دفتر تلفن AJAX مبتنی بر نوشته‌های دسته contacts و فیلدهای ACF، همراه با فیلترهای وابسته، سایدبار جزئیات، QR Code و vCard.",
+    "installation": "افزونه را نصب و فعال کنید، سپس شورت‌کد [istt_phonebook] را در صفحه یا قالب آرشیو قرار دهید.",
+    "changelog": "نسخه 1.0.6: تبدیل اسنیپت به افزونه مستقل، جداسازی فایل‌های PHP، CSS و JavaScript و افزودن بروزرسانی مستقیم از GitHub."
+  }
+}
