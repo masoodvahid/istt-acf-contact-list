@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-function rdsco_contact_list_fields()
+function rdsco_contact_list_default_fields()
 {
     return [
         'zone'           => 'istt_contact_zone',
@@ -18,6 +18,119 @@ function rdsco_contact_list_fields()
         'external_phone' => 'istt_contact_external_phone',
         'internal_phone' => 'istt_contact_internal_phone',
     ];
+}
+
+function rdsco_contact_list_sanitize_fields($fields)
+{
+    $defaults = rdsco_contact_list_default_fields();
+    $fields = is_array($fields) ? $fields : [];
+    $sanitized = [];
+
+    foreach ($defaults as $key => $default) {
+        $value = isset($fields[$key]) ? sanitize_key($fields[$key]) : '';
+        $sanitized[$key] = $value !== '' ? $value : $default;
+    }
+
+    return $sanitized;
+}
+
+function rdsco_contact_list_fields($settings = [])
+{
+    $settings = is_array($settings) ? $settings : [];
+
+    return rdsco_contact_list_sanitize_fields([
+        'zone' => isset($settings['zone_field_slug'])
+            ? $settings['zone_field_slug']
+            : '',
+        'email' => isset($settings['email_field_slug'])
+            ? $settings['email_field_slug']
+            : '',
+        'external_phone' => isset($settings['external_phone_field_slug'])
+            ? $settings['external_phone_field_slug']
+            : '',
+        'internal_phone' => isset($settings['internal_phone_field_slug'])
+            ? $settings['internal_phone_field_slug']
+            : '',
+    ]);
+}
+
+function rdsco_contact_list_encode_field_config($fields)
+{
+    $payload = rtrim(
+        strtr(
+            base64_encode(wp_json_encode(rdsco_contact_list_sanitize_fields($fields))),
+            '+/',
+            '-_'
+        ),
+        '='
+    );
+
+    return [
+        'payload'   => $payload,
+        'signature' => hash_hmac(
+            'sha256',
+            'rdsco-contact-list-fields|' . $payload,
+            wp_salt('nonce')
+        ),
+    ];
+}
+
+function rdsco_contact_list_decode_field_config($payload, $signature)
+{
+    $payload = sanitize_text_field((string) $payload);
+    $signature = sanitize_text_field((string) $signature);
+
+    if ($payload === '' || $signature === '') {
+        return false;
+    }
+
+    $expected = hash_hmac(
+        'sha256',
+        'rdsco-contact-list-fields|' . $payload,
+        wp_salt('nonce')
+    );
+
+    if (!hash_equals($expected, $signature)) {
+        return false;
+    }
+
+    $encoded = strtr($payload, '-_', '+/');
+    $remainder = strlen($encoded) % 4;
+    if ($remainder) {
+        $encoded .= str_repeat('=', 4 - $remainder);
+    }
+
+    $decoded = base64_decode($encoded, true);
+    $fields = $decoded !== false ? json_decode($decoded, true) : null;
+
+    return is_array($fields)
+        ? rdsco_contact_list_sanitize_fields($fields)
+        : false;
+}
+
+function rdsco_contact_list_get_field_label($field_name, $post_id, $fallback)
+{
+    static $labels = [];
+
+    $field_name = sanitize_key($field_name);
+    if ($field_name === '') {
+        return $fallback;
+    }
+
+    if (array_key_exists($field_name, $labels)) {
+        return $labels[$field_name] !== '' ? $labels[$field_name] : $fallback;
+    }
+
+    $label = '';
+    if (function_exists('get_field_object')) {
+        $field = get_field_object($field_name, absint($post_id), false, false);
+        if (is_array($field) && !empty($field['label'])) {
+            $label = sanitize_text_field($field['label']);
+        }
+    }
+
+    $labels[$field_name] = $label;
+    return $label !== '' ? $label : $fallback;
 }
 
 function rdsco_contact_list_normalize_digits($value)
@@ -119,7 +232,7 @@ function rdsco_contact_list_get_contacts_term()
     return (!$term || is_wp_error($term)) ? false : $term;
 }
 
-function rdsco_contact_list_get_zones($term_id)
+function rdsco_contact_list_get_zones($term_id, $field_name)
 {
     global $wpdb;
 
@@ -128,8 +241,12 @@ function rdsco_contact_list_get_zones($term_id)
         return [];
     }
 
-    $field_name = rdsco_contact_list_fields()['zone'];
-    $cache_key  = 'zones_' . md5($term->term_taxonomy_id);
+    $field_name = sanitize_key($field_name);
+    if ($field_name === '') {
+        return [];
+    }
+
+    $cache_key  = 'zones_' . md5($term->term_taxonomy_id . '|' . $field_name);
     $cached     = wp_cache_get($cache_key, 'rdsco_contact_list');
 
     if ($cached !== false) {
@@ -196,7 +313,7 @@ function rdsco_contact_list_get_zones($term_id)
     return $zones;
 }
 
-function rdsco_contact_list_get_units($term_id, $zone = '')
+function rdsco_contact_list_get_units($term_id, $zone = '', $zone_field = '')
 {
     global $wpdb;
 
@@ -205,15 +322,18 @@ function rdsco_contact_list_get_units($term_id, $zone = '')
         return [];
     }
 
-    $zone      = sanitize_text_field($zone);
-    $cache_key = 'units_' . md5($term->term_taxonomy_id . '|' . $zone);
+    $zone       = sanitize_text_field($zone);
+    $zone_field = sanitize_key($zone_field);
+    $cache_key  = 'units_' . md5(
+        $term->term_taxonomy_id . '|' . $zone . '|' . $zone_field
+    );
     $cached    = wp_cache_get($cache_key, 'rdsco_contact_list');
 
     if ($cached !== false) {
         return $cached;
     }
 
-    if ($zone !== '') {
+    if ($zone !== '' && $zone_field !== '') {
         $values = $wpdb->get_col($wpdb->prepare(
             "SELECT DISTINCT TRIM(p.post_excerpt) AS unit_name
              FROM {$wpdb->term_relationships} tr
@@ -227,7 +347,7 @@ function rdsco_contact_list_get_units($term_id, $zone = '')
                AND p.post_status = 'publish'
                AND TRIM(p.post_excerpt) <> ''
              ORDER BY unit_name ASC",
-            rdsco_contact_list_fields()['zone'],
+            $zone_field,
             $zone,
             absint($term->term_taxonomy_id)
         ));
@@ -309,7 +429,11 @@ function rdsco_contact_list_posts_where($where, $query)
 
     if ($search !== '') {
         $like      = '%' . $wpdb->esc_like(rdsco_contact_list_normalize_digits($search)) . '%';
-        $meta_keys = array_values(rdsco_contact_list_fields());
+        $meta_keys = array_values(
+            rdsco_contact_list_sanitize_fields(
+                $query->get('rdsco_contact_list_fields')
+            )
+        );
         $holders   = implode(', ', array_fill(0, count($meta_keys), '%s'));
         $sql       = " AND (
             {$wpdb->posts}.post_title LIKE %s
@@ -344,7 +468,10 @@ function rdsco_contact_list_query($args = [])
         'tag_id'         => 0,
         'paged'          => 1,
         'posts_per_page' => 20,
+        'fields'          => rdsco_contact_list_default_fields(),
     ]);
+
+    $fields = rdsco_contact_list_sanitize_fields($args['fields']);
 
     $tax_query = [
         'relation' => 'AND',
@@ -374,14 +501,15 @@ function rdsco_contact_list_query($args = [])
         'update_post_meta_cache' => true,
         'update_post_term_cache' => false,
         'tax_query'              => $tax_query,
-        'rdsco_contact_list_query'          => true,
-        'rdsco_contact_list_search'         => sanitize_text_field($args['search']),
-        'rdsco_contact_list_unit'           => sanitize_text_field($args['unit']),
+        'rdsco_contact_list_query'  => true,
+        'rdsco_contact_list_search' => sanitize_text_field($args['search']),
+        'rdsco_contact_list_unit'   => sanitize_text_field($args['unit']),
+        'rdsco_contact_list_fields' => $fields,
     ];
 
     if ($args['zone'] !== '') {
         $query_args['meta_query'] = [[
-            'key'     => rdsco_contact_list_fields()['zone'],
+            'key'     => $fields['zone'],
             'value'   => sanitize_text_field($args['zone']),
             'compare' => '=',
         ]];
@@ -419,10 +547,13 @@ function rdsco_contact_list_render_results($args = [])
     $args = wp_parse_args($args, [
         'term_id' => 0, 'search' => '', 'zone' => '', 'unit' => '',
         'tag_id' => 0, 'paged' => 1, 'posts_per_page' => 20,
+        'fields' => rdsco_contact_list_default_fields(),
     ]);
 
-    $fields = rdsco_contact_list_fields();
-    $zones  = rdsco_contact_list_get_zones($args['term_id']);
+    $fields = rdsco_contact_list_sanitize_fields($args['fields']);
+    $field_config = rdsco_contact_list_encode_field_config($fields);
+    $zones  = rdsco_contact_list_get_zones($args['term_id'], $fields['zone']);
+    $args['fields'] = $fields;
     $query  = rdsco_contact_list_query($args);
     $title  = ($args['zone'] !== '' && isset($zones[$args['zone']]))
         ? $zones[$args['zone']]
@@ -454,10 +585,46 @@ function rdsco_contact_list_render_results($args = [])
             $name    = get_the_title();
             $unit    = trim(wp_strip_all_tags(get_post_field('post_excerpt', $post_id)));
             $raw_zone = get_post_meta($post_id, $fields['zone'], true);
-            $zone = isset($zones[$raw_zone]) ? $zones[$raw_zone] : rdsco_contact_list_format_acf_value(rdsco_contact_list_get_meta_value($post_id, $fields['zone']));
-            $email    = rdsco_contact_list_get_meta_value($post_id, $fields['email']);
-            $external = rdsco_contact_list_phone_href(rdsco_contact_list_get_meta_value($post_id, $fields['external_phone']));
-            $internal = rdsco_contact_list_get_meta_value($post_id, $fields['internal_phone']);
+            $zone = is_scalar($raw_zone) && isset($zones[$raw_zone])
+                ? $zones[$raw_zone]
+                : rdsco_contact_list_format_acf_value(
+                    rdsco_contact_list_get_meta_value($post_id, $fields['zone'])
+                );
+            $email = sanitize_email(
+                rdsco_contact_list_format_acf_value(
+                    rdsco_contact_list_get_meta_value($post_id, $fields['email'])
+                )
+            );
+            $external = rdsco_contact_list_phone_href(
+                rdsco_contact_list_format_acf_value(
+                    rdsco_contact_list_get_meta_value($post_id, $fields['external_phone'])
+                )
+            );
+            $internal = rdsco_contact_list_format_acf_value(
+                rdsco_contact_list_get_meta_value($post_id, $fields['internal_phone'])
+            );
+            $labels = [
+                'zone' => rdsco_contact_list_get_field_label(
+                    $fields['zone'],
+                    $post_id,
+                    'حوزه'
+                ),
+                'email' => rdsco_contact_list_get_field_label(
+                    $fields['email'],
+                    $post_id,
+                    'رایانامه'
+                ),
+                'external_phone' => rdsco_contact_list_get_field_label(
+                    $fields['external_phone'],
+                    $post_id,
+                    'شماره مستقیم'
+                ),
+                'internal_phone' => rdsco_contact_list_get_field_label(
+                    $fields['internal_phone'],
+                    $post_id,
+                    'شماره داخلی'
+                ),
+            ];
         ?>
             <article class="rdsco-contact-list-contact-row" style="--rdsco-contact-list-row-index:<?php echo esc_attr($index); ?>">
                 <div class="rdsco-contact-list-contact-photo"><?php echo rdsco_contact_list_contact_photo($post_id, $name); ?></div>
@@ -484,18 +651,24 @@ function rdsco_contact_list_render_results($args = [])
                         <p class="rdsco-contact-list-sidebar-position"><?php echo $unit !== '' ? esc_html($unit) : '—'; ?></p>
                         <div class="rdsco-contact-list-sidebar-divider"></div>
                         <dl class="rdsco-contact-list-sidebar-data">
-                            <div><dt><span class="dashicons dashicons-building"></span> حوزه</dt><dd><?php echo $zone !== '' ? esc_html($zone) : '—'; ?></dd></div>
+                            <div><dt><span class="dashicons dashicons-building"></span> <?php echo esc_html($labels['zone']); ?></dt><dd><?php echo $zone !== '' ? esc_html($zone) : '—'; ?></dd></div>
                             <div><dt><span class="dashicons dashicons-networking"></span> واحد سازمانی</dt><dd><?php echo $unit !== '' ? esc_html($unit) : '—'; ?></dd></div>
-                            <div><dt><span class="dashicons dashicons-phone"></span> شماره داخلی</dt><dd><?php echo $internal ? esc_html($internal) : '—'; ?></dd></div>
-                            <div><dt><span class="dashicons dashicons-phone"></span> شماره مستقیم</dt><dd><?php echo $external ? esc_html($external) : '—'; ?></dd></div>
-                            <div><dt><span class="dashicons dashicons-email-alt"></span> رایانامه</dt><dd><?php echo rdsco_contact_list_protected_email($email); ?></dd></div>
+                            <div><dt><span class="dashicons dashicons-phone"></span> <?php echo esc_html($labels['internal_phone']); ?></dt><dd><?php echo $internal ? esc_html($internal) : '—'; ?></dd></div>
+                            <div><dt><span class="dashicons dashicons-phone"></span> <?php echo esc_html($labels['external_phone']); ?></dt><dd><?php echo $external ? esc_html($external) : '—'; ?></dd></div>
+                            <div><dt><span class="dashicons dashicons-email-alt"></span> <?php echo esc_html($labels['email']); ?></dt><dd><?php echo rdsco_contact_list_protected_email($email); ?></dd></div>
                         </dl>
                         <?php if ($external) : ?>
                             <a class="rdsco-contact-list-sidebar-call" href="tel:<?php echo esc_attr(rdsco_contact_list_phone_href($external)); ?>">
                                 <span class="dashicons dashicons-phone"></span> تماس
                             </a>
                         <?php endif; ?>
-                        <section class="rdsco-contact-list-qr-section" data-qr-contact="<?php echo esc_attr($post_id); ?>" data-qr-token="<?php echo esc_attr(rdsco_contact_list_contact_token($post_id)); ?>">
+                        <section
+                            class="rdsco-contact-list-qr-section"
+                            data-qr-contact="<?php echo esc_attr($post_id); ?>"
+                            data-qr-token="<?php echo esc_attr(rdsco_contact_list_contact_token($post_id, $field_config['signature'])); ?>"
+                            data-fields-config="<?php echo esc_attr($field_config['payload']); ?>"
+                            data-fields-signature="<?php echo esc_attr($field_config['signature']); ?>"
+                        >
                             <div class="rdsco-contact-list-qr-title">
                                 <span class="dashicons dashicons-smartphone"></span>
                                 <div><h3>ذخیره مخاطب</h3><p>کد را با دوربین تلفن همراه اسکن کنید یا فایل مخاطب را دریافت کنید.</p></div>
@@ -528,6 +701,10 @@ function rdsco_contact_list_render($settings = [], $widget_id = '')
         'search_placeholder' => 'نام، سمت، واحد یا داخلی را جست‌وجو کنید...',
         'posts_per_page'     => 20,
         'tags_limit'         => 8,
+        'zone_field_slug'           => 'istt_contact_zone',
+        'email_field_slug'          => 'istt_contact_email',
+        'external_phone_field_slug' => 'istt_contact_external_phone',
+        'internal_phone_field_slug' => 'istt_contact_internal_phone',
     ]);
 
     $term = rdsco_contact_list_get_contacts_term();
@@ -538,8 +715,10 @@ function rdsco_contact_list_render($settings = [], $widget_id = '')
     $term_id = absint($term->term_id);
     $per_page = min(50, max(1, absint($settings['posts_per_page'])));
     $tags_limit = min(20, max(1, absint($settings['tags_limit'])));
-    $zones = rdsco_contact_list_get_zones($term_id);
-    $units = rdsco_contact_list_get_units($term_id);
+    $fields = rdsco_contact_list_fields($settings);
+    $field_config = rdsco_contact_list_encode_field_config($fields);
+    $zones = rdsco_contact_list_get_zones($term_id, $fields['zone']);
+    $units = rdsco_contact_list_get_units($term_id, '', $fields['zone']);
     $tags  = rdsco_contact_list_get_contact_tags($term_id, $tags_limit);
     $id    = $widget_id !== ''
         ? 'rdsco-contact-list-' . sanitize_html_class($widget_id)
@@ -560,6 +739,8 @@ function rdsco_contact_list_render($settings = [], $widget_id = '')
                 <input type="hidden" name="tag_id" value="0">
                 <input type="hidden" name="paged" value="1">
                 <input type="hidden" name="posts_per_page" value="<?php echo esc_attr($per_page); ?>">
+                <input type="hidden" name="fields_config" value="<?php echo esc_attr($field_config['payload']); ?>">
+                <input type="hidden" name="fields_signature" value="<?php echo esc_attr($field_config['signature']); ?>">
 
                 <div class="rdsco-contact-list-search-box">
                     <input type="search" name="search" placeholder="<?php echo esc_attr($settings['search_placeholder']); ?>" autocomplete="off">
@@ -603,7 +784,12 @@ function rdsco_contact_list_render($settings = [], $widget_id = '')
         </div>
 
         <div class="rdsco-contact-list-loading" hidden><span class="dashicons dashicons-update"></span> در حال دریافت اطلاعات...</div>
-        <div class="rdsco-contact-list-results"><?php echo rdsco_contact_list_render_results(['term_id' => $term_id, 'paged' => 1, 'posts_per_page' => $per_page]); ?></div>
+        <div class="rdsco-contact-list-results"><?php echo rdsco_contact_list_render_results([
+            'term_id' => $term_id,
+            'paged' => 1,
+            'posts_per_page' => $per_page,
+            'fields' => $fields,
+        ]); ?></div>
 
         <div class="rdsco-contact-list-sidebar-layer" aria-hidden="true">
             <button type="button" class="rdsco-contact-list-sidebar-backdrop" aria-label="بستن اطلاعات مخاطب"></button>
@@ -638,6 +824,23 @@ function rdsco_contact_list_ajax_filter()
     $tag_id = isset($_POST['tag_id']) ? absint($_POST['tag_id']) : 0;
     $paged  = isset($_POST['paged']) ? max(1, absint($_POST['paged'])) : 1;
     $per_page = isset($_POST['posts_per_page']) ? min(50, max(1, absint($_POST['posts_per_page']))) : 20;
+    $fields_payload = isset($_POST['fields_config']) && is_string($_POST['fields_config'])
+        ? wp_unslash($_POST['fields_config'])
+        : '';
+    $fields_signature = isset($_POST['fields_signature']) && is_string($_POST['fields_signature'])
+        ? wp_unslash($_POST['fields_signature'])
+        : '';
+    $fields = rdsco_contact_list_decode_field_config(
+        $fields_payload,
+        $fields_signature
+    );
+
+    if ($fields === false) {
+        wp_send_json_error(
+            ['message' => 'پیکربندی فیلدهای ACF معتبر نیست.'],
+            403
+        );
+    }
 
     if ($tag_id && !term_exists($tag_id, 'post_tag')) {
         $tag_id = 0;
@@ -647,10 +850,15 @@ function rdsco_contact_list_ajax_filter()
         'term_id' => $term_id, 'search' => $search, 'zone' => $zone,
         'unit' => $unit, 'tag_id' => $tag_id, 'paged' => $paged,
         'posts_per_page' => $per_page,
+        'fields' => $fields,
     ])];
 
     if (!empty($_POST['update_units'])) {
-        $response['units'] = rdsco_contact_list_get_units($term_id, $zone);
+        $response['units'] = rdsco_contact_list_get_units(
+            $term_id,
+            $zone,
+            $fields['zone']
+        );
     }
 
     wp_send_json_success($response);
@@ -659,12 +867,15 @@ function rdsco_contact_list_ajax_filter()
 add_action('wp_ajax_rdsco_contact_list_filter', 'rdsco_contact_list_ajax_filter');
 add_action('wp_ajax_nopriv_rdsco_contact_list_filter', 'rdsco_contact_list_ajax_filter');
 
-function rdsco_contact_list_contact_token($post_id)
+function rdsco_contact_list_contact_token($post_id, $fields_signature)
 {
     return substr(
         hash_hmac(
             'sha256',
-            'rdsco-contact-list-vcard|' . absint($post_id),
+            'rdsco-contact-list-vcard|'
+                . absint($post_id)
+                . '|'
+                . sanitize_text_field($fields_signature),
             wp_salt('nonce')
         ),
         0,
@@ -681,14 +892,24 @@ function rdsco_contact_list_vcard_escape($value)
     );
 }
 
-function rdsco_contact_list_build_vcard($post_id)
+function rdsco_contact_list_build_vcard($post_id, $fields)
 {
-    $fields = rdsco_contact_list_fields();
+    $fields = rdsco_contact_list_sanitize_fields($fields);
     $name = trim(wp_strip_all_tags(get_the_title($post_id)));
     $unit = trim(wp_strip_all_tags(get_post_field('post_excerpt', $post_id)));
-    $email = sanitize_email(rdsco_contact_list_get_meta_value($post_id, $fields['email']));
-    $external = rdsco_contact_list_phone_href(rdsco_contact_list_get_meta_value($post_id, $fields['external_phone']));
-    $internal = sanitize_text_field(rdsco_contact_list_get_meta_value($post_id, $fields['internal_phone']));
+    $email = sanitize_email(
+        rdsco_contact_list_format_acf_value(
+            rdsco_contact_list_get_meta_value($post_id, $fields['email'])
+        )
+    );
+    $external = rdsco_contact_list_phone_href(
+        rdsco_contact_list_format_acf_value(
+            rdsco_contact_list_get_meta_value($post_id, $fields['external_phone'])
+        )
+    );
+    $internal = rdsco_contact_list_format_acf_value(
+        rdsco_contact_list_get_meta_value($post_id, $fields['internal_phone'])
+    );
 
     // Keep the QR payload compact and predictable, especially for Persian UTF-8 text.
     if ($unit !== '') {
@@ -717,11 +938,25 @@ function rdsco_contact_list_ajax_vcard()
     $token   = isset($_POST['token'])
         ? sanitize_text_field(wp_unslash($_POST['token']))
         : '';
+    $fields_payload = isset($_POST['fields_config']) && is_string($_POST['fields_config'])
+        ? wp_unslash($_POST['fields_config'])
+        : '';
+    $fields_signature = isset($_POST['fields_signature']) && is_string($_POST['fields_signature'])
+        ? wp_unslash($_POST['fields_signature'])
+        : '';
+    $fields = rdsco_contact_list_decode_field_config(
+        $fields_payload,
+        $fields_signature
+    );
 
     if (
         !$post_id ||
         !$token ||
-        !hash_equals(rdsco_contact_list_contact_token($post_id), $token) ||
+        $fields === false ||
+        !hash_equals(
+            rdsco_contact_list_contact_token($post_id, $fields_signature),
+            $token
+        ) ||
         get_post_type($post_id) !== 'post' ||
         get_post_status($post_id) !== 'publish' ||
         !has_category('contacts', $post_id)
@@ -734,7 +969,7 @@ function rdsco_contact_list_ajax_vcard()
 
     $filename = sanitize_file_name(get_the_title($post_id));
     wp_send_json_success([
-        'vcard'   => base64_encode(rdsco_contact_list_build_vcard($post_id)),
+        'vcard'   => base64_encode(rdsco_contact_list_build_vcard($post_id, $fields)),
         'filename' => ($filename ?: 'contact') . '.vcf',
     ]);
 }

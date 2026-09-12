@@ -4,7 +4,7 @@ Tags: elementor, contact directory, acf, ajax, phonebook
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.0.1
+Stable tag: 2.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
 
-نسخه 2.0.1 شامل ویجت بومی Elementor «دفتر تلفن» است. این ویجت نوشته‌های دسته contacts را همراه با فیلدهای ACF نمایش می‌دهد و دارای جست‌وجوی AJAX، فیلتر وابسته حوزه و واحد سازمانی، فیلتر برچسب در همان صفحه، سایدبار جزئیات، QR Code و vCard است.
+نسخه 2.1.0 شامل ویجت بومی Elementor «دفتر تلفن» است. این ویجت نوشته‌های دسته contacts را همراه با فیلدهای ACF نمایش می‌دهد و دارای جست‌وجوی AJAX، فیلتر وابسته حوزه و واحد سازمانی، فیلتر برچسب در همان صفحه، سایدبار جزئیات، QR Code و vCard است.
 
 همه متن‌ها، رنگ‌ها، پس‌زمینه، تایپوگرافی، فاصله‌ها و تنظیمات بخش‌های اصلی از پنل خود Elementor کنترل می‌شوند. این نسخه شورت‌کد و صفحه تنظیمات جداگانه ندارد.
 
@@ -25,6 +25,12 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 5. تنظیمات محتوا و ظاهر را از پنل Elementor انجام دهید.
 
 == Changelog ==
+
+= 2.1.0 =
+* دریافت Field Name فیلدهای ACF از تنظیمات ویجت و خواندن خودکار Label آن‌ها.
+* اعمال فیلدهای انتخابی در جست‌وجوی AJAX، فیلتر حوزه، سایدبار و vCard.
+* تکمیل کنترل استاندارد پس‌زمینه تصویر Elementor.
+* افزودن تنظیمات Border و Radius به بخش رنگ‌ها و پس‌زمینه.
 
 = 2.0.1 =
 * تغییر نام فایل اصلی افزونه به rdsco-elementor-widgets.php.

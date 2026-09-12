@@ -49,6 +49,7 @@ final class Widget extends \Elementor\Widget_Base
     protected function register_controls()
     {
         $this->register_content_controls();
+        $this->register_acf_field_controls();
         $this->register_general_style_controls();
         $this->register_header_style_controls();
         $this->register_search_style_controls();
@@ -135,6 +136,64 @@ final class Widget extends \Elementor\Widget_Base
         $this->end_controls_section();
     }
 
+    private function register_acf_field_controls()
+    {
+        $this->start_controls_section(
+            'acf_fields_section',
+            [
+                'label' => esc_html__('فیلدهای ACF', 'rdsco-elementor-widgets'),
+                'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
+            ]
+        );
+
+        $this->add_control(
+            'acf_fields_notice',
+            [
+                'type' => \Elementor\Controls_Manager::RAW_HTML,
+                'raw'  => esc_html__(
+                    'نام فیلد (Field Name) را وارد کنید؛ عنوان نمایشی به‌صورت خودکار از Label همان فیلد ACF خوانده می‌شود.',
+                    'rdsco-elementor-widgets'
+                ),
+                'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
+            ]
+        );
+
+        $fields = [
+            'zone_field_slug' => [
+                'label'   => 'نام فیلد حوزه',
+                'default' => 'istt_contact_zone',
+            ],
+            'email_field_slug' => [
+                'label'   => 'نام فیلد رایانامه',
+                'default' => 'istt_contact_email',
+            ],
+            'external_phone_field_slug' => [
+                'label'   => 'نام فیلد شماره مستقیم',
+                'default' => 'istt_contact_external_phone',
+            ],
+            'internal_phone_field_slug' => [
+                'label'   => 'نام فیلد شماره داخلی',
+                'default' => 'istt_contact_internal_phone',
+            ],
+        ];
+
+        foreach ($fields as $control_id => $field) {
+            $this->add_control(
+                $control_id,
+                [
+                    'label'       => esc_html($field['label']),
+                    'type'        => \Elementor\Controls_Manager::TEXT,
+                    'default'     => $field['default'],
+                    'placeholder' => $field['default'],
+                    'label_block' => true,
+                    'dynamic'     => ['active' => false],
+                ]
+            );
+        }
+
+        $this->end_controls_section();
+    }
+
     private function register_general_style_controls()
     {
         $selector = '{{WRAPPER}} .rdsco-contact-list';
@@ -150,9 +209,11 @@ final class Widget extends \Elementor\Widget_Base
         $this->add_group_control(
             \Elementor\Group_Control_Background::get_type(),
             [
-                'name'     => 'background',
-                'types'    => ['classic', 'gradient'],
-                'selector' => $selector,
+                'name'      => 'background',
+                'label'     => esc_html__('پس‌زمینه', 'rdsco-elementor-widgets'),
+                'types'     => ['classic', 'gradient'],
+                'selector'  => $selector,
+                'separator' => 'after',
             ]
         );
 
@@ -181,6 +242,29 @@ final class Widget extends \Elementor\Widget_Base
                 ]
             );
         }
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Border::get_type(),
+            [
+                'name'      => 'container_border',
+                'label'     => esc_html__('کادر اصلی', 'rdsco-elementor-widgets'),
+                'selector'  => $selector,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_responsive_control(
+            'container_border_radius',
+            [
+                'label'      => esc_html__('گردی گوشه‌های اصلی', 'rdsco-elementor-widgets'),
+                'type'       => \Elementor\Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', '%', 'em'],
+                'selectors'  => [
+                    $selector =>
+                        'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
 
         $this->end_controls_section();
     }

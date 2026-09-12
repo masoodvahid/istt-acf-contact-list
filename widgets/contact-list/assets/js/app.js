@@ -201,6 +201,8 @@
             formData.set('action', 'rdsco_contact_list_vcard');
             formData.set('post_id', contactId);
             formData.set('token', section.dataset.qrToken || '');
+            formData.set('fields_config', section.dataset.fieldsConfig || '');
+            formData.set('fields_signature', section.dataset.fieldsSignature || '');
 
             try {
                 const response = await fetch(wrapper.dataset.ajaxUrl, {
