@@ -1,7 +1,7 @@
 {
   "name": "ISTT ACF Contact List",
   "slug": "istt-acf-contact-list",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "author": "Masood Vahid",
   "homepage": "https://github.com/masoodvahid/istt-acf-contact-list",
   "download_url": "https://github.com/masoodvahid/istt-acf-contact-list/archive/refs/heads/main.zip",
@@ -10,8 +10,8 @@
   "requires_php": "7.4",
   "last_updated": "2026-09-12",
   "sections": {
-    "description": "دفتر تلفن AJAX مبتنی بر نوشته‌های دسته contacts و فیلدهای ACF، همراه با فیلترهای وابسته، سایدبار جزئیات، QR Code و vCard.",
+    "description": "دفتر تلفن AJAX مبتنی بر نوشته‌های دسته contacts و فیلدهای ACF، همراه با فیلترهای وابسته، سایدبار جزئیات، QR Code، vCard و تنظیمات CSS سفارشی.",
     "installation": "افزونه را نصب و فعال کنید، سپس شورت‌کد [istt_phonebook] را در صفحه یا قالب آرشیو قرار دهید.",
-    "changelog": "نسخه 1.0.6: تبدیل اسنیپت به افزونه مستقل، جداسازی فایل‌های PHP، CSS و JavaScript و افزودن بروزرسانی مستقیم از GitHub."
+    "changelog": "نسخه 1.0.7: افزودن صفحه تنظیمات «دفتر تلفن ISTT»، ویرایشگر CSS داخلی وردپرس و بارگذاری CSS سفارشی بعد از استایل اصلی افزونه.\n\nنسخه 1.0.6: تبدیل اسنیپت به افزونه مستقل، جداسازی فایل‌ها و افزودن بروزرسانی مستقیم از GitHub."
   }
 }
