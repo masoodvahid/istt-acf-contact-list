@@ -49,6 +49,13 @@ function istt_acl_enqueue_assets()
     istt_acl_register_assets();
     wp_enqueue_style('dashicons');
     wp_enqueue_style('istt-acf-contact-list');
+
+    $custom_css = get_option('istt_acl_custom_css', '');
+    if (is_string($custom_css) && trim($custom_css) !== '') {
+        // Added after style.css so matching selectors override the bundled design.
+        wp_add_inline_style('istt-acf-contact-list', $custom_css);
+    }
+
     wp_enqueue_script('istt-acf-contact-list-qrcode');
     wp_enqueue_script('istt-acf-contact-list');
 }
