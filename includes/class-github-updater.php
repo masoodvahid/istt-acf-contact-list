@@ -84,7 +84,7 @@ final class GitHub_Updater
     private static function update_item($manifest)
     {
         $item = new \stdClass();
-        $item->id = 'github.com/' . self::REPOSITORY;
+        $item->id = 'https://github.com/' . self::REPOSITORY;
         $item->slug = self::SLUG;
         $item->plugin = RDSCO_ELEMENTOR_WIDGETS_BASENAME;
         $item->new_version = $manifest['version'];
@@ -136,7 +136,19 @@ final class GitHub_Updater
             return false;
         }
 
-        return (array) self::update_item($manifest);
+        $item = self::update_item($manifest);
+
+        // The Update URI filter expects `version`; WordPress later normalizes it
+        // to `new_version` in the plugin update transient.
+        return [
+            'id'           => $item->id,
+            'slug'         => $item->slug,
+            'version'      => $item->new_version,
+            'url'          => $item->url,
+            'package'      => $item->package,
+            'tested'       => $item->tested,
+            'requires_php' => $item->requires_php,
+        ];
     }
 
     public static function plugin_information($result, $action, $args)
