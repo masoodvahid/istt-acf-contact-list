@@ -1,7 +1,7 @@
 {
   "name": "افزونه های المنتور راهکار دیجیتال شریف",
   "slug": "rdsco-elementor-widgets",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "author": "Masood Vahid",
   "homepage": "https://github.com/masoodvahid/istt-acf-contact-list",
   "download_url": "https://github.com/masoodvahid/istt-acf-contact-list/archive/refs/heads/main.zip",
@@ -12,6 +12,6 @@
   "sections": {
     "description": "مجموعه ماژولار ویجت های Elementor راهکار دیجیتال شریف؛ شامل ویجت دفتر تلفن AJAX با فیلترهای وابسته، سایدبار جزئیات، QR Code و vCard.",
     "installation": "Elementor را فعال کنید، سپس از دسته «افزونه های راهکار دیجیتال شریف» ویجت «دفتر تلفن» را به صفحه اضافه کنید.",
-    "changelog": "نسخه 2.0.1: تغییر نام فایل اصلی افزونه به rdsco-elementor-widgets.php و حذف کامل فایل ورودی قدیمی برای نصب تازه."
+    "changelog": "نسخه 2.1.0: دریافت Field Name فیلدهای ACF از تنظیمات ویجت، خواندن خودکار Label، تکمیل تنظیمات استاندارد پس زمینه تصویر و افزودن Border و Radius."
   }
 }
