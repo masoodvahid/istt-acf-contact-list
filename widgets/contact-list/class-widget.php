@@ -49,7 +49,7 @@ final class Widget extends \Elementor\Widget_Base
     protected function register_controls()
     {
         $this->register_content_controls();
-        $this->register_acf_field_controls();
+        $this->register_meta_field_controls();
         $this->register_general_style_controls();
         $this->register_header_style_controls();
         $this->register_search_style_controls();
@@ -133,15 +133,35 @@ final class Widget extends \Elementor\Widget_Base
             ]
         );
 
+        $this->add_control(
+            'start_title',
+            [
+                'label'       => esc_html__('عنوان گزینه‌های شروع', 'rdsco-elementor-widgets'),
+                'type'        => \Elementor\Controls_Manager::TEXT,
+                'default'     => 'از کجا شروع کنم؟',
+                'label_block' => true,
+            ]
+        );
+
+        $this->add_control(
+            'start_description',
+            [
+                'label'   => esc_html__('توضیحات گزینه‌های شروع', 'rdsco-elementor-widgets'),
+                'type'    => \Elementor\Controls_Manager::TEXTAREA,
+                'default' => 'موضوع موردنظر خود را انتخاب کنید تا گزینه‌های مرتبط نمایش داده شوند.',
+                'rows'    => 2,
+            ]
+        );
+
         $this->end_controls_section();
     }
 
-    private function register_acf_field_controls()
+    private function register_meta_field_controls()
     {
         $this->start_controls_section(
             'acf_fields_section',
             [
-                'label' => esc_html__('فیلدهای ACF', 'rdsco-elementor-widgets'),
+                'label' => esc_html__('متای فیلدهای اضافه', 'rdsco-elementor-widgets'),
                 'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
             ]
         );
@@ -151,45 +171,59 @@ final class Widget extends \Elementor\Widget_Base
             [
                 'type' => \Elementor\Controls_Manager::RAW_HTML,
                 'raw'  => esc_html__(
-                    'نام فیلد (Field Name) را وارد کنید؛ عنوان نمایشی به‌صورت خودکار از Label همان فیلد ACF خوانده می‌شود.',
+                    'نام فیلد (Field Name) را وارد و کاربرد آن را تعیین کنید. عنوان نمایشی به‌صورت خودکار از Label همان فیلد ACF خوانده می‌شود. عنوان، چکیده و تصویر شاخص نیازی به تعریف ندارند.',
                     'rdsco-elementor-widgets'
                 ),
                 'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
             ]
         );
 
-        $fields = [
-            'zone_field_slug' => [
-                'label'   => 'نام فیلد حوزه',
-                'default' => 'istt_contact_zone',
-            ],
-            'email_field_slug' => [
-                'label'   => 'نام فیلد رایانامه',
-                'default' => 'istt_contact_email',
-            ],
-            'external_phone_field_slug' => [
-                'label'   => 'نام فیلد شماره مستقیم',
-                'default' => 'istt_contact_external_phone',
-            ],
-            'internal_phone_field_slug' => [
-                'label'   => 'نام فیلد شماره داخلی',
-                'default' => 'istt_contact_internal_phone',
-            ],
-        ];
+        $repeater = new \Elementor\Repeater();
 
-        foreach ($fields as $control_id => $field) {
-            $this->add_control(
-                $control_id,
-                [
-                    'label'       => esc_html($field['label']),
-                    'type'        => \Elementor\Controls_Manager::TEXT,
-                    'default'     => $field['default'],
-                    'placeholder' => $field['default'],
-                    'label_block' => true,
-                    'dynamic'     => ['active' => false],
-                ]
-            );
-        }
+        $repeater->add_control(
+            'field_slug',
+            [
+                'label'       => esc_html__('نام فیلد (Field Name)', 'rdsco-elementor-widgets'),
+                'type'        => \Elementor\Controls_Manager::TEXT,
+                'placeholder' => 'example_field',
+                'label_block' => true,
+                'dynamic'     => ['active' => false],
+            ]
+        );
+
+        $repeater->add_control(
+            'field_role',
+            [
+                'label'   => esc_html__('نوع کاربرد', 'rdsco-elementor-widgets'),
+                'type'    => \Elementor\Controls_Manager::SELECT,
+                'default' => 'text',
+                'options' => [
+                    'text'           => esc_html__('متن عادی', 'rdsco-elementor-widgets'),
+                    'zone'           => esc_html__('حوزه و فیلتر حوزه', 'rdsco-elementor-widgets'),
+                    'email'          => esc_html__('رایانامه', 'rdsco-elementor-widgets'),
+                    'external_phone' => esc_html__('شماره تماس مستقیم', 'rdsco-elementor-widgets'),
+                    'internal_phone' => esc_html__('شماره داخلی', 'rdsco-elementor-widgets'),
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'meta_fields',
+            [
+                'label'         => esc_html__('فهرست متاها', 'rdsco-elementor-widgets'),
+                'type'          => \Elementor\Controls_Manager::REPEATER,
+                'fields'        => $repeater->get_controls(),
+                'default'       => [
+                    ['field_slug' => 'istt_contact_zone', 'field_role' => 'zone'],
+                    ['field_slug' => 'istt_contact_email', 'field_role' => 'email'],
+                    ['field_slug' => 'istt_contact_external_phone', 'field_role' => 'external_phone'],
+                    ['field_slug' => 'istt_contact_internal_phone', 'field_role' => 'internal_phone'],
+                ],
+                'title_field'   => '{{{ field_slug }}}',
+                'prevent_empty' => false,
+                'button_text'   => esc_html__('افزودن متای جدید', 'rdsco-elementor-widgets'),
+            ]
+        );
 
         $this->end_controls_section();
     }
@@ -384,6 +418,101 @@ final class Widget extends \Elementor\Widget_Base
         );
 
         $this->add_control(
+            'start_title_heading',
+            [
+                'label' => esc_html__('عنوان بخش', 'rdsco-elementor-widgets'),
+                'type'  => \Elementor\Controls_Manager::HEADING,
+            ]
+        );
+
+        $this->add_control(
+            'start_title_color',
+            [
+                'label'     => esc_html__('رنگ عنوان', 'rdsco-elementor-widgets'),
+                'type'      => \Elementor\Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .rdsco-contact-list .rdsco-contact-list-start-section h2' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name'     => 'start_title_typography',
+                'label'    => esc_html__('تایپوگرافی عنوان', 'rdsco-elementor-widgets'),
+                'selector' => '{{WRAPPER}} .rdsco-contact-list .rdsco-contact-list-start-section h2',
+            ]
+        );
+
+        $this->add_control(
+            'start_description_color',
+            [
+                'label'     => esc_html__('رنگ توضیحات', 'rdsco-elementor-widgets'),
+                'type'      => \Elementor\Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .rdsco-contact-list .rdsco-contact-list-start-section > p' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name'     => 'start_description_typography',
+                'label'    => esc_html__('تایپوگرافی توضیحات', 'rdsco-elementor-widgets'),
+                'selector' => '{{WRAPPER}} .rdsco-contact-list .rdsco-contact-list-start-section > p',
+            ]
+        );
+
+        $this->add_control(
+            'tag_buttons_heading',
+            [
+                'label'     => esc_html__('کلیدهای گزینه‌های شروع', 'rdsco-elementor-widgets'),
+                'type'      => \Elementor\Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name'     => 'tag_typography',
+                'label'    => esc_html__('تایپوگرافی کلیدها', 'rdsco-elementor-widgets'),
+                'selector' => '{{WRAPPER}} .rdsco-contact-list .rdsco-contact-list-tag-link',
+            ]
+        );
+
+        $this->add_responsive_control(
+            'tag_padding',
+            [
+                'label'      => esc_html__('فاصله داخلی کلیدها', 'rdsco-elementor-widgets'),
+                'type'       => \Elementor\Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', 'em', '%'],
+                'selectors'  => [
+                    '{{WRAPPER}} .rdsco-contact-list .rdsco-contact-list-tag-link' =>
+                        'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'tag_gap',
+            [
+                'label'      => esc_html__('فاصله بین کلیدها', 'rdsco-elementor-widgets'),
+                'type'       => \Elementor\Controls_Manager::SLIDER,
+                'size_units' => ['px', 'em'],
+                'range'      => [
+                    'px' => ['min' => 0, 'max' => 50],
+                    'em' => ['min' => 0, 'max' => 5, 'step' => 0.1],
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .rdsco-contact-list .rdsco-contact-list-tag-links' => 'gap: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
             'tag_background',
             [
                 'label'     => esc_html__('پس‌زمینه عادی', 'rdsco-elementor-widgets'),
@@ -401,6 +530,39 @@ final class Widget extends \Elementor\Widget_Base
             ]
         );
 
+        $this->add_control(
+            'tag_text_color',
+            [
+                'label'     => esc_html__('رنگ متن عادی', 'rdsco-elementor-widgets'),
+                'type'      => \Elementor\Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .rdsco-contact-list .rdsco-contact-list-tag-link' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'tag_hover_color',
+            [
+                'label'     => esc_html__('رنگ متن در هاور', 'rdsco-elementor-widgets'),
+                'type'      => \Elementor\Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .rdsco-contact-list .rdsco-contact-list-tag-link:hover' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'tag_active_color',
+            [
+                'label'     => esc_html__('رنگ متن انتخاب‌شده', 'rdsco-elementor-widgets'),
+                'type'      => \Elementor\Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .rdsco-contact-list .rdsco-contact-list-tag-link.active' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
         $this->add_responsive_control(
             'tag_radius',
             [
@@ -409,6 +571,110 @@ final class Widget extends \Elementor\Widget_Base
                 'size_units' => ['px'],
                 'range'      => ['px' => ['min' => 0, 'max' => 40]],
                 'selectors'  => [$root => '--rdsco-tag-radius: {{SIZE}}{{UNIT}};'],
+            ]
+        );
+
+        $this->add_control(
+            'zone_buttons_heading',
+            [
+                'label'     => esc_html__('کلیدهای حوزه', 'rdsco-elementor-widgets'),
+                'type'      => \Elementor\Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name'     => 'zone_typography',
+                'label'    => esc_html__('تایپوگرافی کلیدهای حوزه', 'rdsco-elementor-widgets'),
+                'selector' => '{{WRAPPER}} .rdsco-contact-list .rdsco-contact-list-zone',
+            ]
+        );
+
+        $this->add_responsive_control(
+            'zone_padding',
+            [
+                'label'      => esc_html__('فاصله داخلی کلیدهای حوزه', 'rdsco-elementor-widgets'),
+                'type'       => \Elementor\Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', 'em', '%'],
+                'selectors'  => [
+                    '{{WRAPPER}} .rdsco-contact-list .rdsco-contact-list-zone' =>
+                        'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'zone_gap',
+            [
+                'label'      => esc_html__('فاصله بین کلیدهای حوزه', 'rdsco-elementor-widgets'),
+                'type'       => \Elementor\Controls_Manager::SLIDER,
+                'size_units' => ['px', 'em'],
+                'range'      => [
+                    'px' => ['min' => 0, 'max' => 50],
+                    'em' => ['min' => 0, 'max' => 5, 'step' => 0.1],
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .rdsco-contact-list .rdsco-contact-list-zone-filters' => 'gap: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'zone_background',
+            [
+                'label'     => esc_html__('پس‌زمینه عادی حوزه', 'rdsco-elementor-widgets'),
+                'type'      => \Elementor\Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .rdsco-contact-list .rdsco-contact-list-zone' => 'background-color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'zone_text_color',
+            [
+                'label'     => esc_html__('رنگ متن عادی حوزه', 'rdsco-elementor-widgets'),
+                'type'      => \Elementor\Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .rdsco-contact-list .rdsco-contact-list-zone' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'zone_active_background',
+            [
+                'label'     => esc_html__('پس‌زمینه حوزه انتخاب‌شده', 'rdsco-elementor-widgets'),
+                'type'      => \Elementor\Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .rdsco-contact-list .rdsco-contact-list-zone.active' => 'background-color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'zone_active_color',
+            [
+                'label'     => esc_html__('رنگ متن حوزه انتخاب‌شده', 'rdsco-elementor-widgets'),
+                'type'      => \Elementor\Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .rdsco-contact-list .rdsco-contact-list-zone.active' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'zone_radius',
+            [
+                'label'      => esc_html__('گردی کلیدهای حوزه', 'rdsco-elementor-widgets'),
+                'type'       => \Elementor\Controls_Manager::SLIDER,
+                'size_units' => ['px'],
+                'range'      => ['px' => ['min' => 0, 'max' => 50]],
+                'selectors'  => [
+                    '{{WRAPPER}} .rdsco-contact-list .rdsco-contact-list-zone' => 'border-radius: {{SIZE}}{{UNIT}};',
+                ],
             ]
         );
 

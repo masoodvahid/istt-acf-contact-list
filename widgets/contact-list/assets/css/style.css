@@ -139,14 +139,18 @@
 }
 
 .rdsco-contact-list .rdsco-contact-list-tag-links {
-    display: grid;
-    grid-template-columns: repeat(5,minmax(0,1fr));
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    justify-content: center;
     gap: 10px;
+    max-width: 100%;
 }
 
 .rdsco-contact-list .rdsco-contact-list-tag-link {
-    display: flex;
-    width: 100%;
+    display: inline-flex;
+    flex: 1 1 185px;
+    max-width: 230px;
     min-height: 78px;
     align-items: center;
     justify-content: center;
@@ -817,7 +821,7 @@ body.rdsco-contact-list-sidebar-open {
 /* Responsive styles */
 @media (max-width: 960px) {
     .rdsco-contact-list .rdsco-contact-list-tag-links {
-        grid-template-columns: repeat(3,minmax(0,1fr));
+        width: 100%;
     }
 
     .rdsco-contact-list .rdsco-contact-list-contact-row {
@@ -854,10 +858,11 @@ body.rdsco-contact-list-sidebar-open {
     }
 
     .rdsco-contact-list .rdsco-contact-list-tag-links {
-        grid-template-columns: 1fr 1fr;
+        width: 100%;
     }
 
     .rdsco-contact-list .rdsco-contact-list-tag-link {
+        flex-basis: calc(50% - 5px);
         min-height: 68px;
         padding: 11px;
         font-size: 12px;
@@ -1008,11 +1013,9 @@ body.rdsco-contact-list-sidebar-open {
 }
 
 @media (max-width: 430px) {
-    .rdsco-contact-list .rdsco-contact-list-tag-links {
-        grid-template-columns: 1fr;
-    }
-
     .rdsco-contact-list .rdsco-contact-list-tag-link {
+        flex-basis: 100%;
+        max-width: none;
         min-height: 58px;
     }
 
