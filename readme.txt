@@ -3,7 +3,7 @@ Contributors: masoodvahid
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.0.6
+Stable tag: 1.0.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,6 +26,11 @@ ACF fields:
 3. Place [istt_phonebook] in the desired page or Elementor archive template.
 
 == Changelog ==
+
+= 1.0.7 =
+* Added a WordPress settings page for custom CSS.
+* Custom CSS is loaded after the bundled stylesheet so it can override the default design.
+* Added the native WordPress code editor and a plugin settings shortcut.
 
 = 1.0.6 =
 * Converted the snippet into a standalone plugin.
