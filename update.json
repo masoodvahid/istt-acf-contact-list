@@ -1,7 +1,7 @@
 {
-  "name": "ISTT ACF Contact List",
-  "slug": "istt-acf-contact-list",
-  "version": "1.0.7",
+  "name": "افزونه های المنتور راهکار دیجیتال شریف",
+  "slug": "rdsco-elementor-widgets",
+  "version": "2.0.0",
   "author": "Masood Vahid",
   "homepage": "https://github.com/masoodvahid/istt-acf-contact-list",
   "download_url": "https://github.com/masoodvahid/istt-acf-contact-list/archive/refs/heads/main.zip",
@@ -10,8 +10,8 @@
   "requires_php": "7.4",
   "last_updated": "2026-09-12",
   "sections": {
-    "description": "دفتر تلفن AJAX مبتنی بر نوشته‌های دسته contacts و فیلدهای ACF، همراه با فیلترهای وابسته، سایدبار جزئیات، QR Code، vCard و تنظیمات CSS سفارشی.",
-    "installation": "افزونه را نصب و فعال کنید، سپس شورت‌کد [istt_phonebook] را در صفحه یا قالب آرشیو قرار دهید.",
-    "changelog": "نسخه 1.0.7: افزودن صفحه تنظیمات «دفتر تلفن ISTT»، ویرایشگر CSS داخلی وردپرس و بارگذاری CSS سفارشی بعد از استایل اصلی افزونه.\n\nنسخه 1.0.6: تبدیل اسنیپت به افزونه مستقل، جداسازی فایل‌ها و افزودن بروزرسانی مستقیم از GitHub."
+    "description": "مجموعه ماژولار ویجت های Elementor راهکار دیجیتال شریف؛ شامل ویجت دفتر تلفن AJAX با فیلترهای وابسته، سایدبار جزئیات، QR Code و vCard.",
+    "installation": "Elementor را فعال کنید، سپس از دسته «افزونه های راهکار دیجیتال شریف» ویجت «دفتر تلفن» را به صفحه اضافه کنید.",
+    "changelog": "نسخه 2.0.0: تبدیل کامل دفتر تلفن از شورت کد به ویجت بومی Elementor، حذف صفحه تنظیمات و افزودن معماری توسعه پذیر برای ویجت های آینده."
   }
 }
