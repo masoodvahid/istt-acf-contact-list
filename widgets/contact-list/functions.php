@@ -694,13 +694,8 @@ function rdsco_contact_list_render_results($args = [])
     } ?>
 
     <div class="rdsco-contact-list-results-head">
-        <div>
-            <span><?php echo esc_html(number_format_i18n($query->found_posts)); ?> نفر در سازمان یافت شد</span>
-            <h2><?php echo esc_html($title); ?></h2>
-        </div>
-        <?php if ($args['unit'] !== '') : ?>
-            <span class="rdsco-contact-list-current-unit"><?php echo esc_html($args['unit']); ?></span>
-        <?php endif; ?>
+        <h3><?php echo esc_html($title); ?></h3>
+        <span><?php echo esc_html(number_format_i18n($query->found_posts)); ?> نفر در سازمان یافت شد</span>
     </div>
 
     <div class="rdsco-contact-list-contacts-list">
@@ -811,14 +806,9 @@ function rdsco_contact_list_render_results($args = [])
 function rdsco_contact_list_render($settings = [], $widget_id = '')
 {
     $settings = wp_parse_args($settings, [
-        'eyebrow'            => 'ارتباط با شهرک',
-        'title'              => 'دنبال چه کسی هستید؟',
-        'description'        => 'نام، سمت، واحد سازمانی یا شماره داخلی موردنظر خود را جست‌وجو کنید.',
         'search_placeholder' => 'نام، سمت، واحد یا داخلی را جست‌وجو کنید...',
         'posts_per_page'     => 20,
         'tags_limit'         => 8,
-        'start_title'        => 'از کجا شروع کنم؟',
-        'start_description'  => 'موضوع موردنظر خود را انتخاب کنید تا گزینه‌های مرتبط نمایش داده شوند.',
         'meta_fields'        => rdsco_contact_list_default_meta_fields(),
     ]);
 
@@ -846,10 +836,6 @@ function rdsco_contact_list_render($settings = [], $widget_id = '')
     ob_start(); ?>
     <section id="<?php echo esc_attr($id); ?>" class="rdsco-contact-list" dir="rtl" data-ajax-url="<?php echo esc_url(admin_url('admin-ajax.php')); ?>">
         <div class="rdsco-contact-list-hero">
-            <div class="rdsco-contact-list-eyebrow"><?php echo esc_html($settings['eyebrow']); ?></div>
-            <h1><?php echo esc_html($settings['title']); ?></h1>
-            <p><?php echo esc_html($settings['description']); ?></p>
-
             <form class="rdsco-contact-list-form">
                 <input type="hidden" name="action" value="rdsco_contact_list_filter">
                 <input type="hidden" name="nonce" value="<?php echo esc_attr($nonce); ?>">
@@ -867,12 +853,6 @@ function rdsco_contact_list_render($settings = [], $widget_id = '')
 
                 <?php if ($tags) : ?>
                     <div class="rdsco-contact-list-start-section">
-                        <?php if (trim((string) $settings['start_title']) !== '') : ?>
-                            <h2><?php echo esc_html($settings['start_title']); ?></h2>
-                        <?php endif; ?>
-                        <?php if (trim((string) $settings['start_description']) !== '') : ?>
-                            <p><?php echo esc_html($settings['start_description']); ?></p>
-                        <?php endif; ?>
                         <div class="rdsco-contact-list-tag-links">
                             <?php $tag_index = 0; foreach ($tags as $tag) : $tag_index++; ?>
                                 <button type="button" class="rdsco-contact-list-tag-link" data-tag-id="<?php echo esc_attr($tag->term_id); ?>" aria-pressed="false" style="--rdsco-contact-list-tag-index:<?php echo esc_attr($tag_index); ?>">
@@ -884,16 +864,16 @@ function rdsco_contact_list_render($settings = [], $widget_id = '')
                 <?php endif; ?>
 
                 <div class="rdsco-contact-list-filter-area">
-                    <div class="rdsco-contact-list-zone-filters">
-                        <button type="button" class="rdsco-contact-list-zone active" data-zone="">همه</button>
-                        <?php foreach ($zones as $value => $label) : ?>
-                            <button type="button" class="rdsco-contact-list-zone" data-zone="<?php echo esc_attr($value); ?>"><?php echo esc_html($label); ?></button>
-                        <?php endforeach; ?>
+                    <div class="rdsco-contact-list-filter-field rdsco-contact-list-zone-filter">
+                        <select name="zone" aria-label="حوزه فعالیت" <?php disabled(empty($zones)); ?>>
+                            <option value="">همه حوزه‌های فعالیت</option>
+                            <?php foreach ($zones as $value => $label) : ?>
+                                <option value="<?php echo esc_attr($value); ?>"><?php echo esc_html($label); ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
-                    <input type="hidden" name="zone" value="">
-                    <div class="rdsco-contact-list-unit-filter">
-                        <label for="<?php echo esc_attr($id . '-unit'); ?>">واحد سازمانی</label>
-                        <select id="<?php echo esc_attr($id . '-unit'); ?>" name="unit">
+                    <div class="rdsco-contact-list-filter-field rdsco-contact-list-unit-filter">
+                        <select id="<?php echo esc_attr($id . '-unit'); ?>" name="unit" aria-label="واحد سازمانی" <?php disabled(empty($units)); ?>>
                             <option value="">همه واحدهای سازمانی</option>
                             <?php foreach ($units as $value => $label) : ?>
                                 <option value="<?php echo esc_attr($value); ?>"><?php echo esc_html($label); ?></option>

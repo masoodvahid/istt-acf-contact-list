@@ -41,6 +41,8 @@
                 option.textContent = entry[1];
                 unit.appendChild(option);
             });
+
+            unit.disabled = Object.keys(list).length === 0;
         }
 
         function loadResults(options) {
@@ -58,6 +60,10 @@
                 controller = new AbortController();
                 const formData = new FormData(form);
                 formData.set('update_units', settings.updateUnits ? '1' : '0');
+
+                if (settings.updateUnits) {
+                    unit.disabled = true;
+                }
 
                 wrapper.classList.add('is-loading');
                 loading.hidden = false;
@@ -92,6 +98,9 @@
                         results.innerHTML = '<div class="rdsco-contact-list-empty"><p>خطا در دریافت اطلاعات.</p></div>';
                     }
                 } finally {
+                    if (settings.updateUnits && unit.options.length > 1) {
+                        unit.disabled = false;
+                    }
                     wrapper.classList.remove('is-loading');
                     loading.hidden = true;
                 }
@@ -272,18 +281,10 @@
             loadResults({ delay: 350 });
         });
 
-        wrapper.querySelectorAll('.rdsco-contact-list-zone').forEach(function (button) {
-            button.addEventListener('click', function () {
-                wrapper.querySelectorAll('.rdsco-contact-list-zone').forEach(function (item) {
-                    item.classList.remove('active');
-                });
-
-                button.classList.add('active');
-                zone.value = button.dataset.zone;
-                unit.value = '';
-                page.value = '1';
-                loadResults({ updateUnits: true });
-            });
+        zone.addEventListener('change', function () {
+            unit.value = '';
+            page.value = '1';
+            loadResults({ updateUnits: true });
         });
 
         unit.addEventListener('change', function () {
@@ -319,10 +320,6 @@
                 unit.value = '';
                 tag.value = '0';
                 page.value = '1';
-
-                wrapper.querySelectorAll('.rdsco-contact-list-zone').forEach(function (item) {
-                    item.classList.toggle('active', item.dataset.zone === '');
-                });
 
                 wrapper.querySelectorAll('.rdsco-contact-list-tag-link').forEach(function (item) {
                     item.classList.remove('active');
