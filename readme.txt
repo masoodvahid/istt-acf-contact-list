@@ -4,7 +4,7 @@ Tags: elementor, contact directory, acf, ajax, phonebook
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.3.0
+Stable tag: 2.3.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
 
-نسخه 2.3.0 شامل ویجت بومی Elementor «دفتر تلفن» است. این ویجت نوشته‌های دسته contacts را همراه با متاهای داینامیک نمایش می‌دهد و دارای جست‌وجوی AJAX، Dropdownهای وابسته حوزه و واحد سازمانی، فیلتر برچسب در همان صفحه، سایدبار جزئیات، QR Code و vCard است.
+نسخه 2.3.1 شامل ویجت بومی Elementor «دفتر تلفن» است. این ویجت نوشته‌های دسته contacts را همراه با متاهای داینامیک نمایش می‌دهد و دارای جست‌وجوی AJAX، Dropdownهای وابسته حوزه و واحد سازمانی، فیلتر برچسب در همان صفحه، سایدبار جزئیات از سمت چپ، QR Code و vCard است.
 
 متن جست‌وجو، رنگ‌ها، پس‌زمینه، تایپوگرافی، فاصله‌ها و تنظیمات بخش‌های اصلی از پنل خود Elementor کنترل می‌شوند. این نسخه شورت‌کد و صفحه تنظیمات جداگانه ندارد.
 
@@ -25,6 +25,10 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 5. تنظیمات محتوا و ظاهر را از پنل Elementor انجام دهید.
 
 == Changelog ==
+
+= 2.3.1 =
+* انتقال سایدبار اطلاعات تماس به سمت چپ صفحه.
+* اصلاح جهت انیمیشن ورود و خروج در دسکتاپ و حفظ حالت پایین‌به‌بالا در موبایل.
 
 = 2.3.0 =
 * حذف عنوان‌های بالای جست‌وجو، عنوان گزینه‌های شروع و کنترل‌های مربوط به آن‌ها.
