@@ -1,0 +1,29 @@
+/*
+ * RDSCO AJAX Archive refinements - v2.4.2
+ * Loaded after v2.4.1 visual styles.
+ */
+
+/* Fixed desktop sidebar width requested for archive filters. */
+.rdsco-ajax-archive.has-sidebar .rdsco-archive-sidebar {
+    width: 290px !important;
+    flex: 0 0 290px !important;
+    flex-basis: 290px !important;
+}
+
+/* Keep only the section headings such as «دسته‌بندی» and «برچسب‌ها». */
+.rdsco-ajax-archive.has-sidebar .rdsco-sidebar-heading {
+    display: none !important;
+}
+
+/* With the global sidebar title removed, let the first section start cleanly. */
+.rdsco-ajax-archive.has-sidebar .rdsco-filter-group:first-of-type {
+    padding-top: 0;
+}
+
+@media (max-width: 767px) {
+    .rdsco-ajax-archive.has-sidebar .rdsco-archive-sidebar {
+        width: 100% !important;
+        flex: none !important;
+        flex-basis: auto !important;
+    }
+}
