@@ -1,0 +1,444 @@
+.rdsco-ajax-archive {
+    --rdsco-dark: #0a1628;
+    --rdsco-accent: #02b6b5;
+    --rdsco-text: #263d4a;
+    --rdsco-muted: #788890;
+    --rdsco-border: #e3e9ed;
+    --rdsco-soft: #f4f6f7;
+    direction: rtl;
+    display: flex;
+    align-items: flex-start;
+    gap: 28px;
+    width: 100%;
+}
+
+.rdsco-editor-notice {
+    direction: rtl;
+    padding: 18px;
+    border: 1px dashed #c3c4c7;
+    border-radius: 8px;
+    background: #fff;
+    color: #50575e;
+}
+
+.rdsco-archive-sidebar {
+    flex: 0 0 230px;
+    width: 230px;
+    position: sticky;
+    top: 100px;
+}
+
+.rdsco-sidebar-heading {
+    margin-bottom: 20px;
+    color: var(--rdsco-dark);
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.rdsco-filter-group {
+    padding-bottom: 22px;
+    margin-bottom: 22px;
+    border-bottom: 1px solid var(--rdsco-border);
+}
+
+.rdsco-filter-group:last-child {
+    border-bottom: 0;
+}
+
+.rdsco-filter-group-title {
+    margin-bottom: 10px;
+    color: #89969c;
+    font-size: 12px;
+}
+
+.rdsco-filter-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.rdsco-filter-item {
+    appearance: none;
+    width: 100%;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 7px 10px;
+    margin: 0;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #51626b;
+    font: inherit;
+    font-size: 13px;
+    text-align: right;
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease;
+}
+
+.rdsco-filter-item:hover {
+    background: #f2f5f6;
+    color: var(--rdsco-dark);
+}
+
+.rdsco-filter-item.is-active {
+    background: var(--rdsco-dark);
+    color: #fff;
+}
+
+.rdsco-filter-name {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 8px;
+}
+
+.rdsco-filter-name img {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    object-fit: cover;
+    border-radius: 7px;
+}
+
+.rdsco-filter-item small {
+    min-width: 22px;
+    opacity: .72;
+    text-align: center;
+    font-size: 10px;
+}
+
+.rdsco-archive-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.rdsco-live-search {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    margin-bottom: 25px;
+}
+
+.rdsco-search-input {
+    width: 100%;
+    height: 48px;
+    padding: 0 46px;
+    border: 1px solid var(--rdsco-border);
+    border-radius: 10px;
+    outline: none;
+    background: #fff;
+    color: var(--rdsco-text);
+    font: inherit;
+    font-size: 13px;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.rdsco-search-input:focus {
+    border-color: var(--rdsco-accent);
+    box-shadow: 0 0 0 3px rgba(2, 182, 181, .08);
+}
+
+.rdsco-search-icon {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #93a1a7;
+    font-size: 22px;
+    pointer-events: none;
+}
+
+.rdsco-search-clear {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 3px 6px;
+    border: 0;
+    background: transparent;
+    color: #a4afb4;
+    font: inherit;
+    font-size: 21px;
+    cursor: pointer;
+}
+
+.rdsco-archive-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.rdsco-archive-card {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--rdsco-border);
+    border-radius: 12px;
+    background: #fff;
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+
+.rdsco-archive-card:hover {
+    transform: translateY(-3px);
+    border-color: #d5e0e4;
+    box-shadow: 0 12px 25px rgba(10, 22, 40, .06);
+}
+
+.rdsco-archive-card-image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: #eef1f2;
+}
+
+.rdsco-archive-card-image img,
+.rdsco-archive-no-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.rdsco-archive-card-image img {
+    object-fit: cover;
+    transition: transform .4s ease;
+}
+
+.rdsco-archive-card:hover .rdsco-archive-card-image img {
+    transform: scale(1.03);
+}
+
+.rdsco-archive-no-image {
+    background: linear-gradient(135deg, #f2f4f5, #e4eaec);
+}
+
+.rdsco-archive-card-content {
+    padding: 15px;
+}
+
+.rdsco-archive-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 7px;
+    color: #8c989e;
+    font-size: 10px;
+}
+
+.rdsco-archive-card-category {
+    color: #088c8a;
+}
+
+.rdsco-archive-card-title {
+    margin: 0 0 7px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.9;
+}
+
+.rdsco-archive-card-title a {
+    color: var(--rdsco-dark);
+    text-decoration: none;
+}
+
+.rdsco-archive-card-excerpt {
+    margin-bottom: 11px;
+    color: #6f7e86;
+    font-size: 11px;
+    line-height: 1.9;
+}
+
+.rdsco-archive-card-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #078b89;
+    font-size: 10px;
+    text-decoration: none;
+}
+
+.rdsco-archive-loading {
+    display: none;
+    min-height: 80px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--rdsco-muted);
+    font-size: 12px;
+}
+
+.rdsco-ajax-archive.is-loading .rdsco-archive-loading {
+    display: flex;
+}
+
+.rdsco-ajax-archive.is-loading .rdsco-archive-results {
+    opacity: .3;
+    pointer-events: none;
+}
+
+.rdsco-spinner {
+    width: 21px;
+    height: 21px;
+    border: 2px solid #dfe6e8;
+    border-top-color: var(--rdsco-accent);
+    border-radius: 50%;
+    animation: rdscoArchiveSpin .7s linear infinite;
+}
+
+@keyframes rdscoArchiveSpin {
+    to { transform: rotate(360deg); }
+}
+
+.rdsco-archive-empty {
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    text-align: center;
+    color: #829097;
+}
+
+.rdsco-archive-empty strong {
+    color: var(--rdsco-dark);
+}
+
+.rdsco-archive-empty-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 6px;
+    border-radius: 50%;
+    background: #f2f4f5;
+    font-size: 20px;
+}
+
+.rdsco-result-count {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 4px;
+    margin-top: 24px;
+    color: #86949a;
+    font-size: 12px;
+}
+
+.rdsco-result-count strong {
+    color: var(--rdsco-dark);
+    font-size: 15px;
+}
+
+.rdsco-load-more-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.rdsco-load-more-wrap[hidden] {
+    display: none !important;
+}
+
+.rdsco-load-more {
+    min-width: 180px;
+    min-height: 44px;
+    padding: 8px 22px;
+    border: 1px solid var(--rdsco-dark);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--rdsco-dark);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease;
+}
+
+.rdsco-load-more:hover {
+    background: var(--rdsco-dark);
+    color: #fff;
+}
+
+.rdsco-pagination-wrap {
+    margin-top: 20px;
+}
+
+.rdsco-archive-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.rdsco-page-button {
+    min-width: 38px;
+    height: 38px;
+    padding: 0 10px;
+    border: 1px solid var(--rdsco-border);
+    border-radius: 6px;
+    background: #fff;
+    color: #586971;
+    font: inherit;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.rdsco-page-button:hover,
+.rdsco-page-button.is-active {
+    border-color: var(--rdsco-dark);
+    background: var(--rdsco-dark);
+    color: #fff;
+}
+
+.rdsco-page-dots {
+    padding: 0 4px;
+    color: #9aa6ab;
+}
+
+@media (max-width: 1024px) {
+    .rdsco-archive-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767px) {
+    .rdsco-ajax-archive {
+        flex-direction: column;
+        gap: 22px;
+    }
+
+    .rdsco-archive-sidebar {
+        position: static;
+        width: 100% !important;
+        flex-basis: auto !important;
+    }
+
+    .rdsco-filter-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .rdsco-filter-item {
+        width: auto;
+        min-height: 38px;
+    }
+
+    .rdsco-filter-name img {
+        width: 26px;
+        height: 26px;
+        flex-basis: 26px;
+    }
+
+    .rdsco-live-search {
+        max-width: none !important;
+    }
+
+    .rdsco-archive-grid {
+        grid-template-columns: 1fr;
+    }
+}
