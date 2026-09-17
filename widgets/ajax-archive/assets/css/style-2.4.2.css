@@ -1,5 +1,5 @@
 /*
- * RDSCO AJAX Archive refinements - v2.4.2
+ * RDSCO AJAX Archive refinements - v2.4.3
  * Loaded after v2.4.1 visual styles.
  */
 
@@ -13,6 +13,15 @@
 /* Keep only the section headings such as «دسته‌بندی» and «برچسب‌ها». */
 .rdsco-ajax-archive.has-sidebar .rdsco-sidebar-heading {
     display: none !important;
+}
+
+/* Remove extra spacing and separators around filter groups. */
+.rdsco-ajax-archive.has-sidebar .rdsco-filter-group {
+    padding: 0;
+    padding-bottom: 0px;
+    margin: 0;
+    border-top: 0;
+    border-bottom: 0;
 }
 
 /* With the global sidebar title removed, let the first section start cleanly. */
