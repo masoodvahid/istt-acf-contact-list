@@ -1,7 +1,7 @@
 {
   "name": "افزونه های المنتور راهکار دیجیتال شریف",
   "slug": "rdsco-elementor-widgets",
-  "version": "2.4.2",
+  "version": "2.4.3",
   "author": "Masood Vahid",
   "homepage": "https://github.com/masoodvahid/istt-acf-contact-list",
   "download_url": "https://github.com/masoodvahid/istt-acf-contact-list/archive/refs/heads/main.zip",
@@ -12,6 +12,6 @@
   "sections": {
     "description": "مجموعه ماژولار ویجت های Elementor راهکار دیجیتال شریف؛ شامل ویجت دفتر تلفن AJAX و ویجت آرشیو AJAX نوشته‌ها با جستجوی زنده، فیلتر زیر‌دسته و برچسب، تصویر دسته، صفحه‌بندی و بارگذاری بیشتر.",
     "installation": "Elementor را فعال کنید. ویجت‌های افزونه از دسته «افزونه های راهکار دیجیتال شریف» در دسترس هستند. برای آرشیو، ویجت «آرشیو AJAX نوشته‌ها» را در Theme Builder > Archive قرار دهید.",
-    "changelog": "نسخه 2.4.2: عرض سایدبار فیلتر در دسکتاپ روی 290 پیکسل تنظیم شد و عنوان کلی «فیلتر مطالب» حذف شد تا فقط عنوان‌های بخش مانند «دسته‌بندی» و «برچسب‌ها» نمایش داده شوند."
+    "changelog": "نسخه 2.4.3: فاصله داخلی، margin و خطوط جداکننده گروه‌های فیلتر سایدبار حذف شد تا منوی دسته‌بندی فشرده‌تر و تمیزتر نمایش داده شود."
   }
 }
