@@ -26,9 +26,16 @@ add_action('wp_enqueue_scripts', static function () {
     );
 
     wp_register_style(
-        'rdsco-ajax-archive',
+        'rdsco-ajax-archive-polish',
         $base_url . 'css/style-2.4.1.css',
         ['rdsco-ajax-archive-base'],
+        RDSCO_ELEMENTOR_WIDGETS_VERSION
+    );
+
+    wp_register_style(
+        'rdsco-ajax-archive',
+        $base_url . 'css/style-2.4.2.css',
+        ['rdsco-ajax-archive-polish'],
         RDSCO_ELEMENTOR_WIDGETS_VERSION
     );
 
