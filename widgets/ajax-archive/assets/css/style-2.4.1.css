@@ -1,0 +1,320 @@
+/*
+ * RDSCO AJAX Archive visual refinements - v2.4.1
+ * Loaded after the base archive stylesheet.
+ */
+
+/* =========================================================
+ * Sidebar
+ * ======================================================= */
+
+.rdsco-ajax-archive.has-sidebar .rdsco-archive-sidebar {
+    position: sticky;
+    top: 100px;
+    padding: 18px;
+    border: 1px solid #e5ebee;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 10px 32px rgba(10, 22, 40, .055);
+}
+
+.rdsco-ajax-archive.has-sidebar .rdsco-sidebar-heading {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 42px;
+    margin: -2px 0 18px;
+    padding: 0 14px 0 0;
+    color: var(--rdsco-dark);
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.7;
+}
+
+.rdsco-ajax-archive.has-sidebar .rdsco-sidebar-heading::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 4px;
+    height: 26px;
+    border-radius: 999px;
+    background: var(--rdsco-accent);
+    transform: translateY(-50%);
+}
+
+.rdsco-ajax-archive.has-sidebar .rdsco-filter-group {
+    padding: 16px 0 18px;
+    margin: 0;
+    border-top: 1px solid #edf1f3;
+    border-bottom: 0;
+}
+
+.rdsco-ajax-archive.has-sidebar .rdsco-filter-group:first-of-type {
+    border-top: 0;
+    padding-top: 2px;
+}
+
+.rdsco-ajax-archive.has-sidebar .rdsco-filter-group:last-child {
+    padding-bottom: 2px;
+}
+
+.rdsco-ajax-archive.has-sidebar .rdsco-filter-group-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 10px;
+    color: #75858d;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.8;
+}
+
+.rdsco-ajax-archive.has-sidebar .rdsco-filter-group-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #eef2f4;
+}
+
+.rdsco-ajax-archive.has-sidebar .rdsco-filter-list {
+    gap: 6px;
+}
+
+.rdsco-ajax-archive.has-sidebar .rdsco-filter-item {
+    position: relative;
+    min-height: 46px;
+    padding: 7px 10px 7px 9px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background: transparent;
+    color: #4c5d66;
+    overflow: hidden;
+    transition:
+        background-color .2s ease,
+        border-color .2s ease,
+        color .2s ease,
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+.rdsco-ajax-archive.has-sidebar .rdsco-filter-item::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 9px;
+    bottom: 9px;
+    width: 3px;
+    border-radius: 99px;
+    background: var(--rdsco-accent);
+    opacity: 0;
+    transform: scaleY(.45);
+    transition: opacity .2s ease, transform .2s ease;
+}
+
+.rdsco-ajax-archive.has-sidebar .rdsco-filter-item:hover {
+    border-color: #e1e9ec;
+    background: #f7f9fa;
+    color: var(--rdsco-dark);
+    transform: translateX(-2px);
+}
+
+.rdsco-ajax-archive.has-sidebar .rdsco-filter-item:hover::before {
+    opacity: .55;
+    transform: scaleY(1);
+}
+
+.rdsco-ajax-archive.has-sidebar .rdsco-filter-item.is-active {
+    border-color: #dce8e9;
+    background: #eef8f8;
+    color: #073f47;
+    box-shadow: inset 0 0 0 1px rgba(2, 182, 181, .025);
+}
+
+.rdsco-ajax-archive.has-sidebar .rdsco-filter-item.is-active::before {
+    opacity: 1;
+    transform: scaleY(1);
+}
+
+.rdsco-ajax-archive.has-sidebar .rdsco-filter-name {
+    gap: 10px;
+    font-weight: 500;
+}
+
+.rdsco-ajax-archive.has-sidebar .rdsco-filter-name img {
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    border: 1px solid #e1e8eb;
+    border-radius: 9px;
+    box-shadow: 0 3px 10px rgba(10, 22, 40, .06);
+}
+
+.rdsco-ajax-archive.has-sidebar .rdsco-filter-item small {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 25px;
+    height: 23px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #eef2f4;
+    color: #74838a;
+    opacity: 1;
+    font-size: 10px;
+    line-height: 1;
+}
+
+.rdsco-ajax-archive.has-sidebar .rdsco-filter-item.is-active small {
+    background: rgba(2, 182, 181, .12);
+    color: #087b7b;
+}
+
+/* =========================================================
+ * Live search - full width
+ * ======================================================= */
+
+.rdsco-ajax-archive .rdsco-live-search {
+    width: 100%;
+    max-width: none !important;
+    margin: 0 0 28px;
+}
+
+.rdsco-ajax-archive .rdsco-search-input {
+    width: 100%;
+    height: 56px;
+    padding: 0 58px 0 48px;
+    border: 1px solid #dfe7ea;
+    border-radius: 14px;
+    background: #fff;
+    color: var(--rdsco-text);
+    box-shadow: 0 5px 20px rgba(10, 22, 40, .045);
+    font-size: 14px;
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease,
+        background-color .2s ease;
+}
+
+.rdsco-ajax-archive .rdsco-search-input::placeholder {
+    color: #9aa7ad;
+    opacity: 1;
+}
+
+.rdsco-ajax-archive .rdsco-search-input:hover {
+    border-color: #ccdadd;
+}
+
+.rdsco-ajax-archive .rdsco-search-input:focus {
+    border-color: var(--rdsco-accent);
+    background: #fff;
+    box-shadow:
+        0 7px 24px rgba(10, 22, 40, .06),
+        0 0 0 4px rgba(2, 182, 181, .09);
+}
+
+.rdsco-ajax-archive .rdsco-search-icon {
+    right: 13px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: #edf8f8;
+    color: #078e8d;
+    font-size: 20px;
+    line-height: 1;
+}
+
+.rdsco-ajax-archive .rdsco-search-clear {
+    left: 13px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 8px;
+    color: #98a5aa;
+    font-size: 19px;
+    line-height: 1;
+    transition: background-color .2s ease, color .2s ease;
+}
+
+.rdsco-ajax-archive .rdsco-search-clear:hover {
+    background: #f0f3f4;
+    color: var(--rdsco-dark);
+}
+
+/* =========================================================
+ * Automatic desktop grid
+ * Sidebar exists: 3 columns
+ * No sidebar: 4 columns
+ * Higher specificity intentionally overrides Elementor's
+ * desktop column selector for this automatic behaviour.
+ * ======================================================= */
+
+body .rdsco-ajax-archive.has-sidebar .rdsco-archive-content .rdsco-archive-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+body .rdsco-ajax-archive.no-sidebar .rdsco-archive-content .rdsco-archive-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+@media (max-width: 1024px) {
+    body .rdsco-ajax-archive.has-sidebar .rdsco-archive-content .rdsco-archive-grid,
+    body .rdsco-ajax-archive.no-sidebar .rdsco-archive-content .rdsco-archive-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .rdsco-ajax-archive.has-sidebar .rdsco-archive-sidebar {
+        position: static;
+        width: 100% !important;
+        flex-basis: auto !important;
+        padding: 15px;
+        border-radius: 14px;
+        box-shadow: 0 8px 24px rgba(10, 22, 40, .045);
+    }
+
+    .rdsco-ajax-archive.has-sidebar .rdsco-filter-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 7px;
+    }
+
+    .rdsco-ajax-archive.has-sidebar .rdsco-filter-item {
+        width: auto;
+        min-height: 40px;
+        padding: 6px 10px;
+        border-color: #e7edef;
+        background: #fff;
+    }
+
+    .rdsco-ajax-archive.has-sidebar .rdsco-filter-item::before {
+        display: none;
+    }
+
+    .rdsco-ajax-archive.has-sidebar .rdsco-filter-item:hover {
+        transform: none;
+    }
+
+    .rdsco-ajax-archive.has-sidebar .rdsco-filter-name img {
+        width: 28px;
+        height: 28px;
+        flex-basis: 28px;
+        border-radius: 7px;
+    }
+
+    .rdsco-ajax-archive .rdsco-search-input {
+        height: 52px;
+        border-radius: 12px;
+    }
+
+    body .rdsco-ajax-archive.has-sidebar .rdsco-archive-content .rdsco-archive-grid,
+    body .rdsco-ajax-archive.no-sidebar .rdsco-archive-content .rdsco-archive-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
