@@ -19,9 +19,16 @@ add_action('wp_enqueue_scripts', static function () {
     $base_url = RDSCO_ELEMENTOR_WIDGETS_URL . 'widgets/ajax-archive/assets/';
 
     wp_register_style(
-        'rdsco-ajax-archive',
+        'rdsco-ajax-archive-base',
         $base_url . 'css/style.css',
         [],
+        RDSCO_ELEMENTOR_WIDGETS_VERSION
+    );
+
+    wp_register_style(
+        'rdsco-ajax-archive',
+        $base_url . 'css/style-2.4.1.css',
+        ['rdsco-ajax-archive-base'],
         RDSCO_ELEMENTOR_WIDGETS_VERSION
     );
 
