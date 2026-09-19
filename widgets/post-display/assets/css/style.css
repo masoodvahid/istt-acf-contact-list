@@ -388,6 +388,11 @@
 }
 
 @media(max-width:1024px){
+    .rdsco-post-display-layout.has-sidebar{
+        grid-template-columns:240px minmax(0,1fr);
+        gap:16px;
+    }
+
     .rdsco-post-display-toolbar{
         flex-direction:column;
         align-items:stretch;
@@ -404,6 +409,30 @@
 }
 
 @media(max-width:767px){
+    .rdsco-post-display-layout.has-sidebar{
+        display:block;
+    }
+
+    .rdsco-post-display-sidebar{
+        position:static;
+        width:100%;
+        margin-bottom:16px;
+        padding:14px;
+        border-radius:14px;
+    }
+
+    .rdsco-post-display-sidebar-list{
+        flex-direction:row;
+        flex-wrap:wrap;
+        gap:7px;
+    }
+
+    .rdsco-post-display-sidebar-filter{
+        width:auto;
+        min-height:38px;
+        transform:none!important;
+    }
+
     .rdsco-post-display-grid{
         grid-template-columns:1fr;
     }
@@ -431,4 +460,110 @@
     .rdsco-post-display-card-body{
         padding:15px;
     }
+}
+
+
+/* =====================================================
+   LAYOUT + SIDEBAR FILTERS
+===================================================== */
+
+.rdsco-post-display-layout{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    gap:22px;
+    align-items:start;
+}
+
+.rdsco-post-display-layout.has-sidebar{
+    grid-template-columns:290px minmax(0,1fr);
+}
+
+.rdsco-post-display-sidebar{
+    position:sticky;
+    top:100px;
+    padding:18px;
+    border:1px solid var(--rdsco-pd-border);
+    border-radius:16px;
+    background:#fff;
+    box-shadow:0 10px 30px rgba(10,22,40,.045);
+}
+
+.rdsco-post-display-sidebar-heading{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:10px;
+    padding-bottom:12px;
+    border-bottom:1px solid #edf1f3;
+    color:var(--rdsco-pd-dark);
+}
+
+.rdsco-post-display-sidebar-heading strong{
+    font-size:13px;
+}
+
+.rdsco-post-display-sidebar-heading .dashicons{
+    color:var(--rdsco-pd-accent);
+    font-size:17px;
+}
+
+.rdsco-post-display-sidebar-list{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+}
+
+.rdsco-post-display-sidebar-filter{
+    width:100%;
+    min-height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:7px 10px;
+    border:1px solid transparent;
+    border-radius:10px;
+    background:transparent;
+    color:#536873;
+    font:inherit;
+    font-size:11px;
+    text-align:right;
+    cursor:pointer;
+    transition:background-color .2s ease,border-color .2s ease,color .2s ease,transform .2s ease;
+}
+
+.rdsco-post-display-sidebar-filter:hover{
+    background:#f7f9fa;
+    border-color:#e4ebee;
+    color:var(--rdsco-pd-dark);
+    transform:translateX(-2px);
+}
+
+.rdsco-post-display-sidebar-filter.is-active{
+    background:#eef8f8;
+    border-color:#d8e9e9;
+    color:#073f47;
+}
+
+.rdsco-post-display-sidebar-filter small{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:25px;
+    height:22px;
+    padding:0 6px;
+    border-radius:999px;
+    background:#eef2f4;
+    color:#788991;
+    font-size:9px;
+}
+
+.rdsco-post-display-sidebar-filter.is-active small{
+    background:rgba(2,182,181,.13);
+    color:#087c7a;
+}
+
+.rdsco-post-display-main{
+    min-width:0;
 }
