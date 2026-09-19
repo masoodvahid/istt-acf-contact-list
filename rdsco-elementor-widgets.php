@@ -3,7 +3,7 @@
  * Plugin Name: افزونه های المنتور راهکار دیجیتال شریف
  * Plugin URI: https://github.com/masoodvahid/istt-acf-contact-list
  * Description: مجموعه ویجت‌های اختصاصی المنتور راهکار دیجیتال شریف.
- * Version: 2.5.0
+ * Version: 2.5.1
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Requires Plugins: elementor
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('RDSCO_ELEMENTOR_WIDGETS_VERSION', '2.5.0');
+define('RDSCO_ELEMENTOR_WIDGETS_VERSION', '2.5.1');
 define('RDSCO_ELEMENTOR_WIDGETS_FILE', __FILE__);
 define('RDSCO_ELEMENTOR_WIDGETS_BASENAME', plugin_basename(__FILE__));
 define('RDSCO_ELEMENTOR_WIDGETS_DIR', plugin_dir_path(__FILE__));
