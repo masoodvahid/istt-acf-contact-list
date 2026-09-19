@@ -79,11 +79,12 @@ final class Widget extends Widget_Base
             'default'      => 'yes',
         ]);
 
-        $this->add_control('show_top_category_filter', [
-            'label'        => esc_html__('نمایش فیلتر دسته‌بندی بالا', 'rdsco-elementor-widgets'),
+        $this->add_control('show_tag_filter', [
+            'label'        => esc_html__('نمایش فیلتر تگ‌ها در ردیف بالا', 'rdsco-elementor-widgets'),
             'type'         => Controls_Manager::SWITCHER,
             'return_value' => 'yes',
             'default'      => 'yes',
+            'description'  => esc_html__('فقط تگ‌های مرتبط با مطالب دسته انتخاب‌شده و زیرمجموعه‌های آن نمایش داده می‌شوند.', 'rdsco-elementor-widgets'),
         ]);
 
         $this->add_control('show_search', [
@@ -244,10 +245,14 @@ final class Widget extends Widget_Base
         }
 
         $show_sidebar     = 'yes' === ($settings['show_category_filter'] ?? 'yes');
-        $show_top_filters = 'yes' === ($settings['show_top_category_filter'] ?? 'yes');
+        $show_tag_filters = 'yes' === ($settings['show_tag_filter'] ?? 'yes');
 
-        $filter_terms = ($show_sidebar || $show_top_filters)
+        $filter_terms = $show_sidebar
             ? Post_Display_Service::get_filter_terms($runtime['root_ids'], $runtime['include_children'])
+            : [];
+
+        $related_tags = $show_tag_filters
+            ? Post_Display_Service::get_related_tags($runtime['root_ids'], $runtime['include_children'], 0)
             : [];
 
         $has_sidebar = $show_sidebar && !empty($filter_terms);
@@ -256,6 +261,7 @@ final class Widget extends Widget_Base
             'root_ids'         => $runtime['root_ids'],
             'include_children' => $runtime['include_children'],
             'active_category'  => 0,
+            'tag_id'           => 0,
             'page'             => 1,
             'per_page'         => $runtime['per_page'],
         ]);
@@ -268,10 +274,11 @@ final class Widget extends Widget_Base
             data-current-page="1"
             data-max-pages="<?php echo esc_attr((int) $query->max_num_pages); ?>"
             data-active-category="0"
+            data-active-tag="0"
             data-nonce="<?php echo esc_attr(wp_create_nonce(Post_Display_Service::NONCE_ACTION)); ?>"
             data-settings="<?php echo esc_attr(wp_json_encode($runtime)); ?>"
         >
-            <?php if ('yes' === ($settings['show_search'] ?? 'yes') || ($show_top_filters && $filter_terms)) : ?>
+            <?php if ('yes' === ($settings['show_search'] ?? 'yes') || $show_tag_filters) : ?>
                 <div class="rdsco-post-display-toolbar">
                     <?php if ('yes' === ($settings['show_search'] ?? 'yes')) : ?>
                         <div class="rdsco-post-display-search">
@@ -288,20 +295,10 @@ final class Widget extends Widget_Base
                         </div>
                     <?php endif; ?>
 
-                    <?php if ($show_top_filters && $filter_terms) : ?>
-                        <div class="rdsco-post-display-filters-wrap">
-                            <div class="rdsco-post-display-filters">
-                                <button type="button" class="rdsco-post-display-filter is-active" data-category="0" aria-pressed="true">همه</button>
-                                <?php foreach ($filter_terms as $term) : ?>
-                                    <button
-                                        type="button"
-                                        class="rdsco-post-display-filter"
-                                        data-category="<?php echo esc_attr($term->term_id); ?>"
-                                        aria-pressed="false"
-                                    >
-                                        <?php echo esc_html($term->name); ?>
-                                    </button>
-                                <?php endforeach; ?>
+                    <?php if ($show_tag_filters) : ?>
+                        <div class="rdsco-post-display-filters-wrap rdsco-post-display-tags-wrap" <?php echo empty($related_tags) ? 'hidden' : ''; ?>>
+                            <div class="rdsco-post-display-filters rdsco-post-display-tag-filters">
+                                <?php echo Post_Display_Service::render_tag_filters($related_tags, 0); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                             </div>
                         </div>
                     <?php endif; ?>

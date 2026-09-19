@@ -42,6 +42,7 @@ final class Post_Display_Service
 
         foreach ($root_ids as $root_id) {
             $children = get_term_children(absint($root_id), 'category');
+
             if (is_wp_error($children)) {
                 continue;
             }
@@ -57,6 +58,7 @@ final class Post_Display_Service
     public static function get_filter_terms(array $root_ids, bool $include_children): array
     {
         $root_ids = self::normalize_category_ids($root_ids);
+
         if (!$root_ids) {
             return [];
         }
@@ -67,6 +69,7 @@ final class Post_Display_Service
 
         foreach ($root_ids as $root_id) {
             $root = get_term($root_id, 'category');
+
             if (!$root || is_wp_error($root)) {
                 continue;
             }
@@ -103,19 +106,120 @@ final class Post_Display_Service
         return $terms;
     }
 
+    /**
+     * Return tags that are actually used by posts inside the selected category
+     * scope. When no category filter is active, the complete configured root
+     * scope is used.
+     */
+    public static function get_related_tags(
+        array $root_ids,
+        bool $include_children,
+        int $active_category = 0
+    ): array {
+        $root_ids = self::normalize_category_ids($root_ids);
+
+        if (!$root_ids) {
+            return [];
+        }
+
+        $allowed_categories = self::get_allowed_category_ids($root_ids, $include_children);
+
+        if ($active_category && !in_array($active_category, $allowed_categories, true)) {
+            $active_category = 0;
+        }
+
+        $scope_terms = $active_category ? [$active_category] : $root_ids;
+
+        $post_ids = get_posts([
+            'post_type'              => 'post',
+            'post_status'            => 'publish',
+            'posts_per_page'         => -1,
+            'fields'                 => 'ids',
+            'no_found_rows'          => true,
+            'ignore_sticky_posts'    => true,
+            'update_post_meta_cache' => false,
+            'update_post_term_cache' => false,
+            'tax_query'              => [
+                [
+                    'taxonomy'         => 'category',
+                    'field'            => 'term_id',
+                    'terms'            => $scope_terms,
+                    'include_children' => $include_children,
+                    'operator'         => 'IN',
+                ],
+            ],
+        ]);
+
+        if (!$post_ids) {
+            return [];
+        }
+
+        $tags = wp_get_object_terms(
+            $post_ids,
+            'post_tag',
+            [
+                'orderby' => 'name',
+                'order'   => 'ASC',
+            ]
+        );
+
+        return is_wp_error($tags) ? [] : $tags;
+    }
+
+    public static function render_tag_filters(array $tags, int $active_tag = 0): string
+    {
+        if (!$tags) {
+            return '';
+        }
+
+        ob_start();
+        ?>
+        <button
+            type="button"
+            class="rdsco-post-display-filter rdsco-post-display-tag-filter <?php echo 0 === $active_tag ? 'is-active' : ''; ?>"
+            data-tag="0"
+            aria-pressed="<?php echo 0 === $active_tag ? 'true' : 'false'; ?>"
+        >
+            همه تگ‌ها
+        </button>
+
+        <?php foreach ($tags as $tag) : ?>
+            <button
+                type="button"
+                class="rdsco-post-display-filter rdsco-post-display-tag-filter <?php echo (int) $tag->term_id === $active_tag ? 'is-active' : ''; ?>"
+                data-tag="<?php echo esc_attr($tag->term_id); ?>"
+                aria-pressed="<?php echo (int) $tag->term_id === $active_tag ? 'true' : 'false'; ?>"
+            >
+                <?php echo esc_html($tag->name); ?>
+            </button>
+        <?php endforeach; ?>
+        <?php
+
+        return (string) ob_get_clean();
+    }
+
     public static function query(array $args): \WP_Query
     {
         $root_ids         = self::normalize_category_ids($args['root_ids'] ?? []);
         $include_children = !empty($args['include_children']);
         $active_category  = absint($args['active_category'] ?? 0);
+        $tag_id           = absint($args['tag_id'] ?? 0);
         $search           = sanitize_text_field($args['search'] ?? '');
         $page             = max(1, absint($args['page'] ?? 1));
         $per_page         = max(1, min(60, absint($args['per_page'] ?? 12)));
 
-        $allowed = self::get_allowed_category_ids($root_ids, $include_children);
+        $allowed_categories = self::get_allowed_category_ids($root_ids, $include_children);
 
-        if ($active_category && !in_array($active_category, $allowed, true)) {
+        if ($active_category && !in_array($active_category, $allowed_categories, true)) {
             $active_category = 0;
+        }
+
+        if ($tag_id) {
+            $tag_term = get_term($tag_id, 'post_tag');
+
+            if (!$tag_term || is_wp_error($tag_term)) {
+                $tag_id = 0;
+            }
         }
 
         $terms = $active_category ? [$active_category] : $root_ids;
@@ -131,7 +235,7 @@ final class Post_Display_Service
         ];
 
         if ($terms) {
-            $query_args['tax_query'] = [
+            $tax_query = [
                 [
                     'taxonomy'         => 'category',
                     'field'            => 'term_id',
@@ -140,6 +244,18 @@ final class Post_Display_Service
                     'operator'         => 'IN',
                 ],
             ];
+
+            if ($tag_id) {
+                $tax_query[] = [
+                    'taxonomy' => 'post_tag',
+                    'field'    => 'term_id',
+                    'terms'    => [$tag_id],
+                    'operator' => 'IN',
+                ];
+                $tax_query['relation'] = 'AND';
+            }
+
+            $query_args['tax_query'] = $tax_query;
         } else {
             $query_args['post__in'] = [0];
         }
@@ -154,6 +270,7 @@ final class Post_Display_Service
     private static function first_relevant_category(int $post_id, array $allowed_ids): ?\WP_Term
     {
         $categories = get_the_category($post_id);
+
         if (!$categories) {
             return null;
         }
@@ -232,6 +349,7 @@ final class Post_Display_Service
             echo '<div class="rdsco-post-display-empty"><span class="dashicons dashicons-search" aria-hidden="true"></span><strong>'
                 . esc_html($settings['empty_text'] ?? 'مطلبی پیدا نشد.')
                 . '</strong></div>';
+
             return (string) ob_get_clean();
         }
 
@@ -311,9 +429,17 @@ final class Post_Display_Service
         $include_children = !empty($settings['include_children']);
         $allowed_ids      = self::get_allowed_category_ids($root_ids, $include_children);
         $active_category  = absint($_POST['active_category'] ?? 0);
+        $tag_id           = absint($_POST['tag_id'] ?? 0);
 
         if ($active_category && !in_array($active_category, $allowed_ids, true)) {
             $active_category = 0;
+        }
+
+        $related_tags = self::get_related_tags($root_ids, $include_children, $active_category);
+        $allowed_tag_ids = array_map('intval', wp_list_pluck($related_tags, 'term_id'));
+
+        if ($tag_id && !in_array($tag_id, $allowed_tag_ids, true)) {
+            $tag_id = 0;
         }
 
         $page     = max(1, absint($_POST['page'] ?? 1));
@@ -334,17 +460,20 @@ final class Post_Display_Service
             'root_ids'         => $root_ids,
             'include_children' => $include_children,
             'active_category'  => $active_category,
+            'tag_id'           => $tag_id,
             'search'           => $search,
             'page'             => $page,
             'per_page'         => $per_page,
         ]);
 
         wp_send_json_success([
-            'html'     => self::render_posts($query, $runtime),
-            'page'     => $page,
-            'maxPages' => (int) $query->max_num_pages,
-            'total'    => number_format_i18n($query->found_posts),
-            'totalRaw' => (int) $query->found_posts,
+            'html'       => self::render_posts($query, $runtime),
+            'tagsHtml'   => self::render_tag_filters($related_tags, $tag_id),
+            'activeTag'  => $tag_id,
+            'page'       => $page,
+            'maxPages'   => (int) $query->max_num_pages,
+            'total'      => number_format_i18n($query->found_posts),
+            'totalRaw'   => (int) $query->found_posts,
         ]);
     }
 }
