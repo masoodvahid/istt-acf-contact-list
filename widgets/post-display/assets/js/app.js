@@ -23,9 +23,12 @@
         const searchClear = wrapper.querySelector('.rdsco-post-display-search-clear');
         const count = wrapper.querySelector('.rdsco-post-display-count strong');
         const loadMore = wrapper.querySelector('.rdsco-post-display-load-more');
+        const tagsWrap = wrapper.querySelector('.rdsco-post-display-tags-wrap');
+        const tagFilters = wrapper.querySelector('.rdsco-post-display-tag-filters');
 
         const state = {
             activeCategory: parseInt(wrapper.dataset.activeCategory || '0', 10),
+            activeTag: parseInt(wrapper.dataset.activeTag || '0', 10),
             page: 1,
             maxPages: parseInt(wrapper.dataset.maxPages || '1', 10),
             search: '',
@@ -42,7 +45,42 @@
             if (!loadMore) {
                 return;
             }
+
             loadMore.hidden = state.maxPages <= 1 || state.page >= state.maxPages;
+        }
+
+        function syncCategoryFilters(categoryId) {
+            wrapper.querySelectorAll('.rdsco-post-display-sidebar-filter').forEach((item) => {
+                const itemCategory = parseInt(item.dataset.category || '0', 10);
+                const isActive = itemCategory === categoryId;
+
+                item.classList.toggle('is-active', isActive);
+                item.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+            });
+        }
+
+        function syncTagFilters(tagId) {
+            wrapper.querySelectorAll('.rdsco-post-display-tag-filter').forEach((item) => {
+                const itemTag = parseInt(item.dataset.tag || '0', 10);
+                const isActive = itemTag === tagId;
+
+                item.classList.toggle('is-active', isActive);
+                item.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+            });
+        }
+
+        function replaceTagFilters(html, activeTag) {
+            if (!tagFilters || !tagsWrap) {
+                return;
+            }
+
+            tagFilters.innerHTML = html || '';
+            tagsWrap.hidden = !html;
+
+            state.activeTag = parseInt(activeTag || '0', 10);
+            wrapper.dataset.activeTag = String(state.activeTag);
+
+            syncTagFilters(state.activeTag);
         }
 
         function appendCards(html) {
@@ -62,7 +100,7 @@
             Array.from(incomingGrid.children).forEach((card) => currentGrid.appendChild(card));
         }
 
-        async function fetchPosts(page, append) {
+        async function fetchPosts(page, append, refreshTags) {
             if (!results) {
                 return;
             }
@@ -79,6 +117,7 @@
             body.append('action', 'rdsco_post_display_fetch');
             body.append('nonce', wrapper.dataset.nonce || '');
             body.append('active_category', String(state.activeCategory));
+            body.append('tag_id', String(state.activeTag));
             body.append('search', state.search);
             body.append('page', String(page));
             body.append('settings', JSON.stringify(state.settings));
@@ -105,9 +144,18 @@
 
                 state.page = parseInt(payload.data.page || page, 10);
                 state.maxPages = parseInt(payload.data.maxPages || '1', 10);
+                state.activeTag = parseInt(payload.data.activeTag || '0', 10);
 
                 wrapper.dataset.currentPage = String(state.page);
                 wrapper.dataset.maxPages = String(state.maxPages);
+                wrapper.dataset.activeCategory = String(state.activeCategory);
+                wrapper.dataset.activeTag = String(state.activeTag);
+
+                if (refreshTags && tagFilters) {
+                    replaceTagFilters(payload.data.tagsHtml || '', state.activeTag);
+                } else {
+                    syncTagFilters(state.activeTag);
+                }
 
                 if (count) {
                     count.textContent = payload.data.total || '0';
@@ -126,27 +174,31 @@
             }
         }
 
-        function syncActiveFilters(categoryId) {
-            wrapper.querySelectorAll('.rdsco-post-display-filter').forEach((item) => {
-                const itemCategory = parseInt(item.dataset.category || '0', 10);
-                const isActive = itemCategory === categoryId;
-
-                item.classList.toggle('is-active', isActive);
-                item.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-            });
-        }
-
         wrapper.addEventListener('click', function (event) {
-            const filter = event.target.closest('.rdsco-post-display-filter');
+            const categoryFilter = event.target.closest('.rdsco-post-display-sidebar-filter');
 
-            if (filter) {
+            if (categoryFilter) {
                 event.preventDefault();
 
-                state.activeCategory = parseInt(filter.dataset.category || '0', 10);
+                state.activeCategory = parseInt(categoryFilter.dataset.category || '0', 10);
+                state.activeTag = 0;
                 state.page = 1;
 
-                syncActiveFilters(state.activeCategory);
-                fetchPosts(1, false);
+                syncCategoryFilters(state.activeCategory);
+                fetchPosts(1, false, true);
+                return;
+            }
+
+            const tagFilter = event.target.closest('.rdsco-post-display-tag-filter');
+
+            if (tagFilter) {
+                event.preventDefault();
+
+                state.activeTag = parseInt(tagFilter.dataset.tag || '0', 10);
+                state.page = 1;
+
+                syncTagFilters(state.activeTag);
+                fetchPosts(1, false, false);
                 return;
             }
 
@@ -154,7 +206,7 @@
 
             if (more && state.page < state.maxPages) {
                 event.preventDefault();
-                fetchPosts(state.page + 1, true);
+                fetchPosts(state.page + 1, true, false);
             }
         });
 
@@ -165,7 +217,7 @@
                 state.searchTimer = window.setTimeout(function () {
                     state.search = searchInput.value.trim();
                     state.page = 1;
-                    fetchPosts(1, false);
+                    fetchPosts(1, false, false);
                 }, 400);
             });
         }
@@ -175,11 +227,13 @@
                 searchInput.value = '';
                 state.search = '';
                 state.page = 1;
-                fetchPosts(1, false);
+                fetchPosts(1, false, false);
                 searchInput.focus();
             });
         }
 
+        syncCategoryFilters(state.activeCategory);
+        syncTagFilters(state.activeTag);
         updateLoadMore();
     }
 
