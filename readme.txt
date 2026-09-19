@@ -4,7 +4,7 @@ Tags: elementor, contact directory, acf, ajax, archive, filter, phonebook
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.5.0
+Stable tag: 2.5.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,13 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 5. برای دسته‌هایی که باید فیلتر داشته باشند، در نوشته‌ها ← دسته‌ها گزینه «دارای فیلتر» را فعال و در صورت نیاز تصویر دسته را انتخاب کنید.
 
 == Changelog ==
+
+= 2.5.1 =
+* بازگرداندن ستون فیلتر دسته‌بندی در سمت راست ویجت «نمایش مطالب».
+* افزودن کنترل مستقل برای نمایش یا عدم نمایش فیلترهای افقی بالای صفحه.
+* هماهنگ‌سازی وضعیت فعال بین فیلترهای بالا و سایدبار.
+* افزودن کنترل عرض سایدبار از Elementor.
+* حفظ جستجو، AJAX، Load More و دو استایل کارت.
 
 = 2.5.0 =
 * افزودن ویجت «نمایش مطالب».

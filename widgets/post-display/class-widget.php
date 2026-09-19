@@ -73,7 +73,14 @@ final class Widget extends Widget_Base
         ]);
 
         $this->add_control('show_category_filter', [
-            'label'        => esc_html__('نمایش فیلتر دسته‌بندی', 'rdsco-elementor-widgets'),
+            'label'        => esc_html__('نمایش ستون فیلتر دسته‌بندی', 'rdsco-elementor-widgets'),
+            'type'         => Controls_Manager::SWITCHER,
+            'return_value' => 'yes',
+            'default'      => 'yes',
+        ]);
+
+        $this->add_control('show_top_category_filter', [
+            'label'        => esc_html__('نمایش فیلتر دسته‌بندی بالا', 'rdsco-elementor-widgets'),
             'type'         => Controls_Manager::SWITCHER,
             'return_value' => 'yes',
             'default'      => 'yes',
@@ -193,6 +200,18 @@ final class Widget extends Widget_Base
             ],
         ]);
 
+        $this->add_responsive_control('sidebar_width', [
+            'label'      => esc_html__('عرض ستون فیلتر', 'rdsco-elementor-widgets'),
+            'type'       => Controls_Manager::SLIDER,
+            'size_units' => ['px'],
+            'range'      => ['px' => ['min' => 190, 'max' => 420]],
+            'default'    => ['size' => 290],
+            'selectors'  => [
+                '{{WRAPPER}} .rdsco-post-display-layout.has-sidebar' => 'grid-template-columns: {{SIZE}}{{UNIT}} minmax(0, 1fr);',
+            ],
+            'condition' => ['show_category_filter' => 'yes'],
+        ]);
+
         $this->end_controls_section();
     }
 
@@ -224,9 +243,14 @@ final class Widget extends Widget_Base
             return;
         }
 
-        $filter_terms = ('yes' === ($settings['show_category_filter'] ?? 'yes'))
+        $show_sidebar     = 'yes' === ($settings['show_category_filter'] ?? 'yes');
+        $show_top_filters = 'yes' === ($settings['show_top_category_filter'] ?? 'yes');
+
+        $filter_terms = ($show_sidebar || $show_top_filters)
             ? Post_Display_Service::get_filter_terms($runtime['root_ids'], $runtime['include_children'])
             : [];
+
+        $has_sidebar = $show_sidebar && !empty($filter_terms);
 
         $query = Post_Display_Service::query([
             'root_ids'         => $runtime['root_ids'],
@@ -247,7 +271,7 @@ final class Widget extends Widget_Base
             data-nonce="<?php echo esc_attr(wp_create_nonce(Post_Display_Service::NONCE_ACTION)); ?>"
             data-settings="<?php echo esc_attr(wp_json_encode($runtime)); ?>"
         >
-            <?php if ('yes' === ($settings['show_search'] ?? 'yes') || $filter_terms) : ?>
+            <?php if ('yes' === ($settings['show_search'] ?? 'yes') || ($show_top_filters && $filter_terms)) : ?>
                 <div class="rdsco-post-display-toolbar">
                     <?php if ('yes' === ($settings['show_search'] ?? 'yes')) : ?>
                         <div class="rdsco-post-display-search">
@@ -264,15 +288,16 @@ final class Widget extends Widget_Base
                         </div>
                     <?php endif; ?>
 
-                    <?php if ($filter_terms) : ?>
+                    <?php if ($show_top_filters && $filter_terms) : ?>
                         <div class="rdsco-post-display-filters-wrap">
                             <div class="rdsco-post-display-filters">
-                                <button type="button" class="rdsco-post-display-filter is-active" data-category="0">همه</button>
+                                <button type="button" class="rdsco-post-display-filter is-active" data-category="0" aria-pressed="true">همه</button>
                                 <?php foreach ($filter_terms as $term) : ?>
                                     <button
                                         type="button"
                                         class="rdsco-post-display-filter"
                                         data-category="<?php echo esc_attr($term->term_id); ?>"
+                                        aria-pressed="false"
                                     >
                                         <?php echo esc_html($term->name); ?>
                                     </button>
@@ -283,32 +308,70 @@ final class Widget extends Widget_Base
                 </div>
             <?php endif; ?>
 
-            <div class="rdsco-post-display-loading" aria-live="polite">
-                <span class="rdsco-post-display-spinner" aria-hidden="true"></span>
-                <span>در حال دریافت مطالب…</span>
-            </div>
+            <div class="rdsco-post-display-layout <?php echo $has_sidebar ? 'has-sidebar' : 'no-sidebar'; ?>">
 
-            <div class="rdsco-post-display-results">
-                <?php echo Post_Display_Service::render_posts($query, $runtime); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-            </div>
+                <?php if ($has_sidebar) : ?>
+                    <aside class="rdsco-post-display-sidebar">
+                        <div class="rdsco-post-display-sidebar-heading">
+                            <strong>دسته‌بندی</strong>
+                            <span class="dashicons dashicons-filter" aria-hidden="true"></span>
+                        </div>
 
-            <div class="rdsco-post-display-footer">
-                <?php if ('yes' === ($settings['show_result_count'] ?? 'yes')) : ?>
-                    <div class="rdsco-post-display-count">
-                        <strong><?php echo esc_html(number_format_i18n($query->found_posts)); ?></strong>
-                        <span>مطلب یافت شد</span>
+                        <div class="rdsco-post-display-sidebar-list">
+                            <button
+                                type="button"
+                                class="rdsco-post-display-filter rdsco-post-display-sidebar-filter is-active"
+                                data-category="0"
+                                aria-pressed="true"
+                            >
+                                <span>همه مطالب</span>
+                                <small><?php echo esc_html(number_format_i18n($query->found_posts)); ?></small>
+                            </button>
+
+                            <?php foreach ($filter_terms as $term) : ?>
+                                <button
+                                    type="button"
+                                    class="rdsco-post-display-filter rdsco-post-display-sidebar-filter"
+                                    data-category="<?php echo esc_attr($term->term_id); ?>"
+                                    aria-pressed="false"
+                                >
+                                    <span><?php echo esc_html($term->name); ?></span>
+                                    <small><?php echo esc_html(number_format_i18n($term->count)); ?></small>
+                                </button>
+                            <?php endforeach; ?>
+                        </div>
+                    </aside>
+                <?php endif; ?>
+
+                <main class="rdsco-post-display-main">
+                    <div class="rdsco-post-display-loading" aria-live="polite">
+                        <span class="rdsco-post-display-spinner" aria-hidden="true"></span>
+                        <span>در حال دریافت مطالب…</span>
                     </div>
-                <?php endif; ?>
 
-                <?php if ('yes' === ($settings['show_load_more'] ?? 'yes')) : ?>
-                    <button
-                        type="button"
-                        class="rdsco-post-display-load-more"
-                        <?php echo $query->max_num_pages <= 1 ? 'hidden' : ''; ?>
-                    >
-                        نمایش مطالب بیشتر
-                    </button>
-                <?php endif; ?>
+                    <div class="rdsco-post-display-results">
+                        <?php echo Post_Display_Service::render_posts($query, $runtime); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                    </div>
+
+                    <div class="rdsco-post-display-footer">
+                        <?php if ('yes' === ($settings['show_result_count'] ?? 'yes')) : ?>
+                            <div class="rdsco-post-display-count">
+                                <strong><?php echo esc_html(number_format_i18n($query->found_posts)); ?></strong>
+                                <span>مطلب یافت شد</span>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ('yes' === ($settings['show_load_more'] ?? 'yes')) : ?>
+                            <button
+                                type="button"
+                                class="rdsco-post-display-load-more"
+                                <?php echo $query->max_num_pages <= 1 ? 'hidden' : ''; ?>
+                            >
+                                نمایش مطالب بیشتر
+                            </button>
+                        <?php endif; ?>
+                    </div>
+                </main>
             </div>
         </div>
         <?php

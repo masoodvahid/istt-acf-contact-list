@@ -126,20 +126,26 @@
             }
         }
 
+        function syncActiveFilters(categoryId) {
+            wrapper.querySelectorAll('.rdsco-post-display-filter').forEach((item) => {
+                const itemCategory = parseInt(item.dataset.category || '0', 10);
+                const isActive = itemCategory === categoryId;
+
+                item.classList.toggle('is-active', isActive);
+                item.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+            });
+        }
+
         wrapper.addEventListener('click', function (event) {
             const filter = event.target.closest('.rdsco-post-display-filter');
 
             if (filter) {
                 event.preventDefault();
 
-                wrapper.querySelectorAll('.rdsco-post-display-filter').forEach((item) => {
-                    item.classList.remove('is-active');
-                });
-
-                filter.classList.add('is-active');
-
                 state.activeCategory = parseInt(filter.dataset.category || '0', 10);
                 state.page = 1;
+
+                syncActiveFilters(state.activeCategory);
                 fetchPosts(1, false);
                 return;
             }
