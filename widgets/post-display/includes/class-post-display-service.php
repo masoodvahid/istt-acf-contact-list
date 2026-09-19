@@ -214,11 +214,12 @@ final class Post_Display_Service
             $active_category = 0;
         }
 
-        $related_tags = self::get_related_tags($root_ids, $include_children, $active_category);
-        $allowed_tag_ids = array_map('intval', wp_list_pluck($related_tags, 'term_id'));
+        if ($tag_id) {
+            $tag_term = get_term($tag_id, 'post_tag');
 
-        if ($tag_id && !in_array($tag_id, $allowed_tag_ids, true)) {
-            $tag_id = 0;
+            if (!$tag_term || is_wp_error($tag_term)) {
+                $tag_id = 0;
+            }
         }
 
         $terms = $active_category ? [$active_category] : $root_ids;
