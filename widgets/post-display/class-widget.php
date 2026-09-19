@@ -79,7 +79,7 @@ final class Widget extends Widget_Base
             'default'      => 'yes',
         ]);
 
-        $this->add_control('show_tag_filter', [
+        $this->add_control('show_top_category_filter', [
             'label'        => esc_html__('نمایش فیلتر تگ‌ها در ردیف بالا', 'rdsco-elementor-widgets'),
             'type'         => Controls_Manager::SWITCHER,
             'return_value' => 'yes',
@@ -244,8 +244,12 @@ final class Widget extends Widget_Base
             return;
         }
 
-        $show_sidebar     = 'yes' === ($settings['show_category_filter'] ?? 'yes');
-        $show_tag_filters = 'yes' === ($settings['show_tag_filter'] ?? 'yes');
+        $show_sidebar = 'yes' === ($settings['show_category_filter'] ?? 'yes');
+
+        // Keep the original control ID for backward compatibility with
+        // widgets saved before v2.5.2. The meaning of the top row is now
+        // "related tags", but the stored Elementor setting remains valid.
+        $show_tag_filters = 'yes' === ($settings['show_top_category_filter'] ?? 'yes');
 
         $filter_terms = $show_sidebar
             ? Post_Display_Service::get_filter_terms($runtime['root_ids'], $runtime['include_children'])
