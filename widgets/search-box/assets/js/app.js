@@ -42,6 +42,71 @@
             return field ? field.value.trim() : '';
         }
 
+        function toEnglishDigits(value) {
+            return String(value || '')
+                .replace(/[۰-۹]/g, function (digit) {
+                    return String('۰۱۲۳۴۵۶۷۸۹'.indexOf(digit));
+                })
+                .replace(/[٠-٩]/g, function (digit) {
+                    return String('٠١٢٣٤٥٦٧٨٩'.indexOf(digit));
+                });
+        }
+
+        function toPersianDigits(value) {
+            return String(value || '').replace(/\d/g, function (digit) {
+                return '۰۱۲۳۴۵۶۷۸۹'[parseInt(digit, 10)];
+            });
+        }
+
+        function isJalaliLeapYear(year) {
+            return [1, 5, 9, 13, 17, 22, 26, 30].indexOf(year % 33) !== -1;
+        }
+
+        function parseJalaliDate(value) {
+            const normalized = toEnglishDigits(value)
+                .replace(/[.\\-]/g, '/')
+                .replace(/\s+/g, '');
+            const match = normalized.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/);
+
+            if (!match) {
+                return null;
+            }
+
+            const year = parseInt(match[1], 10);
+            const month = parseInt(match[2], 10);
+            const day = parseInt(match[3], 10);
+            const maximumDay = month <= 6 ? 31 : (month <= 11 ? 30 : (isJalaliLeapYear(year) ? 30 : 29));
+
+            if (year < 1200 || year > 1600 || month < 1 || month > 12 || day < 1 || day > maximumDay) {
+                return null;
+            }
+
+            return [
+                String(year).padStart(4, '0'),
+                String(month).padStart(2, '0'),
+                String(day).padStart(2, '0')
+            ].join('/');
+        }
+
+        function formatJalaliInput(field) {
+            if (!field) {
+                return;
+            }
+
+            const digits = toEnglishDigits(field.value).replace(/\D/g, '').slice(0, 8);
+            let formatted = digits.slice(0, 4);
+
+            if (digits.length > 4) {
+                formatted += '/' + digits.slice(4, 6);
+            }
+
+            if (digits.length > 6) {
+                formatted += '/' + digits.slice(6, 8);
+            }
+
+            field.value = toPersianDigits(formatted);
+        }
+
         function hasFilters() {
             return (category && category.value !== '0') || fieldValue(dateFrom) || fieldValue(dateTo);
         }
@@ -61,8 +126,20 @@
         }
 
         function validateDates() {
-            const from = fieldValue(dateFrom);
-            const to = fieldValue(dateTo);
+            const fromRaw = fieldValue(dateFrom);
+            const toRaw = fieldValue(dateTo);
+            const from = fromRaw ? parseJalaliDate(fromRaw) : '';
+            const to = toRaw ? parseJalaliDate(toRaw) : '';
+
+            if (fromRaw && !from) {
+                setHelp('تاریخ شروع شمسی معتبر نیست. نمونه صحیح: ۱۴۰۵/۰۱/۰۱', true);
+                return false;
+            }
+
+            if (toRaw && !to) {
+                setHelp('تاریخ پایان شمسی معتبر نیست. نمونه صحیح: ۱۴۰۵/۱۲/۲۹', true);
+                return false;
+            }
 
             if (from && to && from > to) {
                 setHelp('تاریخ شروع باید پیش از تاریخ پایان باشد.', true);
@@ -219,6 +296,24 @@
                     return;
                 }
                 fetchResults(1, false);
+            });
+        });
+
+        [dateFrom, dateTo].forEach(function (field) {
+            if (!field) {
+                return;
+            }
+
+            field.addEventListener('input', function () {
+                formatJalaliInput(field);
+            });
+
+            field.addEventListener('blur', function () {
+                const parsed = parseJalaliDate(field.value);
+
+                if (parsed) {
+                    field.value = toPersianDigits(parsed);
+                }
             });
         });
 

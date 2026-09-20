@@ -120,7 +120,7 @@ final class Widget extends Widget_Base
         ]);
 
         $this->add_control('date_range_enabled', [
-            'label'        => esc_html__('نمایش بازه تاریخی', 'rdsco-elementor-widgets'),
+            'label'        => esc_html__('نمایش بازه تاریخی شمسی', 'rdsco-elementor-widgets'),
             'type'         => Controls_Manager::SWITCHER,
             'return_value' => 'yes',
             'default'      => 'yes',
@@ -264,6 +264,8 @@ final class Widget extends Widget_Base
             'reset_button_text'  => ['متن دکمه پاک‌سازی', 'پاک‌سازی'],
             'date_from_label'    => ['برچسب تاریخ شروع', 'از تاریخ'],
             'date_to_label'      => ['برچسب تاریخ پایان', 'تا تاریخ'],
+            'date_from_placeholder' => ['راهنمای تاریخ شروع', '۱۴۰۵/۰۱/۰۱'],
+            'date_to_placeholder'   => ['راهنمای تاریخ پایان', '۱۴۰۵/۱۲/۲۹'],
             'button_text'        => ['متن لینک نتیجه', 'مشاهده مطلب'],
             'prompt_text'        => ['متن پیش از جستجو', 'عبارت موردنظر را جستجو کنید.'],
             'empty_text'         => ['متن نبود نتیجه', 'نتیجه‌ای پیدا نشد.'],
@@ -585,11 +587,27 @@ final class Widget extends Widget_Base
                     <?php if ($runtime['date_range_enabled']) : ?>
                         <label class="rdsco-search-field rdsco-search-date-field">
                             <span class="rdsco-search-visible-label"><?php echo esc_html($settings['date_from_label'] ?? 'از تاریخ'); ?></span>
-                            <input type="date" class="rdsco-search-field-control rdsco-search-date-from">
+                            <input
+                                type="text"
+                                class="rdsco-search-field-control rdsco-search-date-from"
+                                inputmode="numeric"
+                                dir="ltr"
+                                maxlength="10"
+                                autocomplete="off"
+                                placeholder="<?php echo esc_attr($settings['date_from_placeholder'] ?? '۱۴۰۵/۰۱/۰۱'); ?>"
+                            >
                         </label>
                         <label class="rdsco-search-field rdsco-search-date-field">
                             <span class="rdsco-search-visible-label"><?php echo esc_html($settings['date_to_label'] ?? 'تا تاریخ'); ?></span>
-                            <input type="date" class="rdsco-search-field-control rdsco-search-date-to">
+                            <input
+                                type="text"
+                                class="rdsco-search-field-control rdsco-search-date-to"
+                                inputmode="numeric"
+                                dir="ltr"
+                                maxlength="10"
+                                autocomplete="off"
+                                placeholder="<?php echo esc_attr($settings['date_to_placeholder'] ?? '۱۴۰۵/۱۲/۲۹'); ?>"
+                            >
                         </label>
                     <?php endif; ?>
 

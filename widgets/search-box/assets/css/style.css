@@ -52,9 +52,9 @@
     margin:0;
 }
 
-.rdsco-search-keyword-field>.dashicons{
+.rdsco-search-keyword-field > .dashicons{
     position:absolute;
-    right:15px;
+    left:15px;
     bottom:16px;
     z-index:1;
     width:20px;
@@ -81,7 +81,8 @@
 }
 
 .rdsco-search-input{
-    padding-right:44px;
+    padding-right:14px;
+    padding-left:44px;
 }
 
 .rdsco-search-field-control:focus{

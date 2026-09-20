@@ -101,8 +101,10 @@ final class Search_Service
         $allowed = $settings['allowed_category_ids'];
         $selected = absint($args['category_id'] ?? 0);
         $search = sanitize_text_field($args['search'] ?? '');
-        $date_from = self::sanitize_date($args['date_from'] ?? '');
-        $date_to = self::sanitize_date($args['date_to'] ?? '');
+        $date_from_jalali = self::sanitize_jalali_date($args['date_from'] ?? '');
+        $date_to_jalali = self::sanitize_jalali_date($args['date_to'] ?? '');
+        $date_from = self::jalali_to_gregorian_date($date_from_jalali);
+        $date_to = self::jalali_to_gregorian_date($date_to_jalali);
 
         $category_ids = self::expand_category_ids($allowed, $settings['include_children']);
 
@@ -317,8 +319,10 @@ final class Search_Service
 
         $search = isset($_POST['search']) ? sanitize_text_field(wp_unslash($_POST['search'])) : '';
         $category_id = isset($_POST['category_id']) ? absint($_POST['category_id']) : 0;
-        $date_from = isset($_POST['date_from']) ? self::sanitize_date(wp_unslash($_POST['date_from'])) : '';
-        $date_to = isset($_POST['date_to']) ? self::sanitize_date(wp_unslash($_POST['date_to'])) : '';
+        $date_from_raw = isset($_POST['date_from']) ? sanitize_text_field(wp_unslash($_POST['date_from'])) : '';
+        $date_to_raw = isset($_POST['date_to']) ? sanitize_text_field(wp_unslash($_POST['date_to'])) : '';
+        $date_from = self::sanitize_jalali_date($date_from_raw);
+        $date_to = self::sanitize_jalali_date($date_to_raw);
         $page = isset($_POST['page']) ? max(1, absint($_POST['page'])) : 1;
 
         if ('' !== $search && self::text_length($search) < $settings['minimum_characters']) {
@@ -332,6 +336,14 @@ final class Search_Service
 
         if ($category_id && !in_array($category_id, $settings['allowed_category_ids'], true)) {
             $category_id = 0;
+        }
+
+        if ('' !== trim($date_from_raw) && '' === $date_from) {
+            wp_send_json_error(['message' => 'تاریخ شروع شمسی معتبر نیست. نمونه صحیح: ۱۴۰۵/۰۱/۰۱'], 400);
+        }
+
+        if ('' !== trim($date_to_raw) && '' === $date_to) {
+            wp_send_json_error(['message' => 'تاریخ پایان شمسی معتبر نیست. نمونه صحیح: ۱۴۰۵/۱۲/۲۹'], 400);
         }
 
         if ($date_from && $date_to && $date_from > $date_to) {
@@ -400,12 +412,103 @@ final class Search_Service
         return !empty($categories) ? reset($categories) : null;
     }
 
-    private static function sanitize_date($value)
+    private static function sanitize_jalali_date($value)
     {
-        $value = sanitize_text_field((string) $value);
-        $date = \DateTime::createFromFormat('!Y-m-d', $value);
+        $value = strtr(sanitize_text_field((string) $value), [
+            '۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4',
+            '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9',
+            '٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4',
+            '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9',
+            '-' => '/', '.' => '/', '\\' => '/',
+        ]);
 
-        return $date && $date->format('Y-m-d') === $value ? $value : '';
+        $value = preg_replace('/\s+/', '', trim($value));
+
+        if (!preg_match('/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/', $value, $matches)) {
+            return '';
+        }
+
+        $year = (int) $matches[1];
+        $month = (int) $matches[2];
+        $day = (int) $matches[3];
+
+        if ($year < 1200 || $year > 1600 || $month < 1 || $month > 12 || $day < 1) {
+            return '';
+        }
+
+        $maximum_day = $month <= 6 ? 31 : ($month <= 11 ? 30 : (self::is_jalali_leap_year($year) ? 30 : 29));
+
+        if ($day > $maximum_day) {
+            return '';
+        }
+
+        return sprintf('%04d/%02d/%02d', $year, $month, $day);
+    }
+
+    private static function jalali_to_gregorian_date($value)
+    {
+        if ('' === $value) {
+            return '';
+        }
+
+        [$jalali_year, $jalali_month, $jalali_day] = array_map('intval', explode('/', $value));
+        $jalali_year += 1595;
+        $days = -355668 + (365 * $jalali_year)
+            + ((int) ($jalali_year / 33) * 8)
+            + (int) ((($jalali_year % 33) + 3) / 4)
+            + $jalali_day;
+
+        $days += $jalali_month < 7
+            ? ($jalali_month - 1) * 31
+            : (($jalali_month - 7) * 30) + 186;
+
+        $gregorian_year = 400 * (int) ($days / 146097);
+        $days %= 146097;
+
+        if ($days > 36524) {
+            $gregorian_year += 100 * (int) ((--$days) / 36524);
+            $days %= 36524;
+
+            if ($days >= 365) {
+                $days++;
+            }
+        }
+
+        $gregorian_year += 4 * (int) ($days / 1461);
+        $days %= 1461;
+
+        if ($days > 365) {
+            $gregorian_year += (int) (($days - 1) / 365);
+            $days = ($days - 1) % 365;
+        }
+
+        $gregorian_day = $days + 1;
+        $month_days = [
+            0,
+            31,
+            self::is_gregorian_leap_year($gregorian_year) ? 29 : 28,
+            31, 30, 31, 30, 31, 31, 30, 31, 30, 31,
+        ];
+
+        for ($gregorian_month = 1; $gregorian_month <= 12; $gregorian_month++) {
+            if ($gregorian_day <= $month_days[$gregorian_month]) {
+                break;
+            }
+
+            $gregorian_day -= $month_days[$gregorian_month];
+        }
+
+        return sprintf('%04d-%02d-%02d', $gregorian_year, $gregorian_month, $gregorian_day);
+    }
+
+    private static function is_jalali_leap_year($year)
+    {
+        return in_array($year % 33, [1, 5, 9, 13, 17, 22, 26, 30], true);
+    }
+
+    private static function is_gregorian_leap_year($year)
+    {
+        return 0 === $year % 400 || (0 === $year % 4 && 0 !== $year % 100);
     }
 
     private static function text_length($value)
