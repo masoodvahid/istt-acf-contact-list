@@ -44,6 +44,7 @@ final class Plugin
         require_once RDSCO_ELEMENTOR_WIDGETS_DIR . 'widgets/contact-list/functions.php';
         require_once RDSCO_ELEMENTOR_WIDGETS_DIR . 'widgets/ajax-archive/functions.php';
         require_once RDSCO_ELEMENTOR_WIDGETS_DIR . 'widgets/post-display/functions.php';
+        require_once RDSCO_ELEMENTOR_WIDGETS_DIR . 'widgets/search-box/functions.php';
 
         add_action('wp_enqueue_scripts', [$this, 'register_frontend_assets']);
         add_action('elementor/elements/categories_registered', [$this, 'register_category']);
@@ -68,6 +69,10 @@ final class Plugin
             [
                 'file'  => RDSCO_ELEMENTOR_WIDGETS_DIR . 'widgets/post-display/class-widget.php',
                 'class' => '\\RDSCO\\ElementorWidgets\\Widgets\\PostDisplay\\Widget',
+            ],
+            [
+                'file'  => RDSCO_ELEMENTOR_WIDGETS_DIR . 'widgets/search-box/class-widget.php',
+                'class' => '\\RDSCO\\ElementorWidgets\\Widgets\\SearchBox\\Widget',
             ],
         ];
     }
