@@ -12,6 +12,10 @@
     width: 100%;
 }
 
+.rdsco-archive-top-html {
+    margin-bottom: 25px;
+}
+
 .rdsco-editor-notice {
     direction: rtl;
     padding: 18px;
