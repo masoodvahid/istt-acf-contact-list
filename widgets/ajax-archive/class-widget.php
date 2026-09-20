@@ -223,6 +223,7 @@ final class Widget extends Widget_Base
         $query_root_id   = $filter_root_id ?: $archive_id;
         $selected_cat_id = ($filter_root_id && $archive_id !== $filter_root_id) ? $archive_id : 0;
         $runtime         = $this->runtime_settings($settings);
+        $top_html        = Category_Meta::get_top_html($archive_id);
 
         $query = Archive_Service::query([
             'root_id'     => $query_root_id,
@@ -231,9 +232,15 @@ final class Widget extends Widget_Base
             'per_page'    => $runtime['per_page'],
         ]);
 
-        $sidebar = Archive_Service::render_filter_sidebar($filter_root_id, $selected_cat_id, $runtime);
+        $sidebar = Archive_Service::render_filter_sidebar($filter_root_id, $selected_cat_id, $archive_id, $runtime);
         $classes = 'rdsco-ajax-archive ' . ($sidebar ? 'has-sidebar' : 'no-sidebar');
         ?>
+        <?php if ('' !== trim($top_html)) : ?>
+            <div class="rdsco-archive-top-html">
+                <?php echo $top_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+            </div>
+        <?php endif; ?>
+
         <div
             id="rdsco-archive-<?php echo esc_attr($this->get_id()); ?>"
             class="<?php echo esc_attr($classes); ?>"

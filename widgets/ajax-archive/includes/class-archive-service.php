@@ -248,7 +248,7 @@ final class Archive_Service {
         return (string) ob_get_clean();
     }
 
-    public static function render_filter_sidebar( int $filter_root_id, int $selected_category_id, array $settings ): string {
+    public static function render_filter_sidebar( int $filter_root_id, int $selected_category_id, int $content_term_id, array $settings ): string {
         if ( ! $filter_root_id || 'yes' !== ( $settings['show_filters'] ?? 'yes' ) ) {
             return '';
         }
@@ -261,7 +261,9 @@ final class Archive_Service {
             ? self::get_category_tags( $filter_root_id )
             : [];
 
-        if ( empty( $children ) && empty( $tags ) ) {
+        $sidebar_html = Category_Meta::get_sidebar_html( $content_term_id );
+
+        if ( empty( $children ) && empty( $tags ) && '' === trim( $sidebar_html ) ) {
             return '';
         }
 
@@ -308,6 +310,12 @@ final class Archive_Service {
                             <button type="button" class="rdsco-filter-item is-tag" data-tag="<?php echo esc_attr( $tag->term_id ); ?>"><?php echo esc_html( $tag->name ); ?></button>
                         <?php endforeach; ?>
                     </div>
+                </div>
+            <?php endif; ?>
+
+            <?php if ( '' !== trim( $sidebar_html ) ) : ?>
+                <div class="rdsco-archive-sidebar-html">
+                    <?php echo $sidebar_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                 </div>
             <?php endif; ?>
         </aside>

@@ -11,8 +11,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Category_Meta {
 
-    public const FILTER_META_KEY = '_rdsco_has_filter';
-    public const IMAGE_META_KEY  = '_rdsco_category_image_id';
+    public const FILTER_META_KEY        = '_rdsco_has_filter';
+    public const IMAGE_META_KEY         = '_rdsco_category_image_id';
+    public const TOP_HTML_META_KEY      = '_rdsco_archive_top_html';
+    public const SIDEBAR_HTML_META_KEY  = '_rdsco_archive_sidebar_html';
     public const LEGACY_FILTER_META_KEY = '_istt_has_filter';
     public const LEGACY_IMAGE_META_KEY  = '_istt_category_image_id';
     public const NONCE_ACTION    = 'rdsco_category_meta_action';
@@ -43,12 +45,26 @@ final class Category_Meta {
             <label>تصویر دسته</label>
             <?php self::render_image_picker( 0 ); ?>
         </div>
+
+        <div class="form-field">
+            <label for="rdsco_archive_top_html">کد بالای صفحه (فقط HTML)</label>
+            <textarea name="rdsco_archive_top_html" id="rdsco_archive_top_html" rows="7"></textarea>
+            <p class="description">در بالای ویجت آرشیو این دسته نمایش داده می‌شود. PHP، JavaScript و شورت‌کد اجرا نمی‌شوند.</p>
+        </div>
+
+        <div class="form-field">
+            <label for="rdsco_archive_sidebar_html">کد زیر ستون فیلترها (فقط HTML)</label>
+            <textarea name="rdsco_archive_sidebar_html" id="rdsco_archive_sidebar_html" rows="7"></textarea>
+            <p class="description">پس از فیلترهای ستون کناری نمایش داده می‌شود. PHP، JavaScript و شورت‌کد اجرا نمی‌شوند.</p>
+        </div>
         <?php
     }
 
     public static function render_edit_fields( \WP_Term $term ): void {
-        $has_filter = self::has_filter( $term->term_id ) ? '1' : '';
-        $image_id   = self::get_image_id( $term->term_id );
+        $has_filter  = self::has_filter( $term->term_id ) ? '1' : '';
+        $image_id    = self::get_image_id( $term->term_id );
+        $top_html    = self::get_top_html( $term->term_id );
+        $sidebar_html = self::get_sidebar_html( $term->term_id );
 
         wp_nonce_field( self::NONCE_ACTION, self::NONCE_NAME );
         ?>
@@ -65,6 +81,22 @@ final class Category_Meta {
         <tr class="form-field">
             <th scope="row"><label>تصویر دسته</label></th>
             <td><?php self::render_image_picker( $image_id ); ?></td>
+        </tr>
+
+        <tr class="form-field">
+            <th scope="row"><label for="rdsco_archive_top_html">کد بالای صفحه (فقط HTML)</label></th>
+            <td>
+                <textarea name="rdsco_archive_top_html" id="rdsco_archive_top_html" rows="8" class="large-text code"><?php echo esc_textarea( $top_html ); ?></textarea>
+                <p class="description">در بالای ویجت آرشیو این دسته نمایش داده می‌شود. PHP، JavaScript و شورت‌کد اجرا نمی‌شوند.</p>
+            </td>
+        </tr>
+
+        <tr class="form-field">
+            <th scope="row"><label for="rdsco_archive_sidebar_html">کد زیر ستون فیلترها (فقط HTML)</label></th>
+            <td>
+                <textarea name="rdsco_archive_sidebar_html" id="rdsco_archive_sidebar_html" rows="8" class="large-text code"><?php echo esc_textarea( $sidebar_html ); ?></textarea>
+                <p class="description">پس از فیلترهای ستون کناری نمایش داده می‌شود. PHP، JavaScript و شورت‌کد اجرا نمی‌شوند.</p>
+            </td>
         </tr>
         <?php
     }
@@ -118,6 +150,21 @@ final class Category_Meta {
             delete_term_meta( $term_id, self::IMAGE_META_KEY );
             delete_term_meta( $term_id, self::LEGACY_IMAGE_META_KEY );
         }
+
+        self::save_html_meta( $term_id, self::TOP_HTML_META_KEY, 'rdsco_archive_top_html' );
+        self::save_html_meta( $term_id, self::SIDEBAR_HTML_META_KEY, 'rdsco_archive_sidebar_html' );
+    }
+
+    private static function save_html_meta( int $term_id, string $meta_key, string $field_name ): void {
+        $html = isset( $_POST[ $field_name ] )
+            ? wp_kses_post( wp_unslash( $_POST[ $field_name ] ) )
+            : '';
+
+        if ( '' !== trim( $html ) ) {
+            update_term_meta( $term_id, $meta_key, $html );
+        } else {
+            delete_term_meta( $term_id, $meta_key );
+        }
     }
 
     public static function has_filter( int $term_id ): bool {
@@ -136,6 +183,14 @@ final class Category_Meta {
         }
 
         return absint( get_term_meta( $term_id, self::LEGACY_IMAGE_META_KEY, true ) );
+    }
+
+    public static function get_top_html( int $term_id ): string {
+        return wp_kses_post( (string) get_term_meta( $term_id, self::TOP_HTML_META_KEY, true ) );
+    }
+
+    public static function get_sidebar_html( int $term_id ): string {
+        return wp_kses_post( (string) get_term_meta( $term_id, self::SIDEBAR_HTML_META_KEY, true ) );
     }
 
     public static function add_image_column( array $columns ): array {
