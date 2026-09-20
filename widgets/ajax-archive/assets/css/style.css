@@ -235,7 +235,7 @@
 .rdsco-archive-card-image {
     display: block;
     width: 100%;
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 1 / 1;
     overflow: hidden;
     background: #eef1f2;
 }
@@ -248,8 +248,11 @@
 }
 
 .rdsco-archive-card-image img {
-    object-fit: cover;
     transition: transform .4s ease;
+    object-fit: none;
+    background-color: white;
+    padding: 50px;
+    box-sizing: border-box;
 }
 
 .rdsco-archive-card:hover .rdsco-archive-card-image img {
