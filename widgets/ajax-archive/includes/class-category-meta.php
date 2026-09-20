@@ -157,7 +157,7 @@ final class Category_Meta {
 
     private static function save_html_meta( int $term_id, string $meta_key, string $field_name ): void {
         $html = isset( $_POST[ $field_name ] )
-            ? wp_kses_post( wp_unslash( $_POST[ $field_name ] ) )
+            ? self::sanitize_html( (string) wp_unslash( $_POST[ $field_name ] ) )
             : '';
 
         if ( '' !== trim( $html ) ) {
@@ -185,12 +185,25 @@ final class Category_Meta {
         return absint( get_term_meta( $term_id, self::LEGACY_IMAGE_META_KEY, true ) );
     }
 
+    private static function sanitize_html( string $html ): string {
+        $allowed_html = wp_kses_allowed_html( 'post' );
+
+        // wp_kses_post() removes <style> but leaves its CSS visible as plain text.
+        // These fields accept HTML/CSS snippets, while scripts remain disallowed.
+        $allowed_html['style'] = [
+            'type'  => true,
+            'media' => true,
+        ];
+
+        return wp_kses( $html, $allowed_html );
+    }
+
     public static function get_top_html( int $term_id ): string {
-        return wp_kses_post( (string) get_term_meta( $term_id, self::TOP_HTML_META_KEY, true ) );
+        return self::sanitize_html( (string) get_term_meta( $term_id, self::TOP_HTML_META_KEY, true ) );
     }
 
     public static function get_sidebar_html( int $term_id ): string {
-        return wp_kses_post( (string) get_term_meta( $term_id, self::SIDEBAR_HTML_META_KEY, true ) );
+        return self::sanitize_html( (string) get_term_meta( $term_id, self::SIDEBAR_HTML_META_KEY, true ) );
     }
 
     public static function add_image_column( array $columns ): array {

@@ -4,7 +4,7 @@ Tags: elementor, contact directory, acf, ajax, archive, filter, phonebook
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.5.4
+Stable tag: 2.5.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
 
-نسخه 2.5.4 شامل سه ویجت بومی Elementor است:
+نسخه 2.5.5 شامل سه ویجت بومی Elementor است:
 
 * «دفتر تلفن» با همان امکانات نسخه 2.3.1: جست‌وجوی AJAX، Dropdownهای وابسته حوزه و واحد سازمانی، فیلتر برچسب، سایدبار جزئیات از سمت چپ، QR Code و vCard.
 * «آرشیو AJAX نوشته‌ها» برای قالب Archive المنتور: تشخیص خودکار دسته فعلی، 16 نوشته در هر صفحه، جستجوی زنده، فیلتر زیر‌دسته و برچسب، تصویر دسته، صفحه‌بندی AJAX، نمایش مطالب بیشتر و شمارش نتایج در پایین لیست.
@@ -35,6 +35,11 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 5. برای دسته‌هایی که باید فیلتر داشته باشند، در نوشته‌ها ← دسته‌ها گزینه «دارای فیلتر» را فعال و در صورت نیاز تصویر دسته را انتخاب کنید.
 
 == Changelog ==
+
+= 2.5.5 =
+* حفظ و اجرای تگ <style> در فیلدهای HTML دسته‌بندی.
+* جلوگیری از نمایش متن CSS در بالای آرشیو یا زیر ستون فیلترها.
+* تگ <script> و کدهای JavaScript همچنان برای امنیت حذف می‌شوند.
 
 = 2.5.4 =
 * افزودن فیلد «کد بالای صفحه (فقط HTML)» به تنظیمات دسته‌بندی و نمایش آن بالای ویجت آرشیو.
