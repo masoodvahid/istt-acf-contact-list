@@ -279,7 +279,11 @@ final class Archive_Service {
                     <div class="rdsco-filter-group-title">دسته‌بندی</div>
                     <div class="rdsco-filter-list">
                         <button type="button" class="rdsco-filter-item is-category <?php echo 0 === $selected_category_id ? 'is-active' : ''; ?>" data-category="0">
-                            <span class="rdsco-filter-name">همه</span>
+                            <span class="rdsco-filter-name">
+                                <span class="rdsco-filter-marquee" title="همه">
+                                    <span class="rdsco-filter-marquee-track">همه</span>
+                                </span>
+                            </span>
                         </button>
 
                         <?php foreach ( $children as $child ) : ?>
@@ -292,7 +296,9 @@ final class Archive_Service {
                                     <?php if ( $image_url ) : ?>
                                         <img src="<?php echo esc_url( $image_url ); ?>" alt="" loading="lazy">
                                     <?php endif; ?>
-                                    <span><?php echo esc_html( $child->name ); ?></span>
+                                    <span class="rdsco-filter-marquee" title="<?php echo esc_attr( $child->name ); ?>">
+                                        <span class="rdsco-filter-marquee-track"><?php echo esc_html( $child->name ); ?></span>
+                                    </span>
                                 </span>
                                 <small><?php echo esc_html( $child->count ); ?></small>
                             </button>

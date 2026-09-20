@@ -11,6 +11,49 @@
         }
     }
 
+    function setupFilterMarquees(wrapper) {
+        let frame = 0;
+
+        function refresh() {
+            window.cancelAnimationFrame(frame);
+            frame = window.requestAnimationFrame(function () {
+                wrapper.querySelectorAll('.rdsco-filter-marquee').forEach(function (viewport) {
+                    const track = viewport.querySelector('.rdsco-filter-marquee-track');
+
+                    if (!track) {
+                        return;
+                    }
+
+                    viewport.classList.remove('is-overflowing');
+                    viewport.style.removeProperty('--rdsco-marquee-distance');
+                    viewport.style.removeProperty('--rdsco-marquee-duration');
+
+                    const overflow = Math.ceil(track.scrollWidth - viewport.clientWidth);
+
+                    if (overflow > 2) {
+                        viewport.style.setProperty('--rdsco-marquee-distance', overflow + 'px');
+                        viewport.style.setProperty('--rdsco-marquee-duration', Math.min(14, Math.max(6, 5 + (overflow / 24))) + 's');
+                        viewport.classList.add('is-overflowing');
+                    }
+                });
+            });
+        }
+
+        refresh();
+
+        if (window.ResizeObserver) {
+            const observer = new ResizeObserver(refresh);
+            observer.observe(wrapper);
+            wrapper.rdscoMarqueeObserver = observer;
+        } else {
+            window.addEventListener('resize', refresh, {passive: true});
+        }
+
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(refresh);
+        }
+    }
+
     function initArchive(wrapper) {
         if (!wrapper || wrapper.dataset.rdscoInitialized === '1') {
             return;
@@ -214,6 +257,7 @@
         }
 
         updateLoadMoreVisibility();
+        setupFilterMarquees(wrapper);
     }
 
     function initAll(scope) {

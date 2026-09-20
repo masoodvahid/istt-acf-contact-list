@@ -79,6 +79,7 @@
     font-size: 13px;
     text-align: right;
     cursor: pointer;
+    overflow: hidden;
     transition: background .2s ease, color .2s ease;
 }
 
@@ -94,9 +95,39 @@
 
 .rdsco-filter-name {
     display: flex;
+    flex: 1 1 auto;
     align-items: center;
     min-width: 0;
     gap: 8px;
+    overflow: hidden;
+}
+
+.rdsco-filter-name .rdsco-filter-marquee {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    direction: rtl;
+}
+
+.rdsco-filter-name .rdsco-filter-marquee-track {
+    display: block;
+    flex: 0 0 auto;
+    width: max-content;
+    max-width: none;
+    white-space: nowrap;
+    text-align: right;
+    transform: translateX(0);
+}
+
+.rdsco-filter-name .rdsco-filter-marquee.is-overflowing .rdsco-filter-marquee-track {
+    animation: rdscoFilterMarquee var(--rdsco-marquee-duration, 7s) ease-in-out 1s infinite alternate;
+    will-change: transform;
+}
+
+@keyframes rdscoFilterMarquee {
+    0%, 15% { transform: translateX(0); }
+    85%, 100% { transform: translateX(var(--rdsco-marquee-distance, 0px)); }
 }
 
 .rdsco-filter-name img {
@@ -112,6 +143,17 @@
     opacity: .72;
     text-align: center;
     font-size: 10px;
+    flex: 0 0 auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rdsco-filter-name .rdsco-filter-marquee.is-overflowing .rdsco-filter-marquee-track {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        animation: none;
+        transform: none;
+    }
 }
 
 .rdsco-archive-content {

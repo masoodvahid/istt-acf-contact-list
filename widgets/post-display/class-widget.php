@@ -325,7 +325,9 @@ final class Widget extends Widget_Base
                                 data-category="0"
                                 aria-pressed="true"
                             >
-                                <span>همه مطالب</span>
+                                <span class="rdsco-filter-marquee" title="همه مطالب">
+                                    <span class="rdsco-filter-marquee-track">همه مطالب</span>
+                                </span>
                                 <small><?php echo esc_html(number_format_i18n($query->found_posts)); ?></small>
                             </button>
 
@@ -336,7 +338,9 @@ final class Widget extends Widget_Base
                                     data-category="<?php echo esc_attr($term->term_id); ?>"
                                     aria-pressed="false"
                                 >
-                                    <span><?php echo esc_html($term->name); ?></span>
+                                    <span class="rdsco-filter-marquee" title="<?php echo esc_attr($term->name); ?>">
+                                        <span class="rdsco-filter-marquee-track"><?php echo esc_html($term->name); ?></span>
+                                    </span>
                                     <small><?php echo esc_html(number_format_i18n($term->count)); ?></small>
                                 </button>
                             <?php endforeach; ?>

@@ -530,7 +530,36 @@
     font-size:11px;
     text-align:right;
     cursor:pointer;
+    overflow:hidden;
     transition:background-color .2s ease,border-color .2s ease,color .2s ease,transform .2s ease;
+}
+
+.rdsco-post-display-sidebar-filter .rdsco-filter-marquee{
+    display:flex;
+    flex:1 1 auto;
+    min-width:0;
+    overflow:hidden;
+    direction:rtl;
+}
+
+.rdsco-post-display-sidebar-filter .rdsco-filter-marquee-track{
+    display:block;
+    flex:0 0 auto;
+    width:max-content;
+    max-width:none;
+    white-space:nowrap;
+    text-align:right;
+    transform:translateX(0);
+}
+
+.rdsco-post-display-sidebar-filter .rdsco-filter-marquee.is-overflowing .rdsco-filter-marquee-track{
+    animation:rdscoFilterMarquee var(--rdsco-marquee-duration,7s) ease-in-out 1s infinite alternate;
+    will-change:transform;
+}
+
+@keyframes rdscoFilterMarquee{
+    0%,15%{transform:translateX(0)}
+    85%,100%{transform:translateX(var(--rdsco-marquee-distance,0px))}
 }
 
 .rdsco-post-display-sidebar-filter:hover{
@@ -557,6 +586,17 @@
     background:#eef2f4;
     color:#788991;
     font-size:9px;
+    flex:0 0 auto;
+}
+
+@media(prefers-reduced-motion:reduce){
+    .rdsco-post-display-sidebar-filter .rdsco-filter-marquee.is-overflowing .rdsco-filter-marquee-track{
+        max-width:100%;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        animation:none;
+        transform:none;
+    }
 }
 
 .rdsco-post-display-sidebar-filter.is-active small{
