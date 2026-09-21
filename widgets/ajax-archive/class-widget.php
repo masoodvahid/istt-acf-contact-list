@@ -133,21 +133,6 @@ final class Widget extends Widget_Base
             'condition' => ['show_excerpt' => 'yes'],
         ]);
 
-        $this->add_control('image_ratio', [
-            'label'   => esc_html__('نسبت تصویر', 'rdsco-elementor-widgets'),
-            'type'    => Controls_Manager::SELECT,
-            'default' => '16 / 10',
-            'options' => [
-                '16 / 10' => '16:10',
-                '16 / 9'  => '16:9',
-                '4 / 3'   => '4:3',
-                '1 / 1'   => '1:1',
-            ],
-            'selectors' => [
-                '{{WRAPPER}} .rdsco-archive-card-image' => 'aspect-ratio: {{VALUE}};',
-            ],
-        ]);
-
         $this->add_control('empty_text', [
             'label'       => esc_html__('متن نبود نتیجه', 'rdsco-elementor-widgets'),
             'type'        => Controls_Manager::TEXT,
