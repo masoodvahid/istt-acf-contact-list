@@ -214,7 +214,7 @@ final class Archive_Service {
                                         <span class="rdsco-archive-card-category"><?php echo esc_html( $categories[0]->name ); ?></span>
                                     <?php endif; ?>
                                     <?php if ( $show_date ) : ?>
-                                        <time datetime="<?php echo esc_attr( get_the_date( DATE_W3C ) ); ?>"><?php echo esc_html( get_the_date() ); ?></time>
+                                        <time datetime="<?php echo esc_attr( get_the_date( DATE_W3C ) ); ?>"><?php echo esc_html( get_the_date() ); ?><?php if ( 'news_card' === $display_style ) : ?><span class="dashicons dashicons-calendar-alt" aria-hidden="true"></span><?php endif; ?></time>
                                     <?php endif; ?>
                                 </div>
                             <?php endif; ?>

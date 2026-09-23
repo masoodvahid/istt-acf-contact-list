@@ -160,7 +160,7 @@ final class Category_Meta {
         $styles = [
             'card'           => 'کارت ۱',
             'card_2'         => 'کارت ۲',
-            'news_card'      => 'کارت خبر',
+            'news_card'      => 'کارت ۳',
             'timeline'       => 'تایم لاین',
             'icon'           => 'آیکن باکس ۱',
             'featured_icon'  => 'آیکن باکس ۲',
