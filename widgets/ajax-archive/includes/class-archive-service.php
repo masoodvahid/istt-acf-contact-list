@@ -123,6 +123,23 @@ final class Archive_Service {
             $tax_query['relation'] = 'AND';
         }
 
+        $acf_term_id = absint( $args['acf_term_id'] ?? 0 );
+        $acf_fields  = Category_Meta::get_acf_filter_fields( $acf_term_id );
+        $acf_filters = self::sanitize_acf_filters( $acf_term_id, $args['acf_filters'] ?? [], $acf_fields );
+        $meta_query  = [];
+        foreach ( $acf_filters as $key => $value ) {
+            $field    = $acf_fields[ $key ];
+            $multiple = 'checkbox' === $field['type'] || ( 'select' === $field['type'] && ! empty( $field['multiple'] ) );
+            $meta_query[] = [
+                'key'     => $field['name'],
+                'value'   => $multiple ? '"' . $value . '"' : $value,
+                'compare' => $multiple ? 'LIKE' : '=',
+            ];
+        }
+        if ( count( $meta_query ) > 1 ) {
+            $meta_query['relation'] = 'AND';
+        }
+
         return new \WP_Query(
             [
                 'post_type'           => 'post',
@@ -132,8 +149,30 @@ final class Archive_Service {
                 'ignore_sticky_posts' => true,
                 's'                   => $search,
                 'tax_query'           => $tax_query,
+                'meta_query'          => $meta_query,
             ]
         );
+    }
+
+    public static function sanitize_acf_filters( int $term_id, $raw, ?array $allowed = null ): array {
+        if ( ! $term_id || ! is_array( $raw ) ) {
+            return [];
+        }
+
+        $allowed = null === $allowed ? Category_Meta::get_acf_filter_fields( $term_id ) : $allowed;
+        $filters = [];
+        foreach ( $allowed as $key => $field ) {
+            if ( ! isset( $raw[ $key ] ) || ! is_scalar( $raw[ $key ] ) ) {
+                continue;
+            }
+
+            $value   = (string) $raw[ $key ];
+            $options = Category_Meta::get_acf_filter_options( $field );
+            if ( array_key_exists( $value, $options ) ) {
+                $filters[ $key ] = $value;
+            }
+        }
+        return $filters;
     }
 
     public static function render_posts( \WP_Query $query, array $settings ): string {
@@ -312,17 +351,18 @@ final class Archive_Service {
     }
 
     public static function render_filter_sidebar( int $filter_root_id, int $selected_category_id, int $content_term_id, array $settings ): string {
-        if ( ! $filter_root_id || 'yes' !== ( $settings['show_filters'] ?? 'yes' ) ) {
+        if ( 'yes' !== ( $settings['show_filters'] ?? 'yes' ) ) {
             return '';
         }
 
-        $children = 'yes' === ( $settings['show_subcategories'] ?? 'yes' )
+        $children = $filter_root_id && 'yes' === ( $settings['show_subcategories'] ?? 'yes' )
             ? self::get_child_categories( $filter_root_id )
             : [];
 
         $sidebar_html = Category_Meta::get_sidebar_html( $content_term_id );
+        $acf_fields   = Category_Meta::get_acf_filter_fields( $content_term_id );
 
-        if ( empty( $children ) && '' === trim( $sidebar_html ) ) {
+        if ( empty( $children ) && empty( $acf_fields ) && '' === trim( $sidebar_html ) ) {
             return '';
         }
 
@@ -365,6 +405,18 @@ final class Archive_Service {
                     </div>
                 </div>
             <?php endif; ?>
+
+            <?php foreach ( $acf_fields as $key => $field ) : ?>
+                <div class="rdsco-filter-group rdsco-acf-filter-group">
+                    <label class="rdsco-filter-group-title" for="rdsco-acf-<?php echo esc_attr( $content_term_id . '-' . $key ); ?>"><?php echo esc_html( $field['label'] ?: $field['name'] ); ?></label>
+                    <select class="rdsco-acf-filter-select" id="rdsco-acf-<?php echo esc_attr( $content_term_id . '-' . $key ); ?>" data-acf-field="<?php echo esc_attr( $key ); ?>">
+                        <option value="">همه</option>
+                        <?php foreach ( Category_Meta::get_acf_filter_options( $field ) as $value => $label ) : ?>
+                            <option value="<?php echo esc_attr( $value ); ?>"><?php echo esc_html( $label ); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            <?php endforeach; ?>
 
             <?php if ( '' !== trim( $sidebar_html ) ) : ?>
                 <div class="rdsco-archive-sidebar-html">
@@ -412,6 +464,8 @@ final class Archive_Service {
         $settings_json = isset( $_POST['settings'] ) ? wp_unslash( $_POST['settings'] ) : '{}';
         $settings_raw  = json_decode( $settings_json, true );
         $settings      = self::sanitize_settings( is_array( $settings_raw ) ? $settings_raw : [] );
+        $acf_json      = isset( $_POST['acf_filters'] ) ? wp_unslash( $_POST['acf_filters'] ) : '{}';
+        $acf_raw       = json_decode( is_string( $acf_json ) ? $acf_json : '{}', true );
 
         $root_term = get_term( $root_id, 'category' );
         if ( ! $root_term || is_wp_error( $root_term ) ) {
@@ -442,6 +496,8 @@ final class Archive_Service {
         }
 
         $query_root = $filter_root ?: $root_id;
+        $acf_filters = 'yes' === $settings['show_filters']
+            ? self::sanitize_acf_filters( $root_id, $acf_raw ) : [];
         $tag_scope  = $category_id ?: $query_root;
         $tags       = 'yes' === $settings['show_tags'] ? self::get_category_tags( $tag_scope ) : [];
         $tag_ids    = array_map( 'intval', wp_list_pluck( $tags, 'term_id' ) );
@@ -458,6 +514,8 @@ final class Archive_Service {
                 'search'      => $search,
                 'page'        => $page,
                 'per_page'    => $settings['per_page'],
+                'acf_term_id' => $root_id,
+                'acf_filters' => $acf_filters,
             ]
         );
 

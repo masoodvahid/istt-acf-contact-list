@@ -17,6 +17,8 @@ final class Category_Meta {
     public const SIDEBAR_HTML_META_KEY  = '_rdsco_archive_sidebar_html';
     public const DISPLAY_STYLE_META_KEY = '_rdsco_archive_display_style';
     public const SHOW_TAGS_META_KEY     = '_rdsco_archive_show_tags';
+    public const SHOW_ACF_META_KEY      = '_rdsco_archive_show_acf_filters';
+    public const ACF_FIELDS_META_KEY    = '_rdsco_archive_acf_filter_fields';
     public const LEGACY_FILTER_META_KEY = '_istt_has_filter';
     public const LEGACY_IMAGE_META_KEY  = '_istt_category_image_id';
     public const NONCE_ACTION    = 'rdsco_category_meta_action';
@@ -63,6 +65,11 @@ final class Category_Meta {
         </div>
 
         <div class="form-field">
+            <label for="rdsco_archive_show_acf_filters">فیلتر بر اساس فیلدهای ACF</label>
+            <?php self::render_acf_filter_fields( [], false ); ?>
+        </div>
+
+        <div class="form-field">
             <label for="rdsco_archive_top_html">کد بالای صفحه (فقط HTML)</label>
             <textarea name="rdsco_archive_top_html" id="rdsco_archive_top_html" rows="7"></textarea>
             <p class="description">در بالای ویجت آرشیو این دسته نمایش داده می‌شود. PHP، JavaScript و شورت‌کد اجرا نمی‌شوند.</p>
@@ -81,6 +88,8 @@ final class Category_Meta {
         $image_id     = self::get_image_id( $term->term_id );
         $display_style = self::get_display_style( $term->term_id );
         $show_tags    = self::should_show_tags( $term->term_id );
+        $show_acf     = self::should_show_acf_filters( $term->term_id );
+        $acf_fields   = self::get_selected_acf_field_keys( $term->term_id );
         $top_html     = self::get_top_html( $term->term_id );
         $sidebar_html = self::get_sidebar_html( $term->term_id );
 
@@ -121,6 +130,11 @@ final class Category_Meta {
         </tr>
 
         <tr class="form-field">
+            <th scope="row"><label for="rdsco_archive_show_acf_filters">فیلتر بر اساس فیلدهای ACF</label></th>
+            <td><?php self::render_acf_filter_fields( $acf_fields, $show_acf ); ?></td>
+        </tr>
+
+        <tr class="form-field">
             <th scope="row"><label for="rdsco_archive_top_html">کد بالای صفحه (فقط HTML)</label></th>
             <td>
                 <textarea name="rdsco_archive_top_html" id="rdsco_archive_top_html" rows="8" class="large-text code"><?php echo esc_textarea( $top_html ); ?></textarea>
@@ -154,6 +168,106 @@ final class Category_Meta {
             <button type="button" class="button rdsco-category-image-remove">حذف تصویر</button>
         </div>
         <?php
+    }
+
+    private static function render_acf_filter_fields( array $selected_keys, bool $enabled ): void {
+        ?>
+        <label style="display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" name="rdsco_archive_show_acf_filters" id="rdsco_archive_show_acf_filters" value="1" <?php checked( $enabled ); ?>>
+            نمایش فیلتر فیلدهای انتخاب‌شده در ستون کناری این دسته
+        </label>
+        <?php
+        $fields = self::get_filterable_acf_fields();
+        if ( empty( $fields ) ) {
+            echo '<p class="description">فیلد انتخابی ACF برای نوشته‌ها یافت نشد. ابتدا فیلدی از نوع Select، Radio، Checkbox یا True/False بسازید.</p>';
+            return;
+        }
+        ?>
+        <fieldset style="margin-top:12px;max-height:220px;overflow:auto;">
+            <legend class="screen-reader-text">فیلدهای ACF قابل نمایش</legend>
+            <?php foreach ( $fields as $key => $field ) : ?>
+                <label style="display:block;margin:5px 0;">
+                    <input type="checkbox" name="rdsco_archive_acf_fields[]" value="<?php echo esc_attr( $key ); ?>" <?php checked( in_array( $key, $selected_keys, true ) ); ?>>
+                    <?php echo esc_html( $field['label'] ?: $field['name'] ); ?>
+                    <code><?php echo esc_html( $field['name'] ); ?></code>
+                </label>
+            <?php endforeach; ?>
+        </fieldset>
+        <p class="description">حداکثر ۱۰ فیلد؛ فقط گزینه‌های تعریف‌شده در ACF قابل فیلتر هستند. برای نمایش ستون، «نمایش فیلترها» در ویجت نیز باید روشن باشد.</p>
+        <?php
+    }
+
+    public static function get_filterable_acf_fields(): array {
+        if ( ! function_exists( 'acf_get_field_groups' ) || ! function_exists( 'acf_get_fields' ) ) {
+            return [];
+        }
+
+        static $cached_fields = null;
+        if ( null !== $cached_fields ) {
+            return $cached_fields;
+        }
+
+        $fields = [];
+        foreach ( (array) acf_get_field_groups() as $group ) {
+            if ( empty( $group['key'] ) ) {
+                continue;
+            }
+            foreach ( (array) acf_get_fields( $group['key'] ) as $field ) {
+                if ( ! is_array( $field ) || ! in_array( $field['type'] ?? '', [ 'select', 'radio', 'checkbox', 'true_false' ], true ) ) {
+                    continue;
+                }
+
+                if ( empty( $field['key'] ) || empty( $field['name'] ) || empty( self::get_acf_filter_options( $field ) ) ) {
+                    continue;
+                }
+
+                $fields[ $field['key'] ] = $field;
+            }
+        }
+
+        $cached_fields = $fields;
+        return $cached_fields;
+    }
+
+    public static function get_acf_filter_options( array $field ): array {
+        if ( 'true_false' === ( $field['type'] ?? '' ) ) {
+            return [
+                '1' => (string) ( ! empty( $field['ui_on_text'] ) ? $field['ui_on_text'] : 'بله' ),
+                '0' => (string) ( ! empty( $field['ui_off_text'] ) ? $field['ui_off_text'] : 'خیر' ),
+            ];
+        }
+
+        $options = [];
+        foreach ( (array) ( $field['choices'] ?? [] ) as $value => $label ) {
+            if ( is_scalar( $value ) && is_scalar( $label ) && '' !== (string) $value ) {
+                $options[ (string) $value ] = (string) $label;
+            }
+        }
+        return $options;
+    }
+
+    public static function should_show_acf_filters( int $term_id ): bool {
+        return '1' === (string) get_term_meta( $term_id, self::SHOW_ACF_META_KEY, true );
+    }
+
+    public static function get_selected_acf_field_keys( int $term_id ): array {
+        $keys = get_term_meta( $term_id, self::ACF_FIELDS_META_KEY, true );
+        return is_array( $keys ) ? array_slice( array_values( array_filter( $keys, 'is_string' ) ), 0, 10 ) : [];
+    }
+
+    public static function get_acf_filter_fields( int $term_id ): array {
+        if ( ! self::should_show_acf_filters( $term_id ) ) {
+            return [];
+        }
+
+        $available = self::get_filterable_acf_fields();
+        $selected  = [];
+        foreach ( self::get_selected_acf_field_keys( $term_id ) as $key ) {
+            if ( isset( $available[ $key ] ) ) {
+                $selected[ $key ] = $available[ $key ];
+            }
+        }
+        return $selected;
     }
 
     private static function render_display_style_select( string $selected_style ): void {
@@ -218,6 +332,21 @@ final class Category_Meta {
 
         update_term_meta( $term_id, self::DISPLAY_STYLE_META_KEY, $display_style );
         update_term_meta( $term_id, self::SHOW_TAGS_META_KEY, isset( $_POST['rdsco_archive_show_tags'] ) ? '1' : '0' );
+        update_term_meta( $term_id, self::SHOW_ACF_META_KEY, isset( $_POST['rdsco_archive_show_acf_filters'] ) ? '1' : '0' );
+
+        $raw_keys  = isset( $_POST['rdsco_archive_acf_fields'] ) && is_array( $_POST['rdsco_archive_acf_fields'] )
+            ? wp_unslash( $_POST['rdsco_archive_acf_fields'] ) : [];
+        $available = self::get_filterable_acf_fields();
+        $selected  = [];
+        foreach ( $raw_keys as $key ) {
+            if ( is_string( $key ) && isset( $available[ $key ] ) && ! in_array( $key, $selected, true ) ) {
+                $selected[] = $key;
+            }
+            if ( count( $selected ) >= 10 ) {
+                break;
+            }
+        }
+        update_term_meta( $term_id, self::ACF_FIELDS_META_KEY, $selected );
 
         self::save_html_meta( $term_id, self::TOP_HTML_META_KEY, 'rdsco_archive_top_html' );
         self::save_html_meta( $term_id, self::SIDEBAR_HTML_META_KEY, 'rdsco_archive_sidebar_html' );

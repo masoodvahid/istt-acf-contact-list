@@ -74,6 +74,7 @@
             filterRoot: parseInt(wrapper.dataset.filterRoot || '0', 10),
             categoryId: parseInt(wrapper.dataset.categoryId || '0', 10),
             tagId: parseInt(wrapper.dataset.tagId || '0', 10),
+            acfFilters: {},
             page: 1,
             maxPages: parseInt(wrapper.dataset.maxPages || '1', 10),
             search: '',
@@ -131,6 +132,7 @@
             body.append('category_id', String(state.categoryId));
             body.append('tag_id', String(state.tagId));
             body.append('search', state.search);
+            body.append('acf_filters', JSON.stringify(state.acfFilters));
             body.append('page', String(page));
             body.append('settings', JSON.stringify(state.settings));
 
@@ -239,6 +241,26 @@
                     fetchArchive(state.page + 1, true);
                 }
             }
+        });
+
+        wrapper.addEventListener('change', function (event) {
+            const select = event.target.closest('.rdsco-acf-filter-select');
+            if (!select || !wrapper.contains(select)) {
+                return;
+            }
+
+            const key = select.dataset.acfField;
+            if (!key) {
+                return;
+            }
+
+            if (select.value === '') {
+                delete state.acfFilters[key];
+            } else {
+                state.acfFilters[key] = select.value;
+            }
+            state.page = 1;
+            fetchArchive(1, false);
         });
 
         if (searchInput) {
