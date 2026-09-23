@@ -156,7 +156,7 @@ final class Archive_Service {
         $show_excerpt  = 'yes' === ( $settings['show_excerpt'] ?? 'yes' );
         $excerpt_words = max( 0, absint( $settings['excerpt_length'] ?? 18 ) );
         $display_style = $settings['display_style'] ?? 'card';
-        if ( ! in_array( $display_style, [ 'card', 'card_2', 'icon', 'featured_icon', 'icon_card_2', 'hover_box_1' ], true ) ) {
+        if ( ! in_array( $display_style, [ 'card', 'card_2', 'news_card', 'timeline', 'icon', 'featured_icon', 'icon_card_2', 'hover_box_1' ], true ) ) {
             $display_style = 'card';
         }
         ?>
@@ -189,7 +189,7 @@ final class Archive_Service {
                             </div>
                         </a>
                     <?php else : ?>
-                        <?php if ( in_array( $display_style, [ 'card', 'card_2' ], true ) ) : ?>
+                        <?php if ( in_array( $display_style, [ 'card', 'card_2', 'news_card', 'timeline' ], true ) ) : ?>
                             <a class="rdsco-archive-card-image" href="<?php the_permalink(); ?>" aria-label="<?php echo esc_attr( get_the_title() ); ?>">
                                 <?php if ( has_post_thumbnail() ) : ?>
                                     <?php echo get_the_post_thumbnail( $post_id, 'medium_large', [ 'loading' => 'lazy' ] ); ?>
@@ -369,7 +369,7 @@ final class Archive_Service {
 
     private static function sanitize_settings( array $raw ): array {
         $display_style = $raw['display_style'] ?? 'card';
-        if ( ! in_array( $display_style, [ 'card', 'card_2', 'icon', 'featured_icon', 'icon_card_2', 'hover_box_1' ], true ) ) {
+        if ( ! in_array( $display_style, [ 'card', 'card_2', 'news_card', 'timeline', 'icon', 'featured_icon', 'icon_card_2', 'hover_box_1' ], true ) ) {
             $display_style = 'card';
         }
 

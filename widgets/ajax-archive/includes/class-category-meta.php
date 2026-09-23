@@ -160,6 +160,8 @@ final class Category_Meta {
         $styles = [
             'card'           => 'کارت ۱',
             'card_2'         => 'کارت ۲',
+            'news_card'      => 'کارت خبر',
+            'timeline'       => 'تایم لاین',
             'icon'           => 'آیکن باکس ۱',
             'featured_icon'  => 'آیکن باکس ۲',
             'icon_card_2'    => 'آیکن باکس ۳',
@@ -210,7 +212,7 @@ final class Category_Meta {
             ? sanitize_key( wp_unslash( $_POST['rdsco_archive_display_style'] ) )
             : 'card';
 
-        if ( ! in_array( $display_style, [ 'card', 'card_2', 'icon', 'featured_icon', 'icon_card_2', 'hover_box_1' ], true ) ) {
+        if ( ! in_array( $display_style, [ 'card', 'card_2', 'news_card', 'timeline', 'icon', 'featured_icon', 'icon_card_2', 'hover_box_1' ], true ) ) {
             $display_style = 'card';
         }
 
@@ -254,7 +256,7 @@ final class Category_Meta {
     public static function get_display_style( int $term_id ): string {
         $style = sanitize_key( (string) get_term_meta( $term_id, self::DISPLAY_STYLE_META_KEY, true ) );
 
-        return in_array( $style, [ 'card', 'card_2', 'icon', 'featured_icon', 'icon_card_2', 'hover_box_1' ], true ) ? $style : 'card';
+        return in_array( $style, [ 'card', 'card_2', 'news_card', 'timeline', 'icon', 'featured_icon', 'icon_card_2', 'hover_box_1' ], true ) ? $style : 'card';
     }
 
     public static function should_show_tags( int $term_id ): bool {

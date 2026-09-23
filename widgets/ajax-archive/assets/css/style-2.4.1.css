@@ -262,10 +262,21 @@ body .rdsco-ajax-archive.no-sidebar .rdsco-archive-content .rdsco-archive-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
 }
 
+/* A timeline always occupies one column, including Elementor responsive CSS. */
+body .rdsco-ajax-archive.has-sidebar .rdsco-archive-content .rdsco-archive-grid.style-timeline,
+body .rdsco-ajax-archive.no-sidebar .rdsco-archive-content .rdsco-archive-grid.style-timeline {
+    grid-template-columns: minmax(0, 1fr) !important;
+}
+
 @media (max-width: 1024px) {
     body .rdsco-ajax-archive.has-sidebar .rdsco-archive-content .rdsco-archive-grid,
     body .rdsco-ajax-archive.no-sidebar .rdsco-archive-content .rdsco-archive-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    body .rdsco-ajax-archive.has-sidebar .rdsco-archive-content .rdsco-archive-grid.style-timeline,
+    body .rdsco-ajax-archive.no-sidebar .rdsco-archive-content .rdsco-archive-grid.style-timeline {
+        grid-template-columns: minmax(0, 1fr) !important;
     }
 }
 

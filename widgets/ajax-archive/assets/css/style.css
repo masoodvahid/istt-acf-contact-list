@@ -331,7 +331,7 @@
 }
 
 .rdsco-archive-card.style-card_2 .rdsco-archive-card-image {
-    aspect-ratio: 4 / 3 !important;
+    aspect-ratio: 16 / 10 !important;
     background: #f5f7f8;
 }
 
@@ -374,6 +374,188 @@
 .rdsco-archive-card.style-card_2 .rdsco-archive-card-more {
     margin-top: auto;
     padding-top: 10px;
+}
+
+/* News card: wide photo, airy metadata, blue headline and a short summary. */
+.rdsco-archive-card.style-news_card {
+    display: flex;
+    flex-direction: column;
+    min-height: 490px;
+    padding-top: 50px;
+    border-color: #d8e3ef;
+    border-radius: 12px;
+    box-shadow: none;
+}
+
+.rdsco-archive-card.style-news_card .rdsco-archive-card-image {
+    aspect-ratio: 16 / 10 !important;
+    background: #f4f7fa;
+}
+
+.rdsco-archive-card.style-news_card .rdsco-archive-card-image img {
+    object-fit: cover;
+    background: transparent;
+}
+
+.rdsco-archive-card.style-news_card .rdsco-archive-card-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    padding: 58px 16px 20px;
+}
+
+.rdsco-archive-card.style-news_card .rdsco-archive-card-meta {
+    margin-bottom: 10px;
+    color: #96a5b4;
+    font-size: 10px;
+}
+
+.rdsco-archive-card.style-news_card .rdsco-archive-card-category {
+    color: #138eab;
+}
+
+.rdsco-archive-card.style-news_card .rdsco-archive-card-title {
+    display: -webkit-box;
+    overflow: hidden;
+    margin-bottom: 12px;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.rdsco-archive-card.style-news_card .rdsco-archive-card-title a {
+    color: #12388e;
+}
+
+.rdsco-archive-card.style-news_card .rdsco-archive-card-title a:hover,
+.rdsco-archive-card.style-news_card .rdsco-archive-card-title a:focus-visible {
+    color: #087f9c;
+}
+
+.rdsco-archive-card.style-news_card .rdsco-archive-card-excerpt {
+    display: -webkit-box;
+    overflow: hidden;
+    margin-bottom: 18px;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    color: #8494a3;
+    font-size: 11px;
+}
+
+.rdsco-archive-card.style-news_card .rdsco-archive-card-more {
+    margin-top: auto;
+    color: #12388e;
+}
+
+/* Timeline: one RTL column with a continuous line and an event marker. */
+.rdsco-archive-grid.style-timeline {
+    position: relative;
+    padding-right: 38px;
+}
+
+.rdsco-archive-grid.style-timeline::before {
+    position: absolute;
+    top: 22px;
+    right: 9px;
+    bottom: 22px;
+    width: 2px;
+    background: #d4e8ec;
+    content: '';
+}
+
+.rdsco-archive-card.style-timeline {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(100px, 180px) minmax(0, 1fr);
+    align-items: stretch;
+    border-color: #dbe7eb;
+    border-radius: 12px;
+}
+
+.rdsco-archive-card.style-timeline::before {
+    position: absolute;
+    top: 19px;
+    right: -36px;
+    width: 13px;
+    height: 13px;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    background: var(--rdsco-accent);
+    box-shadow: 0 0 0 2px #b7dcdf;
+    content: '';
+}
+
+.rdsco-archive-card.style-timeline .rdsco-archive-card-image {
+    height: 100%;
+    min-height: 145px;
+    aspect-ratio: auto !important;
+}
+
+.rdsco-archive-card.style-timeline .rdsco-archive-card-image img {
+    object-fit: cover;
+    background: transparent;
+}
+
+.rdsco-archive-card.style-timeline .rdsco-archive-card-content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 18px 22px;
+}
+
+.rdsco-archive-card.style-timeline .rdsco-archive-card-meta {
+    justify-content: flex-start;
+    gap: 16px;
+    margin-bottom: 9px;
+}
+
+.rdsco-archive-card.style-timeline .rdsco-archive-card-meta time {
+    color: #268897;
+}
+
+.rdsco-archive-card.style-timeline .rdsco-archive-card-title {
+    font-size: 16px;
+}
+
+.rdsco-archive-card.style-timeline .rdsco-archive-card-more {
+    margin-top: auto;
+}
+
+@media (max-width: 600px) {
+    .rdsco-archive-grid.style-timeline {
+        padding-right: 29px;
+    }
+
+    .rdsco-archive-grid.style-timeline::before {
+        right: 7px;
+    }
+
+    .rdsco-archive-card.style-timeline {
+        grid-template-columns: 1fr;
+    }
+
+    .rdsco-archive-card.style-timeline::before {
+        right: -28px;
+    }
+
+    .rdsco-archive-card.style-timeline .rdsco-archive-card-image {
+        height: auto;
+        min-height: 0;
+        aspect-ratio: 16 / 10 !important;
+    }
+
+    .rdsco-archive-card.style-news_card {
+        min-height: 0;
+        padding-top: 22px;
+    }
+
+    .rdsco-archive-card.style-news_card .rdsco-archive-card-content {
+        padding-top: 26px;
+    }
 }
 
 /* Hover box 1: title remains legible; a teal gradient arrives on hover. */
