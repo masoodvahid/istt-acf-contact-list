@@ -168,7 +168,16 @@ final class Archive_Service {
                 $has_featured_icon = in_array( $display_style, [ 'featured_icon', 'icon_card_2' ], true ) && has_post_thumbnail( $post_id );
                 ?>
                 <article class="rdsco-archive-card style-<?php echo esc_attr( $display_style ); ?>">
-                    <?php if ( 'hover_box_1' === $display_style ) : ?>
+                    <?php if ( 'timeline' === $display_style ) : ?>
+                        <h3 class="rdsco-timeline-title"><a href="<?php the_permalink(); ?>"><?php echo esc_html( get_the_title() ); ?></a></h3>
+                        <span class="rdsco-timeline-rail" aria-hidden="true"></span>
+                        <div class="rdsco-timeline-content">
+                            <?php if ( $show_excerpt && $excerpt_words > 0 ) : ?>
+                                <p class="rdsco-timeline-excerpt"><?php echo esc_html( wp_trim_words( get_the_excerpt(), $excerpt_words, '…' ) ); ?></p>
+                            <?php endif; ?>
+                            <a class="rdsco-timeline-more" href="<?php the_permalink(); ?>">مطالعه بیشتر <span aria-hidden="true">←</span></a>
+                        </div>
+                    <?php elseif ( 'hover_box_1' === $display_style ) : ?>
                         <a class="rdsco-archive-hover-link" href="<?php the_permalink(); ?>">
                             <?php if ( has_post_thumbnail() ) : ?>
                                 <?php echo get_the_post_thumbnail( $post_id, 'medium_large', [ 'loading' => 'lazy', 'class' => 'rdsco-archive-hover-image' ] ); ?>
@@ -189,7 +198,7 @@ final class Archive_Service {
                             </div>
                         </a>
                     <?php else : ?>
-                        <?php if ( in_array( $display_style, [ 'card', 'card_2', 'news_card', 'timeline' ], true ) ) : ?>
+                        <?php if ( in_array( $display_style, [ 'card', 'card_2', 'news_card' ], true ) ) : ?>
                             <a class="rdsco-archive-card-image" href="<?php the_permalink(); ?>" aria-label="<?php echo esc_attr( get_the_title() ); ?>">
                                 <?php if ( has_post_thumbnail() ) : ?>
                                     <?php echo get_the_post_thumbnail( $post_id, 'medium_large', [ 'loading' => 'lazy' ] ); ?>
