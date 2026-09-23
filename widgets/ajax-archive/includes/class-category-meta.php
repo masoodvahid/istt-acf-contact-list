@@ -179,7 +179,7 @@ final class Category_Meta {
         <?php
         $fields = self::get_filterable_acf_fields();
         if ( empty( $fields ) ) {
-            echo '<p class="description">فیلد انتخابی ACF برای نوشته‌ها یافت نشد. ابتدا فیلدی از نوع Select، Radio، Checkbox یا True/False بسازید.</p>';
+            echo '<p class="description">فیلد قابل فیلتر ACF یافت نشد. فیلدهای ساختاری مانند Repeater، Group و Flexible Content به فیلتر جداگانهٔ زیرفیلد نیاز دارند.</p>';
             return;
         }
         ?>
@@ -193,7 +193,7 @@ final class Category_Meta {
                 </label>
             <?php endforeach; ?>
         </fieldset>
-        <p class="description">حداکثر ۱۰ فیلد؛ فقط گزینه‌های تعریف‌شده در ACF قابل فیلتر هستند. برای نمایش ستون، «نمایش فیلترها» در ویجت نیز باید روشن باشد.</p>
+        <p class="description">تعداد فیلدهای مجاز این دسته محدود نیست؛ گزینه‌های هر فیلتر ۱۰ مورد در هر درخواست بارگذاری می‌شوند. فیلدهای ساختاری و محرمانه (مانند Repeater و Password) قابل فیلتر نیستند. «نمایش فیلترها» در ویجت باید روشن باشد.</p>
         <?php
     }
 
@@ -213,11 +213,23 @@ final class Category_Meta {
                 continue;
             }
             foreach ( (array) acf_get_fields( $group['key'] ) as $field ) {
-                if ( ! is_array( $field ) || ! in_array( $field['type'] ?? '', [ 'select', 'radio', 'checkbox', 'true_false' ], true ) ) {
+                if ( ! is_array( $field ) || in_array( $field['type'] ?? '', [ 'repeater', 'flexible_content', 'group', 'clone', 'tab', 'accordion', 'message', 'password', 'wysiwyg', 'google_map', 'gallery', 'relationship', 'link' ], true ) ) {
                     continue;
                 }
 
-                if ( empty( $field['key'] ) || empty( $field['name'] ) || empty( self::get_acf_filter_options( $field ) ) ) {
+                if ( empty( $field['key'] ) || empty( $field['name'] ) ) {
+                    continue;
+                }
+
+                if ( in_array( $field['type'] ?? '', [ 'post_object', 'taxonomy', 'user' ], true ) && ! empty( $field['multiple'] ) ) {
+                    continue;
+                }
+
+                if ( 'taxonomy' === ( $field['type'] ?? '' ) && in_array( $field['field_type'] ?? '', [ 'checkbox', 'multi_select' ], true ) ) {
+                    continue;
+                }
+
+                if ( ( 'checkbox' === ( $field['type'] ?? '' ) || ( 'select' === ( $field['type'] ?? '' ) && ! empty( $field['multiple'] ) ) ) && empty( self::get_acf_filter_options( $field ) ) ) {
                     continue;
                 }
 
@@ -252,7 +264,7 @@ final class Category_Meta {
 
     public static function get_selected_acf_field_keys( int $term_id ): array {
         $keys = get_term_meta( $term_id, self::ACF_FIELDS_META_KEY, true );
-        return is_array( $keys ) ? array_slice( array_values( array_filter( $keys, 'is_string' ) ), 0, 10 ) : [];
+        return is_array( $keys ) ? array_values( array_filter( $keys, 'is_string' ) ) : [];
     }
 
     public static function get_acf_filter_fields( int $term_id ): array {
@@ -341,9 +353,6 @@ final class Category_Meta {
         foreach ( $raw_keys as $key ) {
             if ( is_string( $key ) && isset( $available[ $key ] ) && ! in_array( $key, $selected, true ) ) {
                 $selected[] = $key;
-            }
-            if ( count( $selected ) >= 10 ) {
-                break;
             }
         }
         update_term_meta( $term_id, self::ACF_FIELDS_META_KEY, $selected );

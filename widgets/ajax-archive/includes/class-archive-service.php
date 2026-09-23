@@ -17,6 +17,8 @@ final class Archive_Service {
     public static function init(): void {
         add_action( 'wp_ajax_' . self::AJAX_ACTION, [ __CLASS__, 'ajax_fetch' ] );
         add_action( 'wp_ajax_nopriv_' . self::AJAX_ACTION, [ __CLASS__, 'ajax_fetch' ] );
+        add_action( 'wp_ajax_rdsco_archive_acf_options', [ __CLASS__, 'ajax_acf_options' ] );
+        add_action( 'wp_ajax_nopriv_rdsco_archive_acf_options', [ __CLASS__, 'ajax_acf_options' ] );
     }
 
     public static function get_current_category(): ?\WP_Term {
@@ -168,11 +170,113 @@ final class Archive_Service {
 
             $value   = (string) $raw[ $key ];
             $options = Category_Meta::get_acf_filter_options( $field );
-            if ( array_key_exists( $value, $options ) ) {
+            if ( array_key_exists( $value, $options ) || ( empty( $options ) && self::acf_value_exists( $term_id, $field, $value ) ) ) {
                 $filters[ $key ] = $value;
             }
         }
         return $filters;
+    }
+
+    private static function acf_scope_ids( int $term_id ): array {
+        $root = self::get_filter_root_id( $term_id ) ?: $term_id;
+        $children = get_term_children( $root, 'category' );
+        return array_merge( [ $root ], is_wp_error( $children ) ? [] : array_map( 'absint', $children ) );
+    }
+
+    private static function acf_value_exists( int $term_id, array $field, string $value ): bool {
+        if ( '' === $value || strlen( $value ) > 764 || is_serialized( $value ) ) {
+            return false;
+        }
+
+        global $wpdb;
+        $scope = self::acf_scope_ids( $term_id );
+        $terms = implode( ', ', array_fill( 0, count( $scope ), '%d' ) );
+        $sql = "SELECT 1 FROM {$wpdb->postmeta} pm
+            JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+            JOIN {$wpdb->term_relationships} tr ON tr.object_id = p.ID
+            JOIN {$wpdb->term_taxonomy} tt ON tt.term_taxonomy_id = tr.term_taxonomy_id
+            WHERE pm.meta_key = %s AND pm.meta_value = %s
+            AND p.post_type = 'post' AND p.post_status = 'publish'
+            AND tt.taxonomy = 'category' AND tt.term_id IN ($terms) LIMIT 1";
+
+        return (bool) $wpdb->get_var( $wpdb->prepare( $sql, array_merge( [ $field['name'], $value ], $scope ) ) );
+    }
+
+    public static function get_acf_option_page( int $term_id, array $field, int $page = 0, string $search = '' ): array {
+        $page   = max( 0, min( 10000, $page ) );
+        $search = trim( sanitize_text_field( $search ) );
+        $search = function_exists( 'mb_substr' ) ? mb_substr( $search, 0, 100 ) : substr( $search, 0, 100 );
+        $choices = Category_Meta::get_acf_filter_options( $field );
+        if ( ! empty( $choices ) ) {
+            if ( '' !== $search ) {
+                $choices = array_filter( $choices, static function ( $label, $value ) use ( $search ) {
+                    return false !== stripos( (string) $label, $search ) || false !== stripos( (string) $value, $search );
+                }, ARRAY_FILTER_USE_BOTH );
+            }
+            $options = array_slice( $choices, $page * 10, 10, true );
+            $rows = [];
+            foreach ( $options as $value => $label ) {
+                $rows[] = [ 'value' => (string) $value, 'label' => $label ];
+            }
+            return [ 'options' => $rows, 'hasMore' => count( $choices ) > ( $page + 1 ) * 10 ];
+        }
+
+        global $wpdb;
+        $scope = self::acf_scope_ids( $term_id );
+        $terms = implode( ', ', array_fill( 0, count( $scope ), '%d' ) );
+        $sql = "SELECT DISTINCT pm.meta_value FROM {$wpdb->postmeta} pm
+            JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+            JOIN {$wpdb->term_relationships} tr ON tr.object_id = p.ID
+            JOIN {$wpdb->term_taxonomy} tt ON tt.term_taxonomy_id = tr.term_taxonomy_id
+            WHERE pm.meta_key = %s AND pm.meta_value <> '' AND CHAR_LENGTH(pm.meta_value) <= 191
+            AND pm.meta_value NOT LIKE %s
+            AND p.post_type = 'post' AND p.post_status = 'publish'
+            AND tt.taxonomy = 'category' AND tt.term_id IN ($terms)";
+        $params = array_merge( [ $field['name'], 'a:%' ], $scope );
+        if ( '' !== $search ) {
+            $sql .= ' AND pm.meta_value LIKE %s';
+            $params[] = '%' . $wpdb->esc_like( $search ) . '%';
+        }
+        $sql .= ' ORDER BY pm.meta_value ASC LIMIT %d OFFSET %d';
+        $params[] = 10;
+        $params[] = $page * 10;
+        $values = (array) $wpdb->get_col( $wpdb->prepare( $sql, $params ) );
+        $rows = [];
+        foreach ( $values as $value ) {
+            if ( ! is_serialized( $value ) ) {
+                $rows[] = [ 'value' => $value, 'label' => self::acf_option_label( $field, $value ) ];
+            }
+        }
+        return [ 'options' => $rows, 'hasMore' => count( $values ) === 10 ];
+    }
+
+    private static function acf_option_label( array $field, string $value ): string {
+        $type = $field['type'] ?? '';
+        if ( in_array( $type, [ 'image', 'file', 'post_object' ], true ) && ctype_digit( $value ) ) {
+            return get_the_title( (int) $value ) ?: $value;
+        }
+        if ( 'user' === $type && ctype_digit( $value ) ) {
+            $user = get_userdata( (int) $value );
+            return $user ? $user->display_name : $value;
+        }
+        if ( 'taxonomy' === $type && ctype_digit( $value ) ) {
+            $term = get_term( (int) $value );
+            return $term && ! is_wp_error( $term ) ? $term->name : $value;
+        }
+        return $value;
+    }
+
+    public static function ajax_acf_options(): void {
+        check_ajax_referer( self::NONCE_ACTION, 'nonce' );
+        $term_id = isset( $_POST['root_id'] ) ? absint( $_POST['root_id'] ) : 0;
+        $key = isset( $_POST['field'] ) && is_string( $_POST['field'] ) ? sanitize_key( wp_unslash( $_POST['field'] ) ) : '';
+        $fields = Category_Meta::get_acf_filter_fields( $term_id );
+        if ( ! isset( $fields[ $key ] ) ) {
+            wp_send_json_error( [ 'message' => 'فیلتر مجاز نیست.' ], 403 );
+        }
+        $page = isset( $_POST['page'] ) ? absint( $_POST['page'] ) : 0;
+        $search = isset( $_POST['search'] ) && is_string( $_POST['search'] ) ? wp_unslash( $_POST['search'] ) : '';
+        wp_send_json_success( self::get_acf_option_page( $term_id, $fields[ $key ], $page, $search ) );
     }
 
     public static function render_posts( \WP_Query $query, array $settings ): string {
@@ -407,14 +511,20 @@ final class Archive_Service {
             <?php endif; ?>
 
             <?php foreach ( $acf_fields as $key => $field ) : ?>
+                <?php
+                $field_options = self::get_acf_option_page( $content_term_id, $field );
+                $select_id     = wp_unique_id( 'rdsco-acf-' );
+                ?>
                 <div class="rdsco-filter-group rdsco-acf-filter-group">
-                    <label class="rdsco-filter-group-title" for="rdsco-acf-<?php echo esc_attr( $content_term_id . '-' . $key ); ?>"><?php echo esc_html( $field['label'] ?: $field['name'] ); ?></label>
-                    <select class="rdsco-acf-filter-select" id="rdsco-acf-<?php echo esc_attr( $content_term_id . '-' . $key ); ?>" data-acf-field="<?php echo esc_attr( $key ); ?>">
+                    <label class="rdsco-filter-group-title" for="<?php echo esc_attr( $select_id ); ?>"><?php echo esc_html( $field['label'] ?: $field['name'] ); ?></label>
+                    <input type="search" class="rdsco-acf-option-search" placeholder="جستجو در گزینه‌ها…" aria-label="جستجو در گزینه‌های <?php echo esc_attr( $field['label'] ?: $field['name'] ); ?>" autocomplete="off">
+                    <select class="rdsco-acf-filter-select" id="<?php echo esc_attr( $select_id ); ?>" data-acf-field="<?php echo esc_attr( $key ); ?>">
                         <option value="">همه</option>
-                        <?php foreach ( Category_Meta::get_acf_filter_options( $field ) as $value => $label ) : ?>
-                            <option value="<?php echo esc_attr( $value ); ?>"><?php echo esc_html( $label ); ?></option>
+                        <?php foreach ( $field_options['options'] as $option ) : ?>
+                            <option value="<?php echo esc_attr( $option['value'] ); ?>"><?php echo esc_html( $option['label'] ); ?></option>
                         <?php endforeach; ?>
                     </select>
+                    <button type="button" class="rdsco-acf-more" data-acf-page="0" <?php echo $field_options['hasMore'] ? '' : 'hidden'; ?>>نمایش موارد بیشتر</button>
                 </div>
             <?php endforeach; ?>
 

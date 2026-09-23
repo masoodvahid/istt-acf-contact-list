@@ -150,10 +150,12 @@
     display: block;
 }
 
-.rdsco-acf-filter-select {
+.rdsco-acf-filter-select,
+.rdsco-acf-option-search {
     width: 100%;
     min-height: 42px;
     padding: 7px 12px;
+    margin: 0 0 7px;
     border: 1px solid var(--rdsco-border);
     border-radius: 8px;
     background: #fff;
@@ -163,9 +165,33 @@
     cursor: pointer;
 }
 
-.rdsco-acf-filter-select:focus-visible {
+.rdsco-acf-filter-select:focus-visible,
+.rdsco-acf-option-search:focus-visible {
     outline: 2px solid var(--rdsco-accent);
     outline-offset: 2px;
+}
+
+.rdsco-acf-option-search {
+    cursor: text;
+}
+
+.rdsco-acf-more {
+    padding: 4px 0;
+    border: 0;
+    background: transparent;
+    color: #078b89;
+    font: inherit;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.rdsco-acf-more[hidden] {
+    display: none !important;
+}
+
+.rdsco-acf-more:hover,
+.rdsco-acf-more:focus-visible {
+    text-decoration: underline;
 }
 
 @media (prefers-reduced-motion: reduce) {
