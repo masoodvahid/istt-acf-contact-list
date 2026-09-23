@@ -323,6 +323,206 @@
     background: linear-gradient(135deg, #f2f4f5, #e4eaec);
 }
 
+/* Card 2: a minimal, cropped featured image with a quiet text area. */
+.rdsco-archive-card.style-card_2 {
+    display: flex;
+    flex-direction: column;
+    border-radius: 14px;
+}
+
+.rdsco-archive-card.style-card_2 .rdsco-archive-card-image {
+    aspect-ratio: 4 / 3 !important;
+    background: #f5f7f8;
+}
+
+.rdsco-archive-card.style-card_2 .rdsco-archive-card-image img {
+    object-fit: cover;
+    background: transparent;
+}
+
+.rdsco-archive-card.style-card_2 .rdsco-archive-card-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 17px;
+}
+
+.rdsco-archive-card.style-card_2 .rdsco-archive-card-meta {
+    margin-bottom: 12px;
+}
+
+.rdsco-archive-card.style-card_2 .rdsco-archive-card-category {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 6px;
+    background: #eaf8f8;
+}
+
+.rdsco-archive-card.style-card_2 .rdsco-archive-card-title {
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.rdsco-archive-card.style-card_2 .rdsco-archive-card-excerpt {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+}
+
+.rdsco-archive-card.style-card_2 .rdsco-archive-card-more {
+    margin-top: auto;
+    padding-top: 10px;
+}
+
+/* Hover box 1: title remains legible; a teal gradient arrives on hover. */
+.rdsco-archive-card.style-hover_box_1 {
+    min-height: 260px;
+    border: 0;
+    border-radius: 14px;
+    background: var(--rdsco-dark);
+}
+
+.rdsco-archive-card.style-hover_box_1 .rdsco-archive-hover-link {
+    position: relative;
+    display: block;
+    min-height: 260px;
+    height: 100%;
+    overflow: hidden;
+    color: #fff;
+    text-decoration: none;
+}
+
+.rdsco-archive-card.style-hover_box_1 .rdsco-archive-hover-image,
+.rdsco-archive-card.style-hover_box_1 .rdsco-archive-hover-placeholder {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .4s ease;
+}
+
+.rdsco-archive-card.style-hover_box_1 .rdsco-archive-hover-placeholder {
+    background: #294a58;
+}
+
+.rdsco-archive-card.style-hover_box_1 .rdsco-archive-hover-link::before,
+.rdsco-archive-card.style-hover_box_1 .rdsco-archive-hover-link::after {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    content: '';
+    pointer-events: none;
+}
+
+.rdsco-archive-card.style-hover_box_1 .rdsco-archive-hover-link::before {
+    background: linear-gradient(180deg, rgba(3, 20, 38, .06) 10%, rgba(3, 20, 38, .85) 100%);
+}
+
+.rdsco-archive-card.style-hover_box_1 .rdsco-archive-hover-link::after {
+    opacity: 0;
+    background: linear-gradient(145deg, rgba(2, 182, 181, .04) 12%, rgba(2, 119, 132, .65) 58%, rgba(5, 29, 52, .94) 100%);
+    transition: opacity .3s ease;
+}
+
+.rdsco-archive-card.style-hover_box_1:hover .rdsco-archive-hover-link::after,
+.rdsco-archive-card.style-hover_box_1:focus-within .rdsco-archive-hover-link::after {
+    opacity: 1;
+}
+
+.rdsco-archive-card.style-hover_box_1:hover .rdsco-archive-hover-image,
+.rdsco-archive-card.style-hover_box_1:focus-within .rdsco-archive-hover-image {
+    transform: scale(1.05);
+}
+
+.rdsco-archive-card.style-hover_box_1 .rdsco-archive-hover-content {
+    position: absolute;
+    z-index: 2;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 7px;
+    padding: 20px;
+    text-align: right;
+    color: #fff;
+}
+
+.rdsco-archive-card.style-hover_box_1 .rdsco-archive-hover-category {
+    padding: 4px 9px;
+    border: 1px solid rgba(255, 255, 255, .35);
+    border-radius: 6px;
+    background: rgba(5, 29, 52, .28);
+    color: #fff;
+    font-size: 10px;
+    line-height: 1.6;
+}
+
+.rdsco-archive-card.style-hover_box_1 .rdsco-archive-hover-title {
+    display: -webkit-box;
+    overflow: hidden;
+    width: 100%;
+    margin: 0;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.75;
+}
+
+.rdsco-archive-card.style-hover_box_1 .rdsco-archive-hover-content time {
+    color: rgba(255, 255, 255, .83);
+    font-size: 10px;
+}
+
+.rdsco-archive-card.style-hover_box_1 .rdsco-archive-hover-excerpt {
+    display: -webkit-box;
+    overflow: hidden;
+    width: 100%;
+    max-height: 0;
+    opacity: 0;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    color: rgba(255, 255, 255, .91);
+    font-size: 11px;
+    line-height: 1.9;
+    transition: max-height .3s ease, opacity .3s ease;
+}
+
+.rdsco-archive-card.style-hover_box_1:hover .rdsco-archive-hover-excerpt,
+.rdsco-archive-card.style-hover_box_1:focus-within .rdsco-archive-hover-excerpt {
+    max-height: 3.8em;
+    opacity: 1;
+}
+
+.rdsco-archive-card.style-hover_box_1 .rdsco-archive-hover-link:focus-visible {
+    outline: 3px solid var(--rdsco-accent);
+    outline-offset: -3px;
+}
+
+@media (hover: none) {
+    .rdsco-archive-card.style-hover_box_1 .rdsco-archive-hover-excerpt {
+        max-height: 3.8em;
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rdsco-archive-card.style-hover_box_1 .rdsco-archive-hover-image,
+    .rdsco-archive-card.style-hover_box_1 .rdsco-archive-hover-link::after,
+    .rdsco-archive-card.style-hover_box_1 .rdsco-archive-hover-excerpt {
+        transition: none;
+    }
+}
+
 .rdsco-archive-card.style-icon,
 .rdsco-archive-card.style-featured_icon {
     display: grid;

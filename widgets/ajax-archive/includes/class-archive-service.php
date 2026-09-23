@@ -156,7 +156,7 @@ final class Archive_Service {
         $show_excerpt  = 'yes' === ( $settings['show_excerpt'] ?? 'yes' );
         $excerpt_words = max( 0, absint( $settings['excerpt_length'] ?? 18 ) );
         $display_style = $settings['display_style'] ?? 'card';
-        if ( ! in_array( $display_style, [ 'card', 'icon', 'featured_icon', 'icon_card_2' ], true ) ) {
+        if ( ! in_array( $display_style, [ 'card', 'card_2', 'icon', 'featured_icon', 'icon_card_2', 'hover_box_1' ], true ) ) {
             $display_style = 'card';
         }
         ?>
@@ -168,50 +168,72 @@ final class Archive_Service {
                 $has_featured_icon = in_array( $display_style, [ 'featured_icon', 'icon_card_2' ], true ) && has_post_thumbnail( $post_id );
                 ?>
                 <article class="rdsco-archive-card style-<?php echo esc_attr( $display_style ); ?>">
-                    <?php if ( 'card' === $display_style ) : ?>
-                        <a class="rdsco-archive-card-image" href="<?php the_permalink(); ?>" aria-label="<?php echo esc_attr( get_the_title() ); ?>">
+                    <?php if ( 'hover_box_1' === $display_style ) : ?>
+                        <a class="rdsco-archive-hover-link" href="<?php the_permalink(); ?>">
                             <?php if ( has_post_thumbnail() ) : ?>
-                                <?php echo get_the_post_thumbnail( $post_id, 'medium_large', [ 'loading' => 'lazy' ] ); ?>
+                                <?php echo get_the_post_thumbnail( $post_id, 'medium_large', [ 'loading' => 'lazy', 'class' => 'rdsco-archive-hover-image' ] ); ?>
                             <?php else : ?>
-                                <span class="rdsco-archive-no-image" aria-hidden="true"></span>
+                                <span class="rdsco-archive-hover-placeholder" aria-hidden="true"></span>
                             <?php endif; ?>
-                        </a>
-                    <?php else : ?>
-                        <a class="rdsco-archive-icon-media <?php echo $has_featured_icon ? 'has-image' : 'has-default-icon'; ?>" href="<?php the_permalink(); ?>" aria-label="<?php echo esc_attr( get_the_title() ); ?>">
-                            <?php if ( $has_featured_icon ) : ?>
-                                <?php echo get_the_post_thumbnail( $post_id, 'thumbnail', [ 'loading' => 'lazy' ] ); ?>
-                            <?php else : ?>
-                                <span class="dashicons dashicons-media-document" aria-hidden="true"></span>
-                            <?php endif; ?>
-                        </a>
-                    <?php endif; ?>
-
-                    <div class="rdsco-archive-card-content">
-                        <?php if ( $show_date || $show_category ) : ?>
-                            <div class="rdsco-archive-card-meta">
+                            <div class="rdsco-archive-hover-content">
                                 <?php if ( $show_category && ! empty( $categories ) ) : ?>
-                                    <span class="rdsco-archive-card-category"><?php echo esc_html( $categories[0]->name ); ?></span>
+                                    <span class="rdsco-archive-hover-category"><?php echo esc_html( $categories[0]->name ); ?></span>
                                 <?php endif; ?>
+                                <h3 class="rdsco-archive-hover-title"><?php echo esc_html( get_the_title() ); ?></h3>
                                 <?php if ( $show_date ) : ?>
                                     <time datetime="<?php echo esc_attr( get_the_date( DATE_W3C ) ); ?>"><?php echo esc_html( get_the_date() ); ?></time>
                                 <?php endif; ?>
+                                <?php if ( $show_excerpt && $excerpt_words > 0 ) : ?>
+                                    <span class="rdsco-archive-hover-excerpt"><?php echo esc_html( wp_trim_words( get_the_excerpt(), $excerpt_words, '…' ) ); ?></span>
+                                <?php endif; ?>
                             </div>
-                        <?php endif; ?>
-
-                        <h3 class="rdsco-archive-card-title">
-                            <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
-                        </h3>
-
-                        <?php if ( $show_excerpt && $excerpt_words > 0 ) : ?>
-                            <div class="rdsco-archive-card-excerpt">
-                                <?php echo esc_html( wp_trim_words( get_the_excerpt(), $excerpt_words, '…' ) ); ?>
-                            </div>
-                        <?php endif; ?>
-
-                        <a class="rdsco-archive-card-more" href="<?php the_permalink(); ?>">
-                            مشاهده مطلب <span aria-hidden="true">←</span>
                         </a>
-                    </div>
+                    <?php else : ?>
+                        <?php if ( in_array( $display_style, [ 'card', 'card_2' ], true ) ) : ?>
+                            <a class="rdsco-archive-card-image" href="<?php the_permalink(); ?>" aria-label="<?php echo esc_attr( get_the_title() ); ?>">
+                                <?php if ( has_post_thumbnail() ) : ?>
+                                    <?php echo get_the_post_thumbnail( $post_id, 'medium_large', [ 'loading' => 'lazy' ] ); ?>
+                                <?php else : ?>
+                                    <span class="rdsco-archive-no-image" aria-hidden="true"></span>
+                                <?php endif; ?>
+                            </a>
+                        <?php else : ?>
+                            <a class="rdsco-archive-icon-media <?php echo $has_featured_icon ? 'has-image' : 'has-default-icon'; ?>" href="<?php the_permalink(); ?>" aria-label="<?php echo esc_attr( get_the_title() ); ?>">
+                                <?php if ( $has_featured_icon ) : ?>
+                                    <?php echo get_the_post_thumbnail( $post_id, 'thumbnail', [ 'loading' => 'lazy' ] ); ?>
+                                <?php else : ?>
+                                    <span class="dashicons dashicons-media-document" aria-hidden="true"></span>
+                                <?php endif; ?>
+                            </a>
+                        <?php endif; ?>
+
+                        <div class="rdsco-archive-card-content">
+                            <?php if ( $show_date || $show_category ) : ?>
+                                <div class="rdsco-archive-card-meta">
+                                    <?php if ( $show_category && ! empty( $categories ) ) : ?>
+                                        <span class="rdsco-archive-card-category"><?php echo esc_html( $categories[0]->name ); ?></span>
+                                    <?php endif; ?>
+                                    <?php if ( $show_date ) : ?>
+                                        <time datetime="<?php echo esc_attr( get_the_date( DATE_W3C ) ); ?>"><?php echo esc_html( get_the_date() ); ?></time>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <h3 class="rdsco-archive-card-title">
+                                <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                            </h3>
+
+                            <?php if ( $show_excerpt && $excerpt_words > 0 ) : ?>
+                                <div class="rdsco-archive-card-excerpt">
+                                    <?php echo esc_html( wp_trim_words( get_the_excerpt(), $excerpt_words, '…' ) ); ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <a class="rdsco-archive-card-more" href="<?php the_permalink(); ?>">
+                                مشاهده مطلب <span aria-hidden="true">←</span>
+                            </a>
+                        </div>
+                    <?php endif; ?>
                 </article>
             <?php endwhile; ?>
         </div>
@@ -347,7 +369,7 @@ final class Archive_Service {
 
     private static function sanitize_settings( array $raw ): array {
         $display_style = $raw['display_style'] ?? 'card';
-        if ( ! in_array( $display_style, [ 'card', 'icon', 'featured_icon', 'icon_card_2' ], true ) ) {
+        if ( ! in_array( $display_style, [ 'card', 'card_2', 'icon', 'featured_icon', 'icon_card_2', 'hover_box_1' ], true ) ) {
             $display_style = 'card';
         }
 

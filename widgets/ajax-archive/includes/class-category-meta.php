@@ -158,10 +158,12 @@ final class Category_Meta {
 
     private static function render_display_style_select( string $selected_style ): void {
         $styles = [
-            'card'           => 'کارت (حالت فعلی)',
-            'icon'           => 'آیکن باکس',
-            'featured_icon'  => 'آیکن باکس با تصویر شاخص',
-            'icon_card_2'    => 'کارت آیکن ۲',
+            'card'           => 'کارت ۱',
+            'card_2'         => 'کارت ۲',
+            'icon'           => 'آیکن باکس ۱',
+            'featured_icon'  => 'آیکن باکس ۲',
+            'icon_card_2'    => 'آیکن باکس ۳',
+            'hover_box_1'    => 'هاور باکس ۱',
         ];
         ?>
         <select name="rdsco_archive_display_style" id="rdsco_archive_display_style">
@@ -208,7 +210,7 @@ final class Category_Meta {
             ? sanitize_key( wp_unslash( $_POST['rdsco_archive_display_style'] ) )
             : 'card';
 
-        if ( ! in_array( $display_style, [ 'card', 'icon', 'featured_icon', 'icon_card_2' ], true ) ) {
+        if ( ! in_array( $display_style, [ 'card', 'card_2', 'icon', 'featured_icon', 'icon_card_2', 'hover_box_1' ], true ) ) {
             $display_style = 'card';
         }
 
@@ -252,7 +254,7 @@ final class Category_Meta {
     public static function get_display_style( int $term_id ): string {
         $style = sanitize_key( (string) get_term_meta( $term_id, self::DISPLAY_STYLE_META_KEY, true ) );
 
-        return in_array( $style, [ 'card', 'icon', 'featured_icon', 'icon_card_2' ], true ) ? $style : 'card';
+        return in_array( $style, [ 'card', 'card_2', 'icon', 'featured_icon', 'icon_card_2', 'hover_box_1' ], true ) ? $style : 'card';
     }
 
     public static function should_show_tags( int $term_id ): bool {
