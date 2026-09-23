@@ -318,7 +318,7 @@
     align-items: start;
     gap: 14px;
     min-height: 150px;
-    padding: 17px;
+    padding: 10px;
 }
 
 .rdsco-archive-icon-media {
@@ -329,7 +329,7 @@
     justify-content: center;
     overflow: hidden;
     border: 1px solid rgba(2, 182, 181, .16);
-    border-radius: 15px;
+    border-radius: 10px;
     background: #edf8f8;
     color: #078e8d;
     text-decoration: none;
@@ -352,7 +352,6 @@
     width: 100%;
     height: 100%;
     display: block;
-    padding: 7px;
     object-fit: contain;
     background: #fff;
     box-sizing: border-box;
@@ -392,6 +391,96 @@
     margin-bottom: 8px;
     font-size: 10px;
     line-height: 1.8;
+}
+
+/* Second icon card: text on the right and a bare featured image on the left. */
+.rdsco-archive-card.style-icon_card_2 {
+    position: relative;
+    display: flex;
+    min-height: 246px;
+    padding: 18px;
+    align-items: stretch;
+}
+
+.rdsco-archive-card.style-icon_card_2 .rdsco-archive-icon-media {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    width: 90px;
+    height: 90px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    transform: translateY(-50%);
+}
+
+.rdsco-archive-card.style-icon_card_2 .rdsco-archive-icon-media img {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    object-fit: contain;
+}
+
+.rdsco-archive-card.style-icon_card_2 .rdsco-archive-icon-media.has-default-icon {
+    color: var(--rdsco-accent);
+}
+
+.rdsco-archive-card.style-icon_card_2:hover .rdsco-archive-icon-media {
+    border: 0;
+    background: transparent;
+    transform: translateY(-50%);
+}
+
+.rdsco-archive-card.style-icon_card_2 .rdsco-archive-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    min-width: 0;
+    padding: 0 0 0 102px;
+    text-align: right;
+}
+
+.rdsco-archive-card.style-icon_card_2 .rdsco-archive-card-meta {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 7px;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.rdsco-archive-card.style-icon_card_2 .rdsco-archive-card-category {
+    display: inline-block;
+    max-width: 100%;
+    padding: 4px 9px;
+    border-radius: 7px;
+    background: #eaf8f8;
+    color: #087b7b;
+    line-height: 1.5;
+}
+
+.rdsco-archive-card.style-icon_card_2 .rdsco-archive-card-title {
+    width: 100%;
+    margin: 0 0 8px;
+    color: var(--rdsco-dark);
+    font-size: 15px;
+    line-height: 1.85;
+}
+
+.rdsco-archive-card.style-icon_card_2 .rdsco-archive-card-excerpt {
+    width: 100%;
+    margin: 0 0 10px;
+    color: #84949b;
+    font-size: 11px;
+    line-height: 1.9;
+}
+
+.rdsco-archive-card.style-icon_card_2 .rdsco-archive-card-more {
+    margin-top: auto;
+    padding-top: 12px;
+    font-size: 11px;
 }
 
 .rdsco-archive-card-content {
@@ -636,12 +725,28 @@
         grid-template-columns: 58px minmax(0, 1fr);
         gap: 12px;
         min-height: 0;
-        padding: 14px;
+        padding: 10px;
     }
 
     .rdsco-archive-icon-media {
         width: 58px;
         height: 58px;
-        border-radius: 13px;
+        border-radius: 10px;
+    }
+
+    .rdsco-archive-card.style-icon_card_2 {
+        min-height: 210px;
+        padding: 14px;
+    }
+
+    .rdsco-archive-card.style-icon_card_2 .rdsco-archive-icon-media {
+        left: 12px;
+        width: 72px;
+        height: 72px;
+        border-radius: 0;
+    }
+
+    .rdsco-archive-card.style-icon_card_2 .rdsco-archive-card-content {
+        padding-left: 82px;
     }
 }

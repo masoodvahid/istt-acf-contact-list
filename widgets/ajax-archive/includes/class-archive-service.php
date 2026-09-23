@@ -156,16 +156,16 @@ final class Archive_Service {
         $show_excerpt  = 'yes' === ( $settings['show_excerpt'] ?? 'yes' );
         $excerpt_words = max( 0, absint( $settings['excerpt_length'] ?? 18 ) );
         $display_style = $settings['display_style'] ?? 'card';
-        if ( ! in_array( $display_style, [ 'card', 'icon', 'featured_icon' ], true ) ) {
+        if ( ! in_array( $display_style, [ 'card', 'icon', 'featured_icon', 'icon_card_2' ], true ) ) {
             $display_style = 'card';
         }
         ?>
         <div class="rdsco-archive-grid style-<?php echo esc_attr( $display_style ); ?>">
             <?php while ( $query->have_posts() ) : $query->the_post(); ?>
                 <?php
-                $post_id          = get_the_ID();
-                $categories       = get_the_category( $post_id );
-                $has_featured_icon = 'featured_icon' === $display_style && has_post_thumbnail( $post_id );
+                $post_id           = get_the_ID();
+                $categories        = get_the_category( $post_id );
+                $has_featured_icon = in_array( $display_style, [ 'featured_icon', 'icon_card_2' ], true ) && has_post_thumbnail( $post_id );
                 ?>
                 <article class="rdsco-archive-card style-<?php echo esc_attr( $display_style ); ?>">
                     <?php if ( 'card' === $display_style ) : ?>
@@ -347,7 +347,7 @@ final class Archive_Service {
 
     private static function sanitize_settings( array $raw ): array {
         $display_style = $raw['display_style'] ?? 'card';
-        if ( ! in_array( $display_style, [ 'card', 'icon', 'featured_icon' ], true ) ) {
+        if ( ! in_array( $display_style, [ 'card', 'icon', 'featured_icon', 'icon_card_2' ], true ) ) {
             $display_style = 'card';
         }
 
