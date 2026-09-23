@@ -111,11 +111,22 @@
             Array.from(incomingGrid.children).forEach((card) => currentGrid.appendChild(card));
         }
 
+        function makeAcfOption(value, label, selected) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'rdsco-acf-option' + (selected ? ' is-active' : '');
+            button.dataset.acfValue = value;
+            button.setAttribute('aria-pressed', selected ? 'true' : 'false');
+            button.textContent = label;
+            return button;
+        }
+
         async function fetchAcfOptions(group, reset) {
-            const select = group.querySelector('.rdsco-acf-filter-select');
+            const options = group.querySelector('.rdsco-acf-option-results');
             const search = group.querySelector('.rdsco-acf-option-search');
             const more = group.querySelector('.rdsco-acf-more');
-            if (!select || !more) {
+            const key = group.dataset.acfField;
+            if (!options || !more || !key) {
                 return;
             }
 
@@ -128,7 +139,7 @@
             body.append('action', 'rdsco_archive_acf_options');
             body.append('nonce', wrapper.dataset.nonce || '');
             body.append('root_id', String(state.rootId));
-            body.append('field', select.dataset.acfField || '');
+            body.append('field', key);
             body.append('page', String(page));
             body.append('search', search ? search.value.trim() : '');
 
@@ -141,21 +152,22 @@
                     return;
                 }
 
-                const selected = state.acfFilters[select.dataset.acfField] || '';
-                const selectedLabel = select.selectedOptions[0] ? select.selectedOptions[0].textContent : selected;
+                const selected = state.acfFilters[key] || '';
+                const selectedButton = Array.from(options.children).find(button => button.dataset.acfValue === selected);
+                const selectedLabel = selectedButton ? selectedButton.textContent : selected;
                 if (reset) {
-                    select.replaceChildren(new Option('همه', ''));
+                    options.replaceChildren();
                 }
 
                 (payload.data.options || []).forEach(function (item) {
-                    if (!Array.from(select.options).some(option => option.value === String(item.value))) {
-                        select.add(new Option(item.label, String(item.value)));
+                    const value = String(item.value);
+                    if (!Array.from(options.children).some(button => button.dataset.acfValue === value)) {
+                        options.appendChild(makeAcfOption(value, String(item.label), value === selected));
                     }
                 });
-                if (selected && !Array.from(select.options).some(option => option.value === selected)) {
-                    select.add(new Option(selectedLabel, selected));
+                if (selected && !Array.from(options.children).some(button => button.dataset.acfValue === selected)) {
+                    options.prepend(makeAcfOption(selected, selectedLabel, true));
                 }
-                select.value = selected;
                 more.dataset.acfPage = String(page);
                 more.hidden = !payload.data.hasMore;
             } catch (error) {
@@ -246,6 +258,33 @@
         }
 
         wrapper.addEventListener('click', function (event) {
+            const acfOption = event.target.closest('.rdsco-acf-option');
+            if (acfOption && wrapper.contains(acfOption)) {
+                event.preventDefault();
+                const group = acfOption.closest('.rdsco-acf-filter-group');
+                const key = group && group.dataset.acfField;
+                if (!key) {
+                    return;
+                }
+
+                const value = acfOption.dataset.acfValue || '';
+                const nextValue = state.acfFilters[key] === value ? '' : value;
+                if (nextValue) {
+                    state.acfFilters[key] = nextValue;
+                } else {
+                    delete state.acfFilters[key];
+                }
+
+                group.querySelectorAll('.rdsco-acf-option').forEach(function (button) {
+                    const active = button.dataset.acfValue === nextValue;
+                    button.classList.toggle('is-active', active);
+                    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+                });
+                state.page = 1;
+                fetchArchive(1, false);
+                return;
+            }
+
             const acfMore = event.target.closest('.rdsco-acf-more');
             if (acfMore) {
                 event.preventDefault();
@@ -306,32 +345,13 @@
             }
         });
 
-        wrapper.addEventListener('change', function (event) {
-            const select = event.target.closest('.rdsco-acf-filter-select');
-            if (!select || !wrapper.contains(select)) {
-                return;
-            }
-
-            const key = select.dataset.acfField;
-            if (!key) {
-                return;
-            }
-
-            if (select.value === '') {
-                delete state.acfFilters[key];
-            } else {
-                state.acfFilters[key] = select.value;
-            }
-            state.page = 1;
-            fetchArchive(1, false);
-        });
-
         wrapper.addEventListener('input', function (event) {
             const search = event.target.closest('.rdsco-acf-option-search');
             if (!search) {
                 return;
             }
             const group = search.closest('.rdsco-acf-filter-group');
+            group.dataset.acfRequest = String(parseInt(group.dataset.acfRequest || '0', 10) + 1);
             window.clearTimeout(group.rdscoSearchTimer);
             group.rdscoSearchTimer = window.setTimeout(function () {
                 fetchAcfOptions(group, true);

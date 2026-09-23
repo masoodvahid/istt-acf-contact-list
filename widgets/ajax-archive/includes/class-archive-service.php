@@ -513,17 +513,19 @@ final class Archive_Service {
             <?php foreach ( $acf_fields as $key => $field ) : ?>
                 <?php
                 $field_options = self::get_acf_option_page( $content_term_id, $field );
-                $select_id     = wp_unique_id( 'rdsco-acf-' );
+                $group_id      = wp_unique_id( 'rdsco-acf-' );
                 ?>
-                <div class="rdsco-filter-group rdsco-acf-filter-group">
-                    <label class="rdsco-filter-group-title" for="<?php echo esc_attr( $select_id ); ?>"><?php echo esc_html( $field['label'] ?: $field['name'] ); ?></label>
+                <div class="rdsco-filter-group rdsco-acf-filter-group" data-acf-field="<?php echo esc_attr( $key ); ?>">
+                    <div class="rdsco-filter-group-title" id="<?php echo esc_attr( $group_id ); ?>"><?php echo esc_html( $field['label'] ?: $field['name'] ); ?></div>
                     <input type="search" class="rdsco-acf-option-search" placeholder="جستجو در گزینه‌ها…" aria-label="جستجو در گزینه‌های <?php echo esc_attr( $field['label'] ?: $field['name'] ); ?>" autocomplete="off">
-                    <select class="rdsco-acf-filter-select" id="<?php echo esc_attr( $select_id ); ?>" data-acf-field="<?php echo esc_attr( $key ); ?>">
-                        <option value="">همه</option>
-                        <?php foreach ( $field_options['options'] as $option ) : ?>
-                            <option value="<?php echo esc_attr( $option['value'] ); ?>"><?php echo esc_html( $option['label'] ); ?></option>
-                        <?php endforeach; ?>
-                    </select>
+                    <div class="rdsco-acf-option-list" role="group" aria-labelledby="<?php echo esc_attr( $group_id ); ?>">
+                        <button type="button" class="rdsco-acf-option is-active" data-acf-value="" aria-pressed="true">همه</button>
+                        <div class="rdsco-acf-option-results">
+                            <?php foreach ( $field_options['options'] as $option ) : ?>
+                                <button type="button" class="rdsco-acf-option" data-acf-value="<?php echo esc_attr( $option['value'] ); ?>" aria-pressed="false"><?php echo esc_html( $option['label'] ); ?></button>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
                     <button type="button" class="rdsco-acf-more" data-acf-page="0" <?php echo $field_options['hasMore'] ? '' : 'hidden'; ?>>نمایش موارد بیشتر</button>
                 </div>
             <?php endforeach; ?>
