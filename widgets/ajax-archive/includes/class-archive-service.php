@@ -155,21 +155,36 @@ final class Archive_Service {
         $show_category = 'yes' === ( $settings['show_category'] ?? 'yes' );
         $show_excerpt  = 'yes' === ( $settings['show_excerpt'] ?? 'yes' );
         $excerpt_words = max( 0, absint( $settings['excerpt_length'] ?? 18 ) );
+        $display_style = $settings['display_style'] ?? 'card';
+        if ( ! in_array( $display_style, [ 'card', 'icon', 'featured_icon' ], true ) ) {
+            $display_style = 'card';
+        }
         ?>
-        <div class="rdsco-archive-grid">
+        <div class="rdsco-archive-grid style-<?php echo esc_attr( $display_style ); ?>">
             <?php while ( $query->have_posts() ) : $query->the_post(); ?>
                 <?php
-                $post_id    = get_the_ID();
-                $categories = get_the_category( $post_id );
+                $post_id          = get_the_ID();
+                $categories       = get_the_category( $post_id );
+                $has_featured_icon = 'featured_icon' === $display_style && has_post_thumbnail( $post_id );
                 ?>
-                <article class="rdsco-archive-card">
-                    <a class="rdsco-archive-card-image" href="<?php the_permalink(); ?>" aria-label="<?php echo esc_attr( get_the_title() ); ?>">
-                        <?php if ( has_post_thumbnail() ) : ?>
-                            <?php echo get_the_post_thumbnail( $post_id, 'medium_large', [ 'loading' => 'lazy' ] ); ?>
-                        <?php else : ?>
-                            <span class="rdsco-archive-no-image" aria-hidden="true"></span>
-                        <?php endif; ?>
-                    </a>
+                <article class="rdsco-archive-card style-<?php echo esc_attr( $display_style ); ?>">
+                    <?php if ( 'card' === $display_style ) : ?>
+                        <a class="rdsco-archive-card-image" href="<?php the_permalink(); ?>" aria-label="<?php echo esc_attr( get_the_title() ); ?>">
+                            <?php if ( has_post_thumbnail() ) : ?>
+                                <?php echo get_the_post_thumbnail( $post_id, 'medium_large', [ 'loading' => 'lazy' ] ); ?>
+                            <?php else : ?>
+                                <span class="rdsco-archive-no-image" aria-hidden="true"></span>
+                            <?php endif; ?>
+                        </a>
+                    <?php else : ?>
+                        <a class="rdsco-archive-icon-media <?php echo $has_featured_icon ? 'has-image' : 'has-default-icon'; ?>" href="<?php the_permalink(); ?>" aria-label="<?php echo esc_attr( get_the_title() ); ?>">
+                            <?php if ( $has_featured_icon ) : ?>
+                                <?php echo get_the_post_thumbnail( $post_id, 'thumbnail', [ 'loading' => 'lazy' ] ); ?>
+                            <?php else : ?>
+                                <span class="dashicons dashicons-media-document" aria-hidden="true"></span>
+                            <?php endif; ?>
+                        </a>
+                    <?php endif; ?>
 
                     <div class="rdsco-archive-card-content">
                         <?php if ( $show_date || $show_category ) : ?>
@@ -248,6 +263,23 @@ final class Archive_Service {
         return (string) ob_get_clean();
     }
 
+    public static function render_tag_filters( array $tags, int $active_tag = 0 ): string {
+        if ( empty( $tags ) ) {
+            return '';
+        }
+
+        ob_start();
+        ?>
+        <div class="rdsco-archive-tags" aria-label="فیلتر مطالب بر اساس تگ">
+            <button type="button" class="rdsco-archive-tag <?php echo 0 === $active_tag ? 'is-active' : ''; ?>" data-tag="0" aria-pressed="<?php echo 0 === $active_tag ? 'true' : 'false'; ?>">همه</button>
+            <?php foreach ( $tags as $tag ) : ?>
+                <button type="button" class="rdsco-archive-tag <?php echo (int) $tag->term_id === $active_tag ? 'is-active' : ''; ?>" data-tag="<?php echo esc_attr( $tag->term_id ); ?>" aria-pressed="<?php echo (int) $tag->term_id === $active_tag ? 'true' : 'false'; ?>"><?php echo esc_html( $tag->name ); ?></button>
+            <?php endforeach; ?>
+        </div>
+        <?php
+        return (string) ob_get_clean();
+    }
+
     public static function render_filter_sidebar( int $filter_root_id, int $selected_category_id, int $content_term_id, array $settings ): string {
         if ( ! $filter_root_id || 'yes' !== ( $settings['show_filters'] ?? 'yes' ) ) {
             return '';
@@ -257,13 +289,9 @@ final class Archive_Service {
             ? self::get_child_categories( $filter_root_id )
             : [];
 
-        $tags = 'yes' === ( $settings['show_tags'] ?? 'yes' )
-            ? self::get_category_tags( $filter_root_id )
-            : [];
-
         $sidebar_html = Category_Meta::get_sidebar_html( $content_term_id );
 
-        if ( empty( $children ) && empty( $tags ) && '' === trim( $sidebar_html ) ) {
+        if ( empty( $children ) && '' === trim( $sidebar_html ) ) {
             return '';
         }
 
@@ -307,18 +335,6 @@ final class Archive_Service {
                 </div>
             <?php endif; ?>
 
-            <?php if ( ! empty( $tags ) ) : ?>
-                <div class="rdsco-filter-group">
-                    <div class="rdsco-filter-group-title">برچسب‌ها</div>
-                    <div class="rdsco-filter-list">
-                        <button type="button" class="rdsco-filter-item is-tag is-active" data-tag="0">همه</button>
-                        <?php foreach ( $tags as $tag ) : ?>
-                            <button type="button" class="rdsco-filter-item is-tag" data-tag="<?php echo esc_attr( $tag->term_id ); ?>"><?php echo esc_html( $tag->name ); ?></button>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-            <?php endif; ?>
-
             <?php if ( '' !== trim( $sidebar_html ) ) : ?>
                 <div class="rdsco-archive-sidebar-html">
                     <?php echo $sidebar_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
@@ -330,6 +346,11 @@ final class Archive_Service {
     }
 
     private static function sanitize_settings( array $raw ): array {
+        $display_style = $raw['display_style'] ?? 'card';
+        if ( ! in_array( $display_style, [ 'card', 'icon', 'featured_icon' ], true ) ) {
+            $display_style = 'card';
+        }
+
         return [
             'per_page'             => max( 1, min( 48, absint( $raw['per_page'] ?? 16 ) ) ),
             'show_date'            => ( 'yes' === ( $raw['show_date'] ?? 'yes' ) ) ? 'yes' : 'no',
@@ -340,6 +361,7 @@ final class Archive_Service {
             'show_filters'         => ( 'yes' === ( $raw['show_filters'] ?? 'yes' ) ) ? 'yes' : 'no',
             'show_subcategories'   => ( 'yes' === ( $raw['show_subcategories'] ?? 'yes' ) ) ? 'yes' : 'no',
             'show_tags'            => ( 'yes' === ( $raw['show_tags'] ?? 'yes' ) ) ? 'yes' : 'no',
+            'display_style'        => $display_style,
             'show_category_images' => ( 'yes' === ( $raw['show_category_images'] ?? 'yes' ) ) ? 'yes' : 'no',
             'show_pagination'      => ( 'yes' === ( $raw['show_pagination'] ?? 'yes' ) ) ? 'yes' : 'no',
             'show_load_more'       => ( 'yes' === ( $raw['show_load_more'] ?? 'yes' ) ) ? 'yes' : 'no',
@@ -365,6 +387,9 @@ final class Archive_Service {
             wp_send_json_error( [ 'message' => 'Invalid archive category.' ], 400 );
         }
 
+        $settings['display_style'] = Category_Meta::get_display_style( $root_id );
+        $settings['show_tags']     = Category_Meta::should_show_tags( $root_id ) ? 'yes' : 'no';
+
         if ( $filter_root ) {
             $expected_filter_root = self::get_filter_root_id( $root_id );
             if ( $expected_filter_root !== $filter_root ) {
@@ -385,14 +410,15 @@ final class Archive_Service {
             }
         }
 
-        if ( $tag_id ) {
-            $tag_term = get_term( $tag_id, 'post_tag' );
-            if ( ! $tag_term || is_wp_error( $tag_term ) ) {
-                $tag_id = 0;
-            }
+        $query_root = $filter_root ?: $root_id;
+        $tag_scope  = $category_id ?: $query_root;
+        $tags       = 'yes' === $settings['show_tags'] ? self::get_category_tags( $tag_scope ) : [];
+        $tag_ids    = array_map( 'intval', wp_list_pluck( $tags, 'term_id' ) );
+
+        if ( $tag_id && ! in_array( $tag_id, $tag_ids, true ) ) {
+            $tag_id = 0;
         }
 
-        $query_root = $filter_root ?: $root_id;
         $query      = self::query(
             [
                 'root_id'     => $query_root,
@@ -412,6 +438,8 @@ final class Archive_Service {
                 'maxPages'   => (int) $query->max_num_pages,
                 'total'      => number_format_i18n( $query->found_posts ),
                 'totalRaw'   => (int) $query->found_posts,
+                'tagsHtml'   => self::render_tag_filters( $tags, $tag_id ),
+                'activeTag'  => $tag_id,
             ]
         );
     }

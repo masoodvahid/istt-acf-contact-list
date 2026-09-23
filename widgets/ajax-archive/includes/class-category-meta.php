@@ -15,6 +15,8 @@ final class Category_Meta {
     public const IMAGE_META_KEY         = '_rdsco_category_image_id';
     public const TOP_HTML_META_KEY      = '_rdsco_archive_top_html';
     public const SIDEBAR_HTML_META_KEY  = '_rdsco_archive_sidebar_html';
+    public const DISPLAY_STYLE_META_KEY = '_rdsco_archive_display_style';
+    public const SHOW_TAGS_META_KEY     = '_rdsco_archive_show_tags';
     public const LEGACY_FILTER_META_KEY = '_istt_has_filter';
     public const LEGACY_IMAGE_META_KEY  = '_istt_category_image_id';
     public const NONCE_ACTION    = 'rdsco_category_meta_action';
@@ -47,6 +49,20 @@ final class Category_Meta {
         </div>
 
         <div class="form-field">
+            <label for="rdsco_archive_display_style">استایل نمایش دسته‌بندی</label>
+            <?php self::render_display_style_select( 'card' ); ?>
+            <p class="description">نوع نمایش نوشته‌های این دسته در ویجت آرشیو را تعیین می‌کند.</p>
+        </div>
+
+        <div class="form-field">
+            <label for="rdsco_archive_show_tags">نمایش تگ‌ها در لاین بالا</label>
+            <label style="display:flex;align-items:center;gap:8px;">
+                <input type="checkbox" name="rdsco_archive_show_tags" id="rdsco_archive_show_tags" value="1" checked>
+                نمایش کلیدهای تگ زیر باکس جستجو
+            </label>
+        </div>
+
+        <div class="form-field">
             <label for="rdsco_archive_top_html">کد بالای صفحه (فقط HTML)</label>
             <textarea name="rdsco_archive_top_html" id="rdsco_archive_top_html" rows="7"></textarea>
             <p class="description">در بالای ویجت آرشیو این دسته نمایش داده می‌شود. PHP، JavaScript و شورت‌کد اجرا نمی‌شوند.</p>
@@ -61,9 +77,11 @@ final class Category_Meta {
     }
 
     public static function render_edit_fields( \WP_Term $term ): void {
-        $has_filter  = self::has_filter( $term->term_id ) ? '1' : '';
-        $image_id    = self::get_image_id( $term->term_id );
-        $top_html    = self::get_top_html( $term->term_id );
+        $has_filter   = self::has_filter( $term->term_id ) ? '1' : '';
+        $image_id     = self::get_image_id( $term->term_id );
+        $display_style = self::get_display_style( $term->term_id );
+        $show_tags    = self::should_show_tags( $term->term_id );
+        $top_html     = self::get_top_html( $term->term_id );
         $sidebar_html = self::get_sidebar_html( $term->term_id );
 
         wp_nonce_field( self::NONCE_ACTION, self::NONCE_NAME );
@@ -81,6 +99,25 @@ final class Category_Meta {
         <tr class="form-field">
             <th scope="row"><label>تصویر دسته</label></th>
             <td><?php self::render_image_picker( $image_id ); ?></td>
+        </tr>
+
+        <tr class="form-field">
+            <th scope="row"><label for="rdsco_archive_display_style">استایل نمایش دسته‌بندی</label></th>
+            <td>
+                <?php self::render_display_style_select( $display_style ); ?>
+                <p class="description">نوع نمایش نوشته‌های این دسته در ویجت آرشیو را تعیین می‌کند.</p>
+            </td>
+        </tr>
+
+        <tr class="form-field">
+            <th scope="row"><label for="rdsco_archive_show_tags">نمایش تگ‌ها در لاین بالا</label></th>
+            <td>
+                <label style="display:flex;align-items:center;gap:8px;">
+                    <input type="checkbox" name="rdsco_archive_show_tags" id="rdsco_archive_show_tags" value="1" <?php checked( $show_tags ); ?>>
+                    نمایش کلیدهای تگ زیر باکس جستجو
+                </label>
+                <p class="description">این گزینه به‌صورت پیش‌فرض فعال است.</p>
+            </td>
         </tr>
 
         <tr class="form-field">
@@ -119,6 +156,21 @@ final class Category_Meta {
         <?php
     }
 
+    private static function render_display_style_select( string $selected_style ): void {
+        $styles = [
+            'card'           => 'کارت (حالت فعلی)',
+            'icon'           => 'آیکن باکس',
+            'featured_icon'  => 'آیکن باکس با تصویر شاخص',
+        ];
+        ?>
+        <select name="rdsco_archive_display_style" id="rdsco_archive_display_style">
+            <?php foreach ( $styles as $value => $label ) : ?>
+                <option value="<?php echo esc_attr( $value ); ?>" <?php selected( $selected_style, $value ); ?>><?php echo esc_html( $label ); ?></option>
+            <?php endforeach; ?>
+        </select>
+        <?php
+    }
+
     public static function save( int $term_id ): void {
         if ( ! isset( $_POST[ self::NONCE_NAME ] ) ) {
             return;
@@ -150,6 +202,17 @@ final class Category_Meta {
             delete_term_meta( $term_id, self::IMAGE_META_KEY );
             delete_term_meta( $term_id, self::LEGACY_IMAGE_META_KEY );
         }
+
+        $display_style = isset( $_POST['rdsco_archive_display_style'] )
+            ? sanitize_key( wp_unslash( $_POST['rdsco_archive_display_style'] ) )
+            : 'card';
+
+        if ( ! in_array( $display_style, [ 'card', 'icon', 'featured_icon' ], true ) ) {
+            $display_style = 'card';
+        }
+
+        update_term_meta( $term_id, self::DISPLAY_STYLE_META_KEY, $display_style );
+        update_term_meta( $term_id, self::SHOW_TAGS_META_KEY, isset( $_POST['rdsco_archive_show_tags'] ) ? '1' : '0' );
 
         self::save_html_meta( $term_id, self::TOP_HTML_META_KEY, 'rdsco_archive_top_html' );
         self::save_html_meta( $term_id, self::SIDEBAR_HTML_META_KEY, 'rdsco_archive_sidebar_html' );
@@ -183,6 +246,20 @@ final class Category_Meta {
         }
 
         return absint( get_term_meta( $term_id, self::LEGACY_IMAGE_META_KEY, true ) );
+    }
+
+    public static function get_display_style( int $term_id ): string {
+        $style = sanitize_key( (string) get_term_meta( $term_id, self::DISPLAY_STYLE_META_KEY, true ) );
+
+        return in_array( $style, [ 'card', 'icon', 'featured_icon' ], true ) ? $style : 'card';
+    }
+
+    public static function should_show_tags( int $term_id ): bool {
+        if ( ! metadata_exists( 'term', $term_id, self::SHOW_TAGS_META_KEY ) ) {
+            return true;
+        }
+
+        return '1' === (string) get_term_meta( $term_id, self::SHOW_TAGS_META_KEY, true );
     }
 
     private static function sanitize_html( string $html ): string {

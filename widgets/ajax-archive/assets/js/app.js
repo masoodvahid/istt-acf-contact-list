@@ -67,6 +67,7 @@
         const resultCount = wrapper.querySelector('.rdsco-result-count strong');
         const searchInput = wrapper.querySelector('.rdsco-search-input');
         const searchClear = wrapper.querySelector('.rdsco-search-clear');
+        const tagsWrap = wrapper.querySelector('.rdsco-archive-tags-wrap');
 
         const state = {
             rootId: parseInt(wrapper.dataset.rootId || '0', 10),
@@ -166,6 +167,13 @@
                     resultCount.textContent = payload.data.total || '0';
                 }
 
+                if (tagsWrap) {
+                    const tagsHtml = payload.data.tagsHtml || '';
+                    tagsWrap.innerHTML = tagsHtml;
+                    tagsWrap.hidden = !tagsHtml.trim();
+                    state.tagId = parseInt(payload.data.activeTag || '0', 10);
+                }
+
                 updateLoadMoreVisibility();
             } catch (error) {
                 if (error.name !== 'AbortError') {
@@ -184,6 +192,7 @@
             if (categoryButton) {
                 event.preventDefault();
                 state.categoryId = parseInt(categoryButton.dataset.category || '0', 10);
+                state.tagId = 0;
                 state.page = 1;
 
                 wrapper.querySelectorAll('.rdsco-filter-item.is-category').forEach((button) => {
@@ -194,16 +203,18 @@
                 return;
             }
 
-            const tagButton = event.target.closest('.rdsco-filter-item.is-tag');
+            const tagButton = event.target.closest('.rdsco-archive-tag');
             if (tagButton) {
                 event.preventDefault();
                 state.tagId = parseInt(tagButton.dataset.tag || '0', 10);
                 state.page = 1;
 
-                wrapper.querySelectorAll('.rdsco-filter-item.is-tag').forEach((button) => {
+                wrapper.querySelectorAll('.rdsco-archive-tag').forEach((button) => {
                     button.classList.remove('is-active');
+                    button.setAttribute('aria-pressed', 'false');
                 });
                 tagButton.classList.add('is-active');
+                tagButton.setAttribute('aria-pressed', 'true');
                 fetchArchive(1, false);
                 return;
             }

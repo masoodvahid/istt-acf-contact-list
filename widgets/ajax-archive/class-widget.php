@@ -80,7 +80,6 @@ final class Widget extends Widget_Base
             'show_search'          => 'جستجوی لایو',
             'show_filters'         => 'نمایش فیلترها',
             'show_subcategories'   => 'نمایش زیر‌دسته‌ها',
-            'show_tags'            => 'نمایش برچسب‌ها',
             'show_category_images' => 'نمایش تصویر زیر‌دسته',
             'show_pagination'      => 'صفحه‌بندی AJAX',
             'show_load_more'       => 'دکمه نمایش مطالب بیشتر',
@@ -183,7 +182,6 @@ final class Widget extends Widget_Base
             'empty_text'           => $settings['empty_text'] ?? 'مطلبی پیدا نشد.',
             'show_filters'         => $settings['show_filters'] ?? 'yes',
             'show_subcategories'   => $settings['show_subcategories'] ?? 'yes',
-            'show_tags'            => $settings['show_tags'] ?? 'yes',
             'show_category_images' => $settings['show_category_images'] ?? 'yes',
             'show_pagination'      => $settings['show_pagination'] ?? 'yes',
             'show_load_more'       => $settings['show_load_more'] ?? 'yes',
@@ -208,7 +206,13 @@ final class Widget extends Widget_Base
         $query_root_id   = $filter_root_id ?: $archive_id;
         $selected_cat_id = ($filter_root_id && $archive_id !== $filter_root_id) ? $archive_id : 0;
         $runtime         = $this->runtime_settings($settings);
+        $runtime['display_style'] = Category_Meta::get_display_style($archive_id);
+        $runtime['show_tags']     = Category_Meta::should_show_tags($archive_id) ? 'yes' : 'no';
         $top_html        = Category_Meta::get_top_html($archive_id);
+        $tag_scope_id    = $selected_cat_id ?: $query_root_id;
+        $tags            = 'yes' === $runtime['show_tags']
+            ? Archive_Service::get_category_tags($tag_scope_id)
+            : [];
 
         $query = Archive_Service::query([
             'root_id'     => $query_root_id,
@@ -246,6 +250,12 @@ final class Widget extends Widget_Base
                         <span class="rdsco-search-icon" aria-hidden="true">⌕</span>
                         <input type="search" class="rdsco-search-input" placeholder="<?php echo esc_attr($settings['search_placeholder'] ?? 'جستجو در مطالب…'); ?>" autocomplete="off">
                         <button type="button" class="rdsco-search-clear" aria-label="پاک کردن جستجو">×</button>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ('yes' === $runtime['show_tags']) : ?>
+                    <div class="rdsco-archive-tags-wrap" <?php echo empty($tags) ? 'hidden' : ''; ?>>
+                        <?php echo Archive_Service::render_tag_filters($tags, 0); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                     </div>
                 <?php endif; ?>
 

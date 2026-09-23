@@ -211,6 +211,54 @@
     cursor: pointer;
 }
 
+.rdsco-archive-tags-wrap {
+    margin: -10px 0 26px;
+}
+
+.rdsco-archive-tags-wrap[hidden] {
+    display: none !important;
+}
+
+.rdsco-archive-content > .rdsco-archive-tags-wrap:first-child {
+    margin-top: 0;
+}
+
+.rdsco-archive-tags {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.rdsco-archive-tag {
+    appearance: none;
+    min-height: 36px;
+    padding: 6px 15px;
+    margin: 0;
+    border: 1px solid #dfe7ea;
+    border-radius: 999px;
+    background: #fff;
+    color: #60727a;
+    box-shadow: 0 3px 12px rgba(10, 22, 40, .035);
+    font: inherit;
+    font-size: 11px;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: border-color .2s ease, background-color .2s ease, color .2s ease, transform .2s ease;
+}
+
+.rdsco-archive-tag:hover {
+    border-color: rgba(2, 182, 181, .45);
+    color: #087b7b;
+    transform: translateY(-1px);
+}
+
+.rdsco-archive-tag.is-active {
+    border-color: var(--rdsco-dark);
+    background: var(--rdsco-dark);
+    color: #fff;
+}
+
 .rdsco-archive-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -261,6 +309,89 @@
 
 .rdsco-archive-no-image {
     background: linear-gradient(135deg, #f2f4f5, #e4eaec);
+}
+
+.rdsco-archive-card.style-icon,
+.rdsco-archive-card.style-featured_icon {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    align-items: start;
+    gap: 14px;
+    min-height: 150px;
+    padding: 17px;
+}
+
+.rdsco-archive-icon-media {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 1px solid rgba(2, 182, 181, .16);
+    border-radius: 15px;
+    background: #edf8f8;
+    color: #078e8d;
+    text-decoration: none;
+    transition: border-color .25s ease, background-color .25s ease, transform .25s ease;
+}
+
+.rdsco-archive-icon-media .dashicons {
+    width: 30px;
+    height: 30px;
+    font-size: 30px;
+    line-height: 1;
+}
+
+.rdsco-archive-icon-media.has-image {
+    border-color: #e1e8eb;
+    background: #fff;
+}
+
+.rdsco-archive-icon-media img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    padding: 7px;
+    object-fit: contain;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.rdsco-archive-card.style-icon:hover .rdsco-archive-icon-media,
+.rdsco-archive-card.style-featured_icon:hover .rdsco-archive-icon-media {
+    border-color: rgba(2, 182, 181, .42);
+    background: #e6f6f6;
+    transform: translateY(-2px);
+}
+
+.rdsco-archive-card.style-featured_icon:hover .rdsco-archive-icon-media.has-image {
+    background: #fff;
+}
+
+.rdsco-archive-card.style-icon .rdsco-archive-card-content,
+.rdsco-archive-card.style-featured_icon .rdsco-archive-card-content {
+    min-width: 0;
+    padding: 0;
+}
+
+.rdsco-archive-card.style-icon .rdsco-archive-card-meta,
+.rdsco-archive-card.style-featured_icon .rdsco-archive-card-meta {
+    margin-bottom: 5px;
+}
+
+.rdsco-archive-card.style-icon .rdsco-archive-card-title,
+.rdsco-archive-card.style-featured_icon .rdsco-archive-card-title {
+    margin-bottom: 5px;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.rdsco-archive-card.style-icon .rdsco-archive-card-excerpt,
+.rdsco-archive-card.style-featured_icon .rdsco-archive-card-excerpt {
+    margin-bottom: 8px;
+    font-size: 10px;
+    line-height: 1.8;
 }
 
 .rdsco-archive-card-content {
@@ -487,7 +618,30 @@
         max-width: none !important;
     }
 
+    .rdsco-archive-tags-wrap {
+        margin-bottom: 22px;
+    }
+
+    .rdsco-archive-tag {
+        min-height: 34px;
+        padding: 5px 12px;
+    }
+
     .rdsco-archive-grid {
         grid-template-columns: 1fr;
+    }
+
+    .rdsco-archive-card.style-icon,
+    .rdsco-archive-card.style-featured_icon {
+        grid-template-columns: 58px minmax(0, 1fr);
+        gap: 12px;
+        min-height: 0;
+        padding: 14px;
+    }
+
+    .rdsco-archive-icon-media {
+        width: 58px;
+        height: 58px;
+        border-radius: 13px;
     }
 }

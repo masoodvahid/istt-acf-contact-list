@@ -21,7 +21,7 @@ add_action('wp_enqueue_scripts', static function () {
     wp_register_style(
         'rdsco-ajax-archive-base',
         $base_url . 'css/style.css',
-        [],
+        ['dashicons'],
         RDSCO_ELEMENTOR_WIDGETS_VERSION
     );
 
