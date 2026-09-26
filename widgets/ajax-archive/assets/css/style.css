@@ -591,24 +591,25 @@
     color: #fff;
 }
 
-/* Timeline: headline, central rail and summary, following the reference layout. */
+/* Timeline: full-width milestones with the excerpt year behind each heading. */
 .rdsco-archive-grid.style-timeline {
+    grid-template-columns: minmax(0, 1fr) !important;
     gap: 0 !important;
 }
 
 .rdsco-archive-card.style-timeline {
     display: grid;
-    grid-template-areas: 'title rail content';
-    grid-template-columns: minmax(0, .68fr) 38px minmax(0, 1fr);
-    align-items: center;
-    min-height: 140px;
+    grid-template-areas: 'heading rail content';
+    grid-template-columns: minmax(0, 1fr) 48px minmax(0, 1fr);
+    align-items: stretch;
+    min-height: 175px;
     overflow: visible;
     border: 0;
-    border-bottom: 1px solid #e2e9f1;
+    border-bottom: 1px solid #e5ebed;
     border-radius: 0;
-    background: transparent;
+    background: #fff;
     box-shadow: none;
-    transition: none;
+    transition: background-color .25s ease;
 }
 
 .rdsco-archive-card.style-timeline:last-child {
@@ -617,19 +618,59 @@
 
 .rdsco-archive-card.style-timeline:hover {
     transform: none;
-    border-color: #e2e9f1;
+    border-color: #e5ebed;
+    background: #fcfdfd;
     box-shadow: none;
 }
 
+.rdsco-archive-card.style-timeline .rdsco-timeline-heading {
+    position: relative;
+    display: flex;
+    grid-area: heading;
+    align-items: center;
+    min-width: 0;
+    min-height: 175px;
+    overflow: hidden;
+    padding: 30px clamp(18px, 3vw, 42px);
+    background: #f7f9f9;
+    transition: background-color .25s ease;
+}
+
+.rdsco-archive-card.style-timeline:hover .rdsco-timeline-heading {
+    background: #f1f8f7;
+}
+
+.rdsco-archive-card.style-timeline .rdsco-timeline-year {
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    max-width: calc(100% - 32px);
+    overflow: hidden;
+    color: rgba(2, 153, 151, .11);
+    font-size: clamp(76px, 11vw, 158px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -.055em;
+    white-space: nowrap;
+    text-overflow: clip;
+    pointer-events: none;
+    transform: translateY(-50%);
+    transition: color .25s ease;
+}
+
+.rdsco-archive-card.style-timeline:hover .rdsco-timeline-year {
+    color: rgba(2, 153, 151, .17);
+}
+
 .rdsco-archive-card.style-timeline .rdsco-timeline-title {
-    grid-area: title;
+    position: relative;
+    z-index: 1;
     min-width: 0;
     margin: 0;
-    padding: 22px 22px 22px 14px;
-    color: #102450;
-    font-size: clamp(18px, 2.1vw, 28px);
+    color: var(--rdsco-dark);
+    font-size: clamp(19px, 2vw, 29px);
     font-weight: 700;
-    line-height: 1.5;
+    line-height: 1.55;
     text-align: right;
 }
 
@@ -640,7 +681,7 @@
 
 .rdsco-archive-card.style-timeline .rdsco-timeline-title a:hover,
 .rdsco-archive-card.style-timeline .rdsco-timeline-title a:focus-visible {
-    color: #078e9d;
+    color: #087f80;
 }
 
 .rdsco-archive-card.style-timeline .rdsco-timeline-rail {
@@ -654,20 +695,29 @@
     top: 0;
     bottom: -1px;
     right: calc(50% - 1px);
-    width: 1px;
-    background: #dce5ef;
+    width: 2px;
+    background: #dcebe9;
     content: '';
 }
 
 .rdsco-archive-card.style-timeline .rdsco-timeline-rail::after {
     position: absolute;
-    top: 33px;
-    right: calc(50% - 7px);
-    width: 14px;
-    height: 14px;
+    top: calc(50% - 8px);
+    right: calc(50% - 8px);
+    width: 16px;
+    height: 16px;
+    box-sizing: border-box;
+    border: 3px solid #02b6b5;
     border-radius: 50%;
-    background: #17aaa8;
+    background: #fff;
+    box-shadow: 0 0 0 5px rgba(2, 182, 181, .1);
     content: '';
+    transition: background-color .25s ease, box-shadow .25s ease;
+}
+
+.rdsco-archive-card.style-timeline:hover .rdsco-timeline-rail::after {
+    background: #02b6b5;
+    box-shadow: 0 0 0 7px rgba(2, 182, 181, .14);
 }
 
 .rdsco-archive-card.style-timeline .rdsco-timeline-content {
@@ -675,25 +725,26 @@
     grid-area: content;
     flex-direction: column;
     min-width: 0;
+    justify-content: center;
     align-items: flex-start;
-    gap: 9px;
-    padding: 22px 30px 22px 22px;
+    gap: 14px;
+    padding: 30px clamp(18px, 3vw, 42px);
     text-align: right;
 }
 
 .rdsco-archive-card.style-timeline .rdsco-timeline-excerpt {
     width: 100%;
     margin: 0;
-    color: #647591;
+    color: #637580;
     font-size: 15px;
-    line-height: 1.7;
+    line-height: 1.85;
 }
 
 .rdsco-archive-card.style-timeline .rdsco-timeline-more {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    color: #65758c;
+    gap: 8px;
+    color: #087f80;
     font-size: 13px;
     line-height: 1.7;
     text-decoration: none;
@@ -701,27 +752,45 @@
 
 .rdsco-archive-card.style-timeline .rdsco-timeline-more:hover,
 .rdsco-archive-card.style-timeline .rdsco-timeline-more:focus-visible {
-    color: #078e9d;
+    color: #035b5a;
+    text-decoration: underline;
 }
 
 @media (max-width: 767px) {
     .rdsco-archive-card.style-timeline {
-        grid-template-areas: 'rail title' 'rail content';
-        grid-template-columns: 30px minmax(0, 1fr);
+        grid-template-areas: 'rail heading' 'rail content';
+        grid-template-columns: 32px minmax(0, 1fr);
         min-height: 0;
     }
 
+    .rdsco-archive-card.style-timeline .rdsco-timeline-heading {
+        min-height: 130px;
+        padding: 22px 18px;
+    }
+
+    .rdsco-archive-card.style-timeline .rdsco-timeline-year {
+        font-size: clamp(70px, 20vw, 118px);
+    }
+
     .rdsco-archive-card.style-timeline .rdsco-timeline-title {
-        padding: 22px 10px 6px 14px;
-        font-size: 20px;
+        font-size: clamp(19px, 5vw, 24px);
     }
 
     .rdsco-archive-card.style-timeline .rdsco-timeline-content {
-        padding: 0 10px 22px 14px;
+        padding: 16px 18px 26px;
     }
 
     .rdsco-archive-card.style-timeline .rdsco-timeline-excerpt {
-        font-size: 13px;
+        font-size: 14px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rdsco-archive-card.style-timeline,
+    .rdsco-archive-card.style-timeline .rdsco-timeline-heading,
+    .rdsco-archive-card.style-timeline .rdsco-timeline-year,
+    .rdsco-archive-card.style-timeline .rdsco-timeline-rail::after {
+        transition: none;
     }
 }
 

@@ -309,14 +309,33 @@ final class Archive_Service {
                 $post_id           = get_the_ID();
                 $categories        = get_the_category( $post_id );
                 $has_featured_icon = in_array( $display_style, [ 'featured_icon', 'icon_card_2' ], true ) && has_post_thumbnail( $post_id );
+                $timeline_year     = '';
+                if ( 'timeline' === $display_style && $show_excerpt ) {
+                    $manual_excerpt = trim( wp_strip_all_tags( get_post_field( 'post_excerpt', $post_id ) ) );
+                    if ( preg_match( '/^[0-9\x{06F0}-\x{06F9}\x{0660}-\x{0669}]{3,4}$/u', $manual_excerpt ) ) {
+                        $timeline_year = $manual_excerpt;
+                    }
+                }
                 ?>
                 <article class="rdsco-archive-card style-<?php echo esc_attr( $display_style ); ?>">
                     <?php if ( 'timeline' === $display_style ) : ?>
-                        <h3 class="rdsco-timeline-title"><a href="<?php the_permalink(); ?>"><?php echo esc_html( get_the_title() ); ?></a></h3>
+                        <div class="rdsco-timeline-heading">
+                            <?php if ( '' !== $timeline_year ) : ?>
+                                <span class="rdsco-timeline-year"><?php echo esc_html( $timeline_year ); ?></span>
+                            <?php endif; ?>
+                            <h3 class="rdsco-timeline-title"><a href="<?php the_permalink(); ?>"><?php echo esc_html( get_the_title() ); ?></a></h3>
+                        </div>
                         <span class="rdsco-timeline-rail" aria-hidden="true"></span>
                         <div class="rdsco-timeline-content">
                             <?php if ( $show_excerpt && $excerpt_words > 0 ) : ?>
-                                <p class="rdsco-timeline-excerpt"><?php echo esc_html( wp_trim_words( get_the_excerpt(), $excerpt_words, '…' ) ); ?></p>
+                                <?php
+                                $timeline_summary = '' !== $timeline_year
+                                    ? wp_trim_words( wp_strip_all_tags( strip_shortcodes( get_the_content() ) ), $excerpt_words, '…' )
+                                    : wp_trim_words( get_the_excerpt(), $excerpt_words, '…' );
+                                ?>
+                                <?php if ( '' !== trim( $timeline_summary ) ) : ?>
+                                    <p class="rdsco-timeline-excerpt"><?php echo esc_html( $timeline_summary ); ?></p>
+                                <?php endif; ?>
                             <?php endif; ?>
                             <a class="rdsco-timeline-more" href="<?php the_permalink(); ?>">مطالعه بیشتر <span aria-hidden="true">←</span></a>
                         </div>
