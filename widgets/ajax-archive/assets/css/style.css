@@ -595,12 +595,13 @@
 .rdsco-archive-grid.style-timeline {
     grid-template-columns: minmax(0, 1fr) !important;
     gap: 0 !important;
+    container-type: inline-size;
 }
 
 .rdsco-archive-card.style-timeline {
     display: grid;
     grid-template-areas: 'heading rail content';
-    grid-template-columns: minmax(0, 1fr) 48px minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) 40px minmax(0, 2fr);
     align-items: stretch;
     min-height: 175px;
     overflow: visible;
@@ -628,11 +629,11 @@
     display: flex;
     grid-area: heading;
     align-items: center;
-    gap: clamp(12px, 1.6vw, 20px);
+    gap: clamp(10px, 1.2vw, 16px);
     min-width: 0;
     min-height: 175px;
     overflow: hidden;
-    padding: 30px clamp(18px, 3vw, 42px);
+    padding: 24px clamp(12px, 1.5vw, 24px);
     background: #f7f9f9;
     transition: background-color .25s ease;
 }
@@ -645,8 +646,8 @@
     position: relative;
     z-index: 1;
     display: block;
-    flex: 0 0 clamp(82px, 8vw, 112px);
-    width: clamp(82px, 8vw, 112px);
+    flex: 0 0 clamp(62px, 6vw, 88px);
+    width: clamp(62px, 6vw, 88px);
     aspect-ratio: 1 / 1;
     overflow: hidden;
     border-radius: 12px;
@@ -681,7 +682,7 @@
     max-width: 100%;
     overflow: hidden;
     color: rgba(2, 153, 151, .11);
-    font-size: clamp(76px, 11vw, 158px);
+    font-size: clamp(62px, 8vw, 112px);
     font-weight: 800;
     line-height: 1;
     letter-spacing: -.055em;
@@ -702,7 +703,7 @@
     min-width: 0;
     margin: 0;
     color: var(--rdsco-dark);
-    font-size: clamp(19px, 2vw, 29px);
+    font-size: clamp(17px, 1.6vw, 24px);
     font-weight: 700;
     line-height: 1.55;
     text-align: right;
@@ -788,6 +789,22 @@
 .rdsco-archive-card.style-timeline .rdsco-timeline-more:focus-visible {
     color: #035b5a;
     text-decoration: underline;
+}
+
+@container (max-width: 660px) {
+    .rdsco-archive-card.style-timeline {
+        grid-template-areas: 'rail heading' 'rail content';
+        grid-template-columns: 32px minmax(0, 1fr);
+    }
+
+    .rdsco-archive-card.style-timeline .rdsco-timeline-heading {
+        min-height: 130px;
+        padding: 20px 18px;
+    }
+
+    .rdsco-archive-card.style-timeline .rdsco-timeline-content {
+        padding: 16px 18px 26px;
+    }
 }
 
 @media (max-width: 767px) {
