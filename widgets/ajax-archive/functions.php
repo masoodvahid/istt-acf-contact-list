@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) {
 }
 
 require_once __DIR__ . '/includes/class-category-meta.php';
+require_once __DIR__ . '/includes/class-timeline-view.php';
 require_once __DIR__ . '/includes/class-archive-service.php';
 
 Category_Meta::init();
@@ -33,9 +34,16 @@ add_action('wp_enqueue_scripts', static function () {
     );
 
     wp_register_style(
-        'rdsco-ajax-archive',
+        'rdsco-ajax-archive-layout',
         $base_url . 'css/style-2.4.2.css',
         ['rdsco-ajax-archive-polish'],
+        RDSCO_ELEMENTOR_WIDGETS_VERSION
+    );
+
+    wp_register_style(
+        'rdsco-ajax-archive',
+        $base_url . 'css/timeline-chart.css',
+        ['rdsco-ajax-archive-layout'],
         RDSCO_ELEMENTOR_WIDGETS_VERSION
     );
 

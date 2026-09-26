@@ -1,0 +1,105 @@
+/* Annual achievements chart: shown only for categories using the timeline style. */
+.rdsco-archive-grid.style-timeline {
+    display: block;
+    min-width: 0;
+    container-type: inline-size;
+}
+
+.rdsco-timeline-chart-frame,
+.rdsco-timeline-entries {
+    border: 1px solid #e3eaea;
+    border-radius: 16px;
+    background: #fff;
+}
+
+.rdsco-timeline-chart-frame {
+    margin-bottom: 24px;
+    padding: 24px 25px 14px;
+}
+
+.rdsco-timeline-chart-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.rdsco-timeline-chart-heading h2 { margin: 0; color: #0a1628; font-size: 18px; }
+.rdsco-timeline-chart-heading p { margin: 0; color: #718289; font-size: 12px; line-height: 1.9; }
+.rdsco-timeline-chart-scroll { overflow-x: auto; padding-bottom: 6px; }
+
+.rdsco-timeline-chart {
+    position: relative;
+    min-width: max(540px, calc(var(--timeline-count) * 95px));
+    height: 340px;
+    margin-top: 10px;
+}
+
+.rdsco-timeline-guides,
+.rdsco-timeline-columns { position: absolute; inset: 0 40px 0 6px; }
+.rdsco-timeline-guide { position: absolute; right: 0; left: 0; height: 1px; border-top: 1px dashed #e5ebea; pointer-events: none; }
+.rdsco-timeline-guide.is-baseline { border-top: 2px solid #9caaa9; }
+.rdsco-timeline-guide small { position: absolute; right: -31px; top: -9px; width: 26px; color: #879392; font-size: 10px; text-align: center; }
+.rdsco-timeline-connection { position: absolute; inset: 0 40px 44px 6px; z-index: 1; width: calc(100% - 46px); height: calc(100% - 44px); pointer-events: none; overflow: visible; }
+.rdsco-timeline-connection polyline { fill: none; stroke: #02a7a4; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; opacity: .72; vector-effect: non-scaling-stroke; }
+.rdsco-timeline-columns { z-index: 2; display: grid; grid-template-columns: repeat(var(--timeline-count), minmax(0, 1fr)); }
+.rdsco-timeline-point { position: relative; display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; color: #78aaa8; cursor: pointer; }
+.rdsco-timeline-stem { position: absolute; right: calc(50% - 2px); bottom: 44px; width: 4px; height: var(--rise); border-radius: 3px 3px 0 0; background: currentColor; }
+.rdsco-timeline-dot { position: absolute; right: calc(50% - 9px); bottom: calc(44px + var(--rise) - 9px); width: 18px; height: 18px; box-sizing: border-box; border: 4px solid currentColor; border-radius: 50%; background: #fff; box-shadow: 0 0 0 5px #02b6b514; }
+.rdsco-timeline-value { position: absolute; right: 50%; bottom: calc(44px + var(--rise) + 17px); transform: translateX(50%); color: #0a1628; font-size: 29px; font-weight: 800; line-height: 1; white-space: nowrap; }
+.rdsco-timeline-value small { display: block; margin-top: 8px; color: #728383; font-size: 11px; font-weight: 400; }
+.rdsco-timeline-year-label { position: absolute; right: 50%; bottom: 0; display: grid; place-items: center; min-width: 68px; height: 34px; transform: translateX(50%); border-radius: 8px; color: #526364; font-size: 15px; font-weight: 700; }
+.rdsco-timeline-point:hover,
+.rdsco-timeline-point[aria-pressed="true"] { color: #02a7a4; }
+.rdsco-timeline-point:hover .rdsco-timeline-year-label,
+.rdsco-timeline-point[aria-pressed="true"] .rdsco-timeline-year-label { background: #e8f7f6; color: #006e6d; }
+.rdsco-timeline-point:focus-visible,
+.rdsco-timeline-expand:focus-visible { outline: 2px solid #02b6b5; outline-offset: -5px; }
+
+.rdsco-timeline-entries { overflow: hidden; }
+.rdsco-timeline-entry[hidden] { display: none !important; }
+.rdsco-timeline-entry { display: grid; grid-template-areas: "heading rail details"; grid-template-columns: minmax(0, 1fr) 40px minmax(0, 2fr); }
+.rdsco-timeline-entry-heading { grid-area: heading; display: flex; align-items: center; gap: 14px; min-width: 0; padding: 32px 19px; background: #f5f7f7; }
+.rdsco-timeline-entry-image { display: block; flex: 0 0 74px; width: 74px; height: 74px; overflow: hidden; border-radius: 13px; background: #fff; }
+.rdsco-timeline-entry-image img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.rdsco-timeline-entry-title-wrap { position: relative; isolation: isolate; display: flex; flex: 1; flex-direction: column; justify-content: center; min-width: 0; min-height: 128px; }
+.rdsco-timeline-entry-watermark { position: absolute; right: 0; top: 50%; z-index: -1; max-width: 100%; overflow: hidden; transform: translateY(-50%); color: rgba(2, 142, 141, .12); font-size: clamp(57px, 7.7vw, 100px); font-weight: 900; letter-spacing: -.07em; line-height: 1; white-space: nowrap; pointer-events: none; }
+.rdsco-timeline-entry-heading h3 { position: relative; margin: 6px 0 8px; color: #0a1628; font-size: clamp(18px, 1.8vw, 25px); line-height: 1.6; }
+.rdsco-timeline-entry-heading h3 a { color: inherit; text-decoration: none; }
+.rdsco-timeline-entry-heading h3 a:hover { color: #087f80; }
+.rdsco-timeline-entry-count { color: #687b7d; font-size: 12px; }
+.rdsco-timeline-entry-rail { position: relative; grid-area: rail; }
+.rdsco-timeline-entry-rail::before { content: ""; position: absolute; top: 0; bottom: 0; right: calc(50% - 1px); width: 2px; background: #dceae8; }
+.rdsco-timeline-entry-rail::after { content: ""; position: absolute; top: 51px; right: calc(50% - 8px); width: 16px; height: 16px; box-sizing: border-box; border: 3px solid #02b6b5; border-radius: 50%; background: #fff; box-shadow: 0 0 0 6px #02b6b519; }
+.rdsco-timeline-entry-details { grid-area: details; min-width: 0; padding: 30px clamp(22px, 3vw, 42px) 32px; }
+.rdsco-timeline-entry-lead { margin: 0 0 14px; padding: 11px 14px; border-right: 3px solid #02b6b5; border-radius: 5px 0 0 5px; background: #f3f9f8; color: #344e59; font-size: 13px; line-height: 1.9; }
+.rdsco-timeline-achievements { margin: 0; padding: 0; list-style: none; }
+.rdsco-timeline-achievements li { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 10px; align-items: start; padding: 12px 0; border-bottom: 1px solid #edf0f0; color: #384950; font-size: 14px; line-height: 2; }
+.rdsco-timeline-achievements li:last-child { border-bottom: 0; }
+.rdsco-timeline-achievements li small { padding-top: 3px; color: #078e8d; font-size: 12px; font-weight: 700; }
+.rdsco-timeline-entry:not(.is-expanded) .rdsco-timeline-achievements li:nth-child(n+4) { display: none; }
+.rdsco-timeline-expand { display: inline-flex; align-items: center; gap: 10px; min-height: 38px; margin-top: 15px; padding: 6px 0; border: 0; background: none; color: #078e8d; font-size: 13px; font-weight: 700; cursor: pointer; }
+.rdsco-timeline-expand::after { content: "+"; display: grid; place-items: center; width: 23px; height: 23px; border: 1px solid #bce2e0; border-radius: 50%; font-size: 17px; line-height: 1; }
+.rdsco-timeline-entry.is-expanded .rdsco-timeline-expand::after { content: "−"; }
+.rdsco-timeline-entry-more { display: block; width: fit-content; margin-top: 14px; color: #087f80; font-size: 13px; text-decoration: none; }
+.rdsco-timeline-entry-more:hover { text-decoration: underline; }
+
+@container (max-width: 660px) {
+    .rdsco-timeline-entry { grid-template-areas: "rail heading" "rail details"; grid-template-columns: 29px minmax(0, 1fr); }
+    .rdsco-timeline-entry-heading { min-height: 130px; padding: 22px 15px; }
+    .rdsco-timeline-entry-title-wrap { min-height: 84px; }
+    .rdsco-timeline-entry-image { flex-basis: 64px; width: 64px; height: 64px; }
+    .rdsco-timeline-entry-heading h3 { font-size: 19px; }
+    .rdsco-timeline-entry-details { padding: 16px 18px 26px; }
+}
+
+@media (max-width: 767px) {
+    .rdsco-timeline-chart-frame { padding: 18px 12px 10px; }
+    .rdsco-timeline-entry { grid-template-areas: "rail heading" "rail details"; grid-template-columns: 29px minmax(0, 1fr); }
+    .rdsco-timeline-entry-heading { min-height: 130px; padding: 22px 15px; }
+    .rdsco-timeline-entry-title-wrap { min-height: 84px; }
+    .rdsco-timeline-entry-image { flex-basis: 64px; width: 64px; height: 64px; }
+    .rdsco-timeline-entry-heading h3 { font-size: 19px; }
+    .rdsco-timeline-entry-details { padding: 16px 18px 26px; }
+}

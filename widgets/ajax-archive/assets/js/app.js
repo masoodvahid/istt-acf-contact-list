@@ -95,6 +95,40 @@
             loadMoreWrap.hidden = state.maxPages <= 1 || state.page >= state.maxPages;
         }
 
+        function redrawTimeline() {
+            const chart = results && results.querySelector('.rdsco-timeline-chart');
+            if (!chart) {
+                return;
+            }
+
+            const buttons = Array.from(chart.querySelectorAll('.rdsco-timeline-point'));
+            const maximum = Math.max(10, Math.ceil(Math.max(...buttons.map(button => parseInt(button.dataset.count || '0', 10))) / 10) * 10);
+            const guides = chart.querySelector('.rdsco-timeline-guides');
+            const line = chart.querySelector('.rdsco-timeline-connection polyline');
+            chart.style.setProperty('--timeline-count', buttons.length);
+
+            if (guides) {
+                guides.replaceChildren();
+                for (let tick = 0; tick <= maximum; tick += 10) {
+                    const guide = document.createElement('span');
+                    guide.className = 'rdsco-timeline-guide' + (tick === 0 ? ' is-baseline' : '');
+                    guide.style.bottom = (44 + Math.round(tick / maximum * 230)) + 'px';
+                    const label = document.createElement('small');
+                    label.textContent = new Intl.NumberFormat('fa-IR').format(tick);
+                    guide.appendChild(label);
+                    guides.appendChild(guide);
+                }
+            }
+
+            if (line) {
+                line.setAttribute('points', buttons.map((button, index) => {
+                    const rise = Math.round(parseInt(button.dataset.count || '0', 10) / maximum * 230);
+                    button.style.setProperty('--rise', rise + 'px');
+                    return Math.round(300 * (1 - (index + .5) / buttons.length)) + ',' + (296 - rise);
+                }).join(' '));
+            }
+        }
+
         function appendCards(html) {
             const temp = document.createElement('div');
             temp.innerHTML = html;
@@ -104,6 +138,27 @@
             if (!incomingGrid || !currentGrid) {
                 if (results) {
                     results.innerHTML = html;
+                }
+                return;
+            }
+
+            const currentTimeline = currentGrid.querySelector('.rdsco-timeline-chart');
+            const incomingTimeline = incomingGrid.querySelector('.rdsco-timeline-chart');
+            if (currentTimeline && incomingTimeline) {
+                const currentColumns = currentTimeline.querySelector('.rdsco-timeline-columns');
+                const incomingColumns = incomingTimeline.querySelector('.rdsco-timeline-columns');
+                const currentEntries = currentGrid.querySelector('.rdsco-timeline-entries');
+                const incomingEntries = incomingGrid.querySelector('.rdsco-timeline-entries');
+                if (currentColumns && incomingColumns && currentEntries && incomingEntries) {
+                    Array.from(incomingColumns.children).forEach(button => {
+                        button.setAttribute('aria-pressed', 'false');
+                        currentColumns.appendChild(button);
+                    });
+                    Array.from(incomingEntries.children).forEach(entry => {
+                        entry.hidden = true;
+                        currentEntries.appendChild(entry);
+                    });
+                    redrawTimeline();
                 }
                 return;
             }
@@ -221,6 +276,7 @@
                     appendCards(payload.data.html || '');
                 } else {
                     results.innerHTML = payload.data.html || '';
+                    redrawTimeline();
                 }
 
                 state.page = parseInt(payload.data.page || page, 10);
@@ -258,6 +314,30 @@
         }
 
         wrapper.addEventListener('click', function (event) {
+            const point = event.target.closest('.rdsco-timeline-point');
+            if (point && results.contains(point)) {
+                event.preventDefault();
+                const target = Array.from(results.querySelectorAll('.rdsco-timeline-entry')).find(entry => entry.id === point.getAttribute('aria-controls'));
+                if (target) {
+                    results.querySelectorAll('.rdsco-timeline-point').forEach(button => {
+                        button.setAttribute('aria-pressed', button === point ? 'true' : 'false');
+                    });
+                    results.querySelectorAll('.rdsco-timeline-entry').forEach(entry => { entry.hidden = entry !== target; });
+                }
+                return;
+            }
+
+            const expand = event.target.closest('.rdsco-timeline-expand');
+            if (expand && results.contains(expand)) {
+                event.preventDefault();
+                const entry = expand.closest('.rdsco-timeline-entry');
+                const opened = entry.classList.toggle('is-expanded');
+                expand.setAttribute('aria-expanded', opened ? 'true' : 'false');
+                expand.setAttribute('aria-label', (opened ? 'نمایش موارد کمتر برای سال ' : 'نمایش همهٔ افتخارات سال ') + expand.dataset.year);
+                expand.textContent = opened ? 'نمایش موارد کمتر' : 'نمایش ' + expand.dataset.remaining + ' مورد دیگر';
+                return;
+            }
+
             const acfOption = event.target.closest('.rdsco-acf-option');
             if (acfOption && wrapper.contains(acfOption)) {
                 event.preventDefault();

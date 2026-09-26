@@ -294,6 +294,11 @@ final class Archive_Service {
             return (string) ob_get_clean();
         }
 
+        if ( 'timeline' === ( $settings['display_style'] ?? '' ) ) {
+            ob_end_clean();
+            return Timeline_View::render( $query );
+        }
+
         $show_date     = 'yes' === ( $settings['show_date'] ?? 'yes' );
         $show_category = 'yes' === ( $settings['show_category'] ?? 'yes' );
         $show_excerpt  = 'yes' === ( $settings['show_excerpt'] ?? 'yes' );
