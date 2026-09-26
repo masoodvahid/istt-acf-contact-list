@@ -123,16 +123,18 @@
     .rdsco-timeline-entry-heading { position: static; min-height: 130px; padding: 22px 15px; }
     .rdsco-timeline-entry-title-wrap { min-height: 84px; }
     .rdsco-timeline-entry-image { flex-basis: 64px; width: 64px; height: 64px; }
-    .rdsco-timeline-entry-heading h3 { font-size: 19px; }
+    .rdsco-timeline-entry-heading h3 { font-size: 19px; overflow-wrap: break-word; }
     .rdsco-timeline-entry-details { padding: 16px 18px 26px; }
 }
 
 @media (max-width: 767px) {
     .rdsco-timeline-chart-frame { padding: 18px 12px 10px; }
+    .rdsco-timeline-chart { min-width: max(270px, calc(var(--timeline-count) * 105px)); }
+    .rdsco-timeline-chart-heading h2 { font-size: 16px; }
     .rdsco-timeline-entry { grid-template-areas: "rail heading" "rail details"; grid-template-columns: 29px minmax(0, 1fr); }
-    .rdsco-timeline-entry-heading { position: static; min-height: 130px; padding: 22px 15px; }
+    .rdsco-timeline-entry-heading { position: static; min-height: 130px; gap: 10px; padding: 22px 15px; }
     .rdsco-timeline-entry-title-wrap { min-height: 84px; }
     .rdsco-timeline-entry-image { flex-basis: 64px; width: 64px; height: 64px; }
-    .rdsco-timeline-entry-heading h3 { font-size: 19px; }
+    .rdsco-timeline-entry-heading h3 { font-size: 19px; overflow-wrap: break-word; }
     .rdsco-timeline-entry-details { padding: 16px 18px 26px; }
 }

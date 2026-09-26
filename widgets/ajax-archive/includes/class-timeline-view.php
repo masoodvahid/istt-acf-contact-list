@@ -85,6 +85,12 @@ final class Timeline_View {
         return strtr( (string) $number, [ '0' => '۰', '1' => '۱', '2' => '۲', '3' => '۳', '4' => '۴', '5' => '۵', '6' => '۶', '7' => '۷', '8' => '۸', '9' => '۹' ] );
     }
 
+    /** Change the label in this view while preserving the post title in WordPress. */
+    private static function display_title( string $title ): string {
+        $title = preg_replace( '/^\s*افتخارات\s+سال(?=\s|$)/u', 'دستاوردهای سال', $title );
+        return 'افتخارات' === trim( $title ) ? 'دستاوردها' : $title;
+    }
+
     public static function render( \WP_Query $query ): string {
         $posts = [];
         $maximum = 0;
@@ -110,8 +116,8 @@ final class Timeline_View {
         <div class="rdsco-archive-grid style-timeline">
             <div class="rdsco-timeline-chart-frame">
                 <div class="rdsco-timeline-chart-heading">
-                    <h2>نمودار افتخارات سالانه</h2>
-                    <p>برای دیدن افتخارات هر سال، روی نقطهٔ آن کلیک کنید.</p>
+                    <h2>نمودار دستاوردهای سالانه</h2>
+                    <p>برای دیدن دستاوردهای هر سال، روی نقطهٔ آن کلیک کنید.</p>
                 </div>
                 <div class="rdsco-timeline-chart-scroll">
                     <div class="rdsco-timeline-chart" style="--timeline-count:<?php echo esc_attr( $count_posts ); ?>">
@@ -129,10 +135,10 @@ final class Timeline_View {
                         <div class="rdsco-timeline-columns">
                             <?php foreach ( $posts as $index => $entry ) : ?>
                                 <?php $id = $prefix . '-' . $entry['post']->ID; ?>
-                                <button type="button" class="rdsco-timeline-point" style="--rise:<?php echo esc_attr( (int) round( $entry['count'] / $scale * 230 ) ); ?>px" data-count="<?php echo esc_attr( $entry['count'] ); ?>" aria-controls="<?php echo esc_attr( $id ); ?>" aria-pressed="<?php echo 0 === $index ? 'true' : 'false'; ?>" aria-label="نمایش افتخارات سال <?php echo esc_attr( self::persian_number( $entry['year'] ) ); ?>، <?php echo esc_attr( self::persian_number( $entry['count'] ) ); ?> افتخار">
+                                <button type="button" class="rdsco-timeline-point" style="--rise:<?php echo esc_attr( (int) round( $entry['count'] / $scale * 230 ) ); ?>px" data-count="<?php echo esc_attr( $entry['count'] ); ?>" aria-controls="<?php echo esc_attr( $id ); ?>" aria-pressed="<?php echo 0 === $index ? 'true' : 'false'; ?>" aria-label="نمایش دستاوردهای سال <?php echo esc_attr( self::persian_number( $entry['year'] ) ); ?>، <?php echo esc_attr( self::persian_number( $entry['count'] ) ); ?> دستاورد">
                                     <span class="rdsco-timeline-stem" aria-hidden="true"></span>
                                     <span class="rdsco-timeline-dot" aria-hidden="true"></span>
-                                    <span class="rdsco-timeline-value" aria-hidden="true"><?php echo esc_html( self::persian_number( $entry['count'] ) ); ?><small>افتخار</small></span>
+                                    <span class="rdsco-timeline-value" aria-hidden="true"><?php echo esc_html( self::persian_number( $entry['count'] ) ); ?><small>دستاورد</small></span>
                                     <span class="rdsco-timeline-year-label" aria-hidden="true"><?php echo esc_html( self::persian_number( $entry['year'] ) ); ?></span>
                                 </button>
                             <?php endforeach; ?>
@@ -146,19 +152,20 @@ final class Timeline_View {
                     $post = $entry['post'];
                     $id = $prefix . '-' . $post->ID;
                     $year = self::persian_number( $entry['year'] );
+                    $display_title = self::display_title( get_the_title( $post ) );
                     $remaining = max( 0, count( $entry['items'] ) - 3 );
                     ?>
                     <article class="rdsco-timeline-entry" id="<?php echo esc_attr( $id ); ?>" <?php echo 0 === $index ? '' : 'hidden'; ?>>
                         <div class="rdsco-timeline-entry-heading">
                             <?php if ( has_post_thumbnail( $post->ID ) ) : ?>
-                                <a href="<?php echo esc_url( get_permalink( $post ) ); ?>" class="rdsco-timeline-entry-image" aria-label="<?php echo esc_attr( get_the_title( $post ) ); ?>">
+                                <a href="<?php echo esc_url( get_permalink( $post ) ); ?>" class="rdsco-timeline-entry-image" aria-label="<?php echo esc_attr( $display_title ); ?>">
                                     <?php echo get_the_post_thumbnail( $post->ID, 'thumbnail', [ 'loading' => 'lazy', 'alt' => '' ] ); ?>
                                 </a>
                             <?php endif; ?>
                             <div class="rdsco-timeline-entry-title-wrap">
                                 <span class="rdsco-timeline-entry-watermark" aria-hidden="true"><?php echo esc_html( $year ); ?></span>
-                                <h3><a href="<?php echo esc_url( get_permalink( $post ) ); ?>"><?php echo esc_html( get_the_title( $post ) ); ?></a></h3>
-                                <span class="rdsco-timeline-entry-count"><?php echo esc_html( self::persian_number( $entry['count'] ) ); ?> افتخار ثبت‌شده</span>
+                                <h3><a href="<?php echo esc_url( get_permalink( $post ) ); ?>"><?php echo esc_html( $display_title ); ?></a></h3>
+                                <span class="rdsco-timeline-entry-count"><?php echo esc_html( self::persian_number( $entry['count'] ) ); ?> دستاورد ثبت‌شده</span>
                             </div>
                         </div>
                         <span class="rdsco-timeline-entry-rail" aria-hidden="true"></span>

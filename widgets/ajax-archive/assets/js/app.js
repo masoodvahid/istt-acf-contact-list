@@ -333,7 +333,7 @@
                 const entry = expand.closest('.rdsco-timeline-entry');
                 const opened = entry.classList.toggle('is-expanded');
                 expand.setAttribute('aria-expanded', opened ? 'true' : 'false');
-                expand.setAttribute('aria-label', (opened ? 'نمایش موارد کمتر برای سال ' : 'نمایش همهٔ افتخارات سال ') + expand.dataset.year);
+                expand.setAttribute('aria-label', (opened ? 'نمایش موارد کمتر برای سال ' : 'نمایش همهٔ دستاوردهای سال ') + expand.dataset.year);
                 expand.textContent = opened ? 'نمایش موارد کمتر' : 'نمایش ' + expand.dataset.remaining + ' مورد دیگر';
                 return;
             }
