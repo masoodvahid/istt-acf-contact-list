@@ -320,10 +320,17 @@ final class Archive_Service {
                 <article class="rdsco-archive-card style-<?php echo esc_attr( $display_style ); ?>">
                     <?php if ( 'timeline' === $display_style ) : ?>
                         <div class="rdsco-timeline-heading">
-                            <?php if ( '' !== $timeline_year ) : ?>
-                                <span class="rdsco-timeline-year"><?php echo esc_html( $timeline_year ); ?></span>
+                            <?php if ( has_post_thumbnail( $post_id ) ) : ?>
+                                <a class="rdsco-timeline-image-link" href="<?php the_permalink(); ?>" aria-label="<?php echo esc_attr( get_the_title() ); ?>">
+                                    <?php echo get_the_post_thumbnail( $post_id, 'medium', [ 'loading' => 'lazy', 'class' => 'rdsco-timeline-image', 'alt' => '' ] ); ?>
+                                </a>
                             <?php endif; ?>
-                            <h3 class="rdsco-timeline-title"><a href="<?php the_permalink(); ?>"><?php echo esc_html( get_the_title() ); ?></a></h3>
+                            <div class="rdsco-timeline-title-wrap">
+                                <?php if ( '' !== $timeline_year ) : ?>
+                                    <span class="rdsco-timeline-year"><?php echo esc_html( $timeline_year ); ?></span>
+                                <?php endif; ?>
+                                <h3 class="rdsco-timeline-title"><a href="<?php the_permalink(); ?>"><?php echo esc_html( get_the_title() ); ?></a></h3>
+                            </div>
                         </div>
                         <span class="rdsco-timeline-rail" aria-hidden="true"></span>
                         <div class="rdsco-timeline-content">

@@ -628,6 +628,7 @@
     display: flex;
     grid-area: heading;
     align-items: center;
+    gap: clamp(12px, 1.6vw, 20px);
     min-width: 0;
     min-height: 175px;
     overflow: hidden;
@@ -640,11 +641,44 @@
     background: #f1f8f7;
 }
 
+.rdsco-archive-card.style-timeline .rdsco-timeline-image-link {
+    position: relative;
+    z-index: 1;
+    display: block;
+    flex: 0 0 clamp(82px, 8vw, 112px);
+    width: clamp(82px, 8vw, 112px);
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.rdsco-archive-card.style-timeline .rdsco-timeline-image-link:focus-visible {
+    outline: 2px solid var(--rdsco-accent);
+    outline-offset: 3px;
+}
+
+.rdsco-archive-card.style-timeline .rdsco-timeline-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.rdsco-archive-card.style-timeline .rdsco-timeline-title-wrap {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    min-width: 0;
+    min-height: 110px;
+}
+
 .rdsco-archive-card.style-timeline .rdsco-timeline-year {
     position: absolute;
     top: 50%;
-    right: 16px;
-    max-width: calc(100% - 32px);
+    right: 0;
+    max-width: 100%;
     overflow: hidden;
     color: rgba(2, 153, 151, .11);
     font-size: clamp(76px, 11vw, 158px);
@@ -768,8 +802,18 @@
         padding: 22px 18px;
     }
 
+    .rdsco-archive-card.style-timeline .rdsco-timeline-image-link {
+        flex-basis: 76px;
+        width: 76px;
+        border-radius: 10px;
+    }
+
+    .rdsco-archive-card.style-timeline .rdsco-timeline-title-wrap {
+        min-height: 84px;
+    }
+
     .rdsco-archive-card.style-timeline .rdsco-timeline-year {
-        font-size: clamp(70px, 20vw, 118px);
+        font-size: clamp(60px, 14vw, 86px);
     }
 
     .rdsco-archive-card.style-timeline .rdsco-timeline-title {
